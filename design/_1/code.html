@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary": "#ffffff", "on-primary": "#ffffff", "error-container": "#ffdad6", "surface-container-high": "#eae7e7", "on-primary-container": "#e1ffe5", "inverse-primary": "#9dd3aa", "primary": "#316342", "tertiary-container": "#b35641", "on-secondary-fixed": "#1c1c18", "secondary-container": "#e5e2dc", "on-background": "#1b1c1c", "outline-variant": "#c1c9bf", "on-surface-variant": "#414942", "error": "#ba1a1a", "on-primary-fixed-variant": "#1e5031", "primary-container": "#4a7c59", "surface": "#fcf9f8", "surface-container": "#f0eded", "secondary-fixed": "#e5e2dc", "on-secondary-container": "#656460", "on-tertiary-container": "#fff5f3", "inverse-on-surface": "#f3f0f0", "primary-fixed-dim": "#9dd3aa", "secondary-fixed-dim": "#c9c6c1", "on-surface": "#1b1c1c", "surface-tint": "#376847", "tertiary-fixed": "#ffdad2", "tertiary": "#943f2b", "on-secondary-fixed-variant": "#474743", "background": "#fcf9f8", "tertiary-fixed-dim": "#ffb4a3", "surface-container-highest": "#e4e2e1", "on-tertiary-fixed-variant": "#7c2d1b", "outline": "#717971", "on-primary-fixed": "#00210e", "primary-fixed": "#b9efc5", "surface-variant": "#e4e2e1", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "surface-dim": "#dcd9d9", "on-error-container": "#93000a", "on-tertiary-fixed": "#3d0600", "surface-container-low": "#f6f3f2", "on-tertiary": "#ffffff", "surface-bright": "#fcf9f8", "inverse-surface": "#303030", "secondary": "#5f5e5a" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter-mobile": "0.75rem", "margin": "1.25rem", "space-xl": "2rem", "space-lg": "1.5rem", "margin-mobile": "1rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem", "gutter": "1rem" }, "fontFamily": { "label-lg": ["Noto Sans KR", "sans-serif"], "numeric-callout": ["Plus Jakarta Sans", "sans-serif"], "headline-xl": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"], "label-md": ["Noto Sans KR", "sans-serif"], "body-lg": ["Noto Sans KR", "sans-serif"], "body-sm": ["Noto Sans KR", "sans-serif"], "label-sm": ["Noto Sans KR", "sans-serif"], "headline-md": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"], "headline-lg": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"], "body-md": ["Noto Sans KR", "sans-serif"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "600" }], "numeric-callout": ["20px", { "lineHeight": "24px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-xl": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-md": ["18px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-lg": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "-0.01em", "fontWeight": "400" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; } body { overscroll-behavior: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_12px_rgba(49,99,66,0.05)] pt-safe"><div class="max-w-[480px] mx-auto h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-space-sm"><span class="font-headline-lg text-headline-lg text-primary tracking-tight font-bold">이천베베로드</span><div class="flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm"><span class="material-symbols-outlined text-[13px] text-primary">location_on</span><span>이천시</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="알림 및 안심팁" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-[0_0_0_1.5px_#4A7C59]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHcos0wiqqbU73ZcGGihurbsnjVdWrvn79Vd3pXIzyCh6NZAtnEJgPklWigOrA0zkBXEkS7getpns9rjgoEN3rrWzIIgdBgBsXTjyGN85mU4LXyVhjGfzzAfLvxurozc9Jccl4rw8MFhbB_Bbn4usvHcBLcnBk6Vn5whslecVmlU8QlAPFtHF5KP61it4IJgO5dzSfkzp1K17FY5ZFJXhBDOn2GyHOlriFGGLsREr9VE63m3tpTn-L"/></div></div></header><main class="flex-1 flex flex-col relative w-full max-w-[480px] mx-auto px-margin-mobile pt-16 pb-24 bg-surface"><div class="flex flex-col w-full pb-20">
+<!-- Top Header & Reassurance Block -->
+<section class="flex flex-col gap-2 pt-3 pb-5">
+<div class="inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">family_star</span>
+<span>김민지 가족 맞춤 코스</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-1">
+      오늘은 4개 블록이 적당해요
+    </h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+      2세 아이와 무더운 날씨, 유모차 사용을 고려해 무리 없는 동선으로 구성했어요.
+    </p>
+</section>
+<!-- Summary Metrics Feasibility Card -->
+<section class="rounded-xl bg-surface-container-lowest shadow-sm p-space-md mb-space-lg">
+<!-- Feasibility Status Banner -->
+<div class="flex items-center gap-2 p-2.5 rounded-lg bg-surface-container text-primary mb-3">
+<span class="material-symbols-outlined text-[20px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-md text-label-md text-primary font-semibold">무리 없는 일정이에요 (2세 아이 기준 안심)</span>
+</div>
+<!-- 3-Column Metrics Grid -->
+<div class="grid grid-cols-3 gap-2 py-2 mb-2 text-center">
+<div class="flex flex-col items-center bg-surface-container-low rounded-lg py-2.5 px-1">
+<span class="font-label-sm text-label-sm text-secondary">총 일정</span>
+<span class="font-numeric-callout text-numeric-callout text-on-surface mt-0.5">5시간 30분</span>
+</div>
+<div class="flex flex-col items-center bg-surface-container-low rounded-lg py-2.5 px-1">
+<span class="font-label-sm text-label-sm text-secondary">순수 이동</span>
+<span class="font-numeric-callout text-numeric-callout text-on-surface mt-0.5">1시간 10분</span>
+</div>
+<div class="flex flex-col items-center bg-surface-container-low rounded-lg py-2.5 px-1">
+<span class="font-label-sm text-label-sm text-primary">여유·버퍼</span>
+<span class="font-numeric-callout text-numeric-callout text-primary mt-0.5">40분 확보</span>
+</div>
+</div>
+<!-- Explanatory note -->
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1.5 px-1 mt-1">
+<span class="material-symbols-outlined text-[16px] text-primary">shield</span>
+<span>장소 간 이동시간 15~20분 내외로 아이가 차 안에서 보채지 않는 거리입니다.</span>
+</p>
+</section>
+<!-- Vertical Itinerary Timeline -->
+<section class="flex flex-col gap-0 mb-space-xl">
+<div class="flex items-center justify-between mb-3 px-1">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-on-surface">베베로드 추천 타임라인</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">4개 장소</span>
+</div>
+<button class="font-label-md text-label-md text-primary flex items-center gap-0.5 active:opacity-75 transition-opacity" onclick="toggleAllCards()">
+<span class="material-symbols-outlined text-[16px]">unfold_more</span>
+<span>간단히 보기</span>
+</button>
+</div>
+<!-- BLOCK 1: LUNCH -->
+<div class="relative pl-7 pb-2 timeline-item">
+<!-- Connector line -->
+<div class="absolute left-[13px] top-7 bottom-0 w-[2px] bg-secondary-container"></div>
+<!-- Node -->
+<div class="absolute left-0 top-1 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm font-label-md text-label-md">
+        1
+      </div>
+<!-- Destination Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-3">
+<div class="relative h-36 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Warm modern Korean hanjeongsik restaurant named Misotjieum in Icheon, bright daylight through large windows, clean wooden tables with generous spacing for strollers, peaceful dining environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGoIB6-wDFN72uBZIMaB9KZnC6xo_8qxT0r3WuLhZVTp7EU4Kn7F2SYLOliJS0eFtrijvGOCNzet57g0yyv1us8_cPcv5MHKzsezs2P2uW9sS2EzaxUfWb9Zpq7AFD-r-CU81Ckhv08GAZ5OsZIKsxsXKK5goUsroH7_xiwyka5UQLKtQ-rhgnl4x7pGM3-wMAV9J1f6nVKQQI8MxKheZxpeM5Fr1T4kBEopI6CvDyHRY4sKO5H4At"/>
+<div class="absolute top-2.5 left-2.5 flex gap-1.5">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary">restaurant</span>
+              점심 식사
+            </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface-variant font-label-sm text-label-sm">실내 에어컨</span>
+</div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm">
+            12:00 — 13:00 (60분)
+          </div>
+</div>
+<div class="p-space-md flex flex-col gap-2.5">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-on-surface">미솥지음 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">쌀밥 한정식</span></h2>
+<span class="font-label-sm text-label-sm text-primary font-medium">유아 동반 94% 만족</span>
+</div>
+<!-- Facility Badges Grid -->
+<div class="flex flex-wrap gap-1.5">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>주차 편리
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>아기의자 8개 보유
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">help</span>기저귀대 확인필요
+            </span>
+</div>
+<!-- Recommendation Reason -->
+<div class="p-2.5 rounded-lg bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+<span class="font-label-md text-label-md text-primary block mb-0.5">추천 이유</span>
+            이천 도착 직후 바로 식사하며 아이 컨디션과 허기를 달래기 좋아요. 테이블 간격이 넓어 유모차 거치가 편합니다.
+          </div>
+</div>
+</div>
+<!-- Transit Segment 1 -->
+<div class="flex items-center gap-2 py-1.5 px-3 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm self-start my-1 w-fit shadow-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">directions_car</span>
+<span>이동 20분 · 주차 및 승하차 버퍼 10분 포함</span>
+</div>
+</div>
+<!-- BLOCK 2: MAIN ATTRACTION -->
+<div class="relative pl-7 pb-2 timeline-item">
+<!-- Connector line -->
+<div class="absolute left-[13px] top-7 bottom-0 w-[2px] bg-secondary-container"></div>
+<!-- Node -->
+<div class="absolute left-0 top-1 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm font-label-md text-label-md">
+        2
+      </div>
+<!-- Destination Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-3">
+<div class="relative h-36 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Icheon Agriculture Theme Park and Rice Cafe with gentle paved wooden deck ramps suitable for strollers, shaded trees, serene countryside park atmosphere in soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7pgFnYwf7EK8pG55BsRUKu1mbzsmcZTFVcIbwA8ah2V4eL4B5sjoMerUbPItq5N0zFM9Ga_6x90krkmI_fbqMyF7xGs75UqfLs3r8lN5JnAWX6aYU9dvOuEttiOkI_Hb4RFPfvJOkE_ef2PQYX1-B81oazwfpg8n6ueDknEXc-5OtyT_ZcL_XzpYfnLOHJGtPZaEk_G-VxjDw2gzRc8SajUWHhPf-KQazXLXB9rOpqZsAfAi86xWb"/>
+<div class="absolute top-2.5 left-2.5 flex gap-1.5">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">park</span>
+              메인 체험 &amp; 쉼
+            </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface-variant font-label-sm text-label-sm">실내 + 그늘</span>
+</div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm">
+            13:20 — 14:50 (90분)
+          </div>
+</div>
+<div class="p-space-md flex flex-col gap-2.5">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-on-surface">이천농업테마공원 + 라이스카페</h2>
+<span class="font-label-sm text-label-sm text-primary font-medium">유모차 친화 1등급</span>
+</div>
+<!-- Facility Badges Grid -->
+<div class="flex flex-wrap gap-1.5">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>유모차 완경사
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>전용 주차장
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>독립 수유실
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>기저귀 갈이대
+            </span>
+</div>
+<!-- Recommendation Reason -->
+<div class="p-2.5 rounded-lg bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+<span class="font-label-md text-label-md text-primary block mb-0.5">추천 이유</span>
+            완만한 덱길로 유모차 주행이 쾌적하며, 더울 땐 공원 내 라이스카페 실내에서 시원한 휴식이 가능해요.
+          </div>
+</div>
+</div>
+<!-- Transit Segment 2 (Nap Feasible Highlight) -->
+<div class="flex items-center gap-2 py-2 px-3.5 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm self-start my-1 w-fit shadow-xs">
+<span class="material-symbols-outlined text-[18px] text-tertiary">bedtime</span>
+<span class="font-semibold">🚗 이동 30분 (아기 낮잠 타이밍으로 추천 😴)</span>
+</div>
+</div>
+<!-- BLOCK 3: INDOOR OBSERVATION -->
+<div class="relative pl-7 pb-2 timeline-item">
+<!-- Connector line -->
+<div class="absolute left-[13px] top-7 bottom-0 w-[2px] bg-secondary-container"></div>
+<!-- Node -->
+<div class="absolute left-0 top-1 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm font-label-md text-label-md">
+        3
+      </div>
+<!-- Destination Card 3 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-3">
+<div class="relative h-36 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Icheon Environmental Learning Center interior, cool air-conditioned indoor botanical garden and freshwater aquarium tanks with calm lighting suitable for young children" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2XTB5YqKuwq-YaB4gr0f23ajEuhy5giGEOF8E2HX3zeriaBppAdODQbqyHXRu9HUy84OqATEEU56pb7gBYyc1_qtcHC41oJOoQ7u6wrqBKXskMKk_sZXvbTejY3mGA-gmilT-PsAFtTjkPQenk2XPQdtI7p2i9KNghJC0WuW0doKEgELczJzqX_lxSd8BfY87zMvEgqLOZsg0ptgEqtoW_Nkl7Kq_eoUYqDJ3TI4PZKVnZoEgvJ1r"/>
+<div class="absolute top-2.5 left-2.5 flex gap-1.5">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">ac_unit</span>
+              실내 관람
+            </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface-variant font-label-sm text-label-sm">완전 실내</span>
+</div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm">
+            15:20 — 16:00 (40분)
+          </div>
+</div>
+<div class="p-space-md flex flex-col gap-2.5">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-on-surface">이천시환경학습관</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">쾌적지수 98점</span>
+</div>
+<!-- Facility Badges Grid -->
+<div class="flex flex-wrap gap-1.5">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>엘리베이터
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>유모차 관람
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>화장실 완비
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">help</span>아기의자 확인필요
+            </span>
+</div>
+<!-- Recommendation Reason -->
+<div class="p-2.5 rounded-lg bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+<span class="font-label-md text-label-md text-primary block mb-0.5">추천 이유</span>
+            무더운 오후 시간대 실내에서 시원하게 물고기와 식물을 관찰할 수 있는 쾌적한 쉼표 장소입니다.
+          </div>
+</div>
+</div>
+<!-- Transit Segment 3 -->
+<div class="flex items-center gap-2 py-1.5 px-3 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm self-start my-1 w-fit shadow-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">directions_car</span>
+<span>이동 15분</span>
+</div>
+</div>
+<!-- BLOCK 4: RELAX CAFE -->
+<div class="relative pl-7 pb-2 timeline-item">
+<!-- Connector line -->
+<div class="absolute left-[13px] top-7 bottom-0 w-[2px] bg-secondary-container"></div>
+<!-- Node -->
+<div class="absolute left-0 top-1 w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm font-label-md text-label-md">
+        4
+      </div>
+<!-- Destination Card 4 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-3">
+<div class="relative h-36 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Aesthetic Korean garden cafe Cafe Eulele in Icheon, expansive lawn yard with soft evening sunlight, clean glass architecture with warm wooden interior, high chairs and spacious seating" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvxFwvCNgr-k_BuQezefSomllf6uO1PLY-VE_obxPVrOnSbKHzey-_reGbV8iVXT-A6AtL6XarC9AazlrXT57hv1hsGj0mlxn7ue_MXrA6Z8lc0lTPdwMxqgeshSjtzBo4nX-EkFvnNnQdvrnZwI2e_Fg7lZ4eDQxy4ZSQ7kn5lexIUwk-K5s6LqE4u4C7iPVCkyejoWJrjV5xk9ZXkEA9SUvOqLnJM5xJtQ9F0s90R0mcD-75_G6a"/>
+<div class="absolute top-2.5 left-2.5 flex gap-1.5">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-tertiary">coffee</span>
+              부모 휴식
+            </span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface-variant font-label-sm text-label-sm">실내/잔디마당</span>
+</div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-inverse-surface/80 text-inverse-on-surface font-label-sm text-label-sm">
+            16:15 — 17:00 (45분)
+          </div>
+</div>
+<div class="p-space-md flex flex-col gap-2.5">
+<div class="flex items-baseline justify-between">
+<h2 class="font-headline-md text-headline-md text-on-surface">카페 을를</h2>
+<span class="font-label-sm text-label-sm text-primary font-medium">잔디마당 완비</span>
+</div>
+<!-- Facility Badges Grid -->
+<div class="flex flex-wrap gap-1.5">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>전용 주차
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>아기의자
+            </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>야외 테라스
+            </span>
+</div>
+<!-- Recommendation Reason -->
+<div class="p-2.5 rounded-lg bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+<span class="font-label-md text-label-md text-primary block mb-0.5">추천 이유</span>
+            집으로 출발하기 전 부모가 커피 한 잔과 함께 한숨 돌리는 마지막 충전 시간입니다.
+          </div>
+</div>
+</div>
+</div>
+<!-- Final Safe Return Indicator -->
+<div class="relative pl-7 timeline-item">
+<div class="absolute left-0 top-1 w-7 h-7 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-sm font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">home</span>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary">traffic</span>
+<span>🏁 17:30 이천 출발 → 서울 저녁 정체 전 안전 귀가</span>
+</div>
+</div>
+</section>
+<!-- Recommendation Rationale Card ("왜 이렇게 추천했나요?") -->
+<section class="rounded-xl bg-surface-container-lowest shadow-sm p-space-md mb-space-lg">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-[22px] text-primary">psychology_alt</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">왜 이렇게 추천했나요?</h2>
+</div>
+<!-- Decision Chips -->
+<div class="flex flex-wrap gap-1.5 mb-3.5">
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">👶 2세 아이 발걸음</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">🦽 유모차 완경사로 보장</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">☀️ 무더위 실내 60% 안배</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm">☕ 부모 휴식 45분 보장</span>
+</div>
+<!-- Rationale Text -->
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed bg-surface-container-low p-3 rounded-lg">
+      오늘 최고 기온이 31℃로 예보되어 오후 햇볕이 가장 강한 15시대에 실내 온실 및 수족관 코스를 배치했습니다. 2세 아이의 수면 리듬을 고려하여 14:50 공원 출발 직후 카시트에서 숙면을 취할 수 있도록 30분 거리 구간으로 최적화했습니다.
+    </p>
+</section>
+<!-- Alternative Places Section ("오늘은 다음으로 남겨둘게요") -->
+<section class="rounded-xl bg-surface-container-low p-space-md mb-space-lg">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[20px] text-secondary">bookmark_added</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">오늘은 다음으로 남겨둘게요</h2>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">2곳 제외</span>
+</div>
+<div class="flex flex-col gap-2.5">
+<!-- Excluded Place 1 -->
+<div class="p-3 rounded-lg bg-surface-container-lowest shadow-xs flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface">모가의 숲</span>
+<span class="font-label-sm text-label-sm text-tertiary bg-tertiary-fixed px-2 py-0.5 rounded">폭염 주의</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          야외 위주 공간으로 오늘 같은 폭염에는 아이가 쉽게 지칠 수 있어 제외했어요.
+        </p>
+</div>
+<!-- Excluded Place 2 -->
+<div class="p-3 rounded-lg bg-surface-container-lowest shadow-xs flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface">성호호수연꽃단지</span>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-container px-2 py-0.5 rounded">동선 초과</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          동선상 40분이 더 소요되어 저녁 귀가 정체 시간을 넘기게 됩니다.
+        </p>
+</div>
+</div>
+</section>
+<!-- Secondary Actions Row -->
+<section class="grid grid-cols-2 gap-2 mb-4">
+<button class="h-12 flex items-center justify-center gap-1.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md active:bg-surface-container-high transition-colors" onclick="alert('장소 순서 재배치 화면으로 이동합니다.')">
+<span class="material-symbols-outlined text-[18px]">swap_vert</span>
+<span>장소 순서 바꾸기</span>
+</button>
+<button class="h-12 flex items-center justify-center gap-1.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md active:bg-surface-container-high transition-colors" onclick="alert('1개 장소를 줄여 더 여유로운 3개 블록으로 맞춥니다.')">
+<span class="material-symbols-outlined text-[18px]">remove_circle_outline</span>
+<span>한 곳 줄이기 (-45분)</span>
+</button>
+</section>
+<!-- Primary Sticky Action Anchor -->
+<section class="sticky bottom-20 z-40 pt-2 pb-1">
+<button class="w-full h-[52px] rounded-full bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(49,99,66,0.25)] active:scale-[0.98] transition-transform" onclick="startItinerary()">
+<span class="material-symbols-outlined text-[20px]">navigation</span>
+<span>이 코스로 하루 시작하기</span>
+</button>
+</section>
+</div>
+<script>
+  function toggleAllCards() {
+    const images = document.querySelectorAll('.timeline-item img');
+    images.forEach(img => {
+      const parent = img.parentElement;
+      if (parent.style.display === 'none') {
+        parent.style.display = 'block';
+      } else {
+        parent.style.display = 'none';
+      }
+    });
+  }
+
+  function startItinerary() {
+    const btn = event.currentTarget;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">refresh</span> 코스 안내를 시작합니다...';
+    setTimeout(() => {
+      alert('김민지 가족의 안심 이천 일정이 시작되었습니다. 1번째 블록 [미솥지음]으로 내비게이션을 연동합니다.');
+      btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check</span> 출발 완료';
+    }, 600);
+  }
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(43,43,43,0.05)]" data-active-classes="text-primary font-semibold"><div class="max-w-[480px] mx-auto flex justify-around items-center h-16 px-gutter-mobile"><a class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-primary transition-all active:scale-95" data-path="home" href="#"><span class="material-symbols-outlined text-[24px]">home</span><span class="font-label-sm text-label-sm">홈</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] transition-all active:scale-95 text-primary font-semibold" data-path="itinerary-recommend" href="#"><span class="material-symbols-outlined text-[24px]">alt_route</span><span class="font-label-sm text-label-sm">코스 추천</span></a><a class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-primary transition-all active:scale-95" data-path="places" href="#"><span class="material-symbols-outlined text-[24px]">explore</span><span class="font-label-sm text-label-sm">장소 탐색</span></a><a class="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] text-on-surface-variant hover:text-primary transition-all active:scale-95" data-path="my-trip" href="#"><span class="material-symbols-outlined text-[24px]">calendar_month</span><span class="font-label-sm text-label-sm">내 일정</span></a></div></nav></body></html>

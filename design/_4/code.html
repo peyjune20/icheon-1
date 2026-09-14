@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary": "#ffffff", "on-primary": "#ffffff", "error-container": "#ffdad6", "surface-container-high": "#eae7e7", "on-primary-container": "#e1ffe5", "inverse-primary": "#9dd3aa", "primary": "#316342", "tertiary-container": "#b35641", "on-secondary-fixed": "#1c1c18", "secondary-container": "#e5e2dc", "on-background": "#1b1c1c", "outline-variant": "#c1c9bf", "on-surface-variant": "#414942", "error": "#ba1a1a", "on-primary-fixed-variant": "#1e5031", "primary-container": "#4a7c59", "surface": "#fcf9f8", "surface-container": "#f0eded", "secondary-fixed": "#e5e2dc", "on-secondary-container": "#656460", "on-tertiary-container": "#fff5f3", "inverse-on-surface": "#f3f0f0", "primary-fixed-dim": "#9dd3aa", "secondary-fixed-dim": "#c9c6c1", "on-surface": "#1b1c1c", "surface-tint": "#376847", "tertiary-fixed": "#ffdad2", "tertiary": "#943f2b", "on-secondary-fixed-variant": "#474743", "background": "#fcf9f8", "tertiary-fixed-dim": "#ffb4a3", "surface-container-highest": "#e4e2e1", "on-tertiary-fixed-variant": "#7c2d1b", "outline": "#717971", "on-primary-fixed": "#00210e", "primary-fixed": "#b9efc5", "surface-variant": "#e4e2e1", "on-error": "#ffffff", "surface-container-lowest": "#ffffff", "surface-dim": "#dcd9d9", "on-error-container": "#93000a", "on-tertiary-fixed": "#3d0600", "surface-container-low": "#f6f3f2", "on-tertiary": "#ffffff", "surface-bright": "#fcf9f8", "inverse-surface": "#303030", "secondary": "#5f5e5a" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter-mobile": "0.75rem", "margin": "1.25rem", "space-xl": "2rem", "space-lg": "1.5rem", "margin-mobile": "1rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-md": "1rem", "gutter": "1rem" }, "fontFamily": { "label-lg": ["Noto Sans KR", "sans-serif"], "numeric-callout": ["Plus Jakarta Sans", "sans-serif"], "headline-xl": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"], "label-md": ["Noto Sans KR", "sans-serif"], "body-lg": ["Noto Sans KR", "sans-serif"], "body-sm": ["Noto Sans KR", "sans-serif"], "label-sm": ["Noto Sans KR", "sans-serif"], "headline-md": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"], "headline-lg": ["Plus Jakarta Sans", "Noto Sans KR", "sans-serif"], "body-md": ["Noto Sans KR", "sans-serif"] }, "fontSize": { "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "600" }], "numeric-callout": ["20px", { "lineHeight": "24px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-xl": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-md": ["18px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-lg": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "-0.01em", "fontWeight": "400" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; } body { overscroll-behavior: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen pt-safe pb-safe antialiased"><main class="flex-1 flex flex-col relative w-full max-w-[480px] mx-auto bg-surface"><div class="flex flex-col w-full pb-32">
+<!-- Top Progress Bar & Header Meta -->
+<div class="px-margin pt-4 pb-2">
+<div class="flex items-center justify-between text-on-surface-variant mb-2">
+<span class="font-label-sm text-label-sm text-primary font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">eco</span>
+        1/2 기본 조건 설정
+      </span>
+<span class="font-label-sm text-label-sm text-secondary">약 1분 소요</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-300 w-1/2"></div>
+</div>
+</div>
+<!-- Screen Titles -->
+<div class="px-margin pt-3 pb-4">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+      우리 가족 여행을 알려주세요
+    </h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+      아이와 무리 없이 움직일 수 있는 안심 코스를 만들어드릴게요.
+    </p>
+</div>
+<!-- Main Content Cards Stack -->
+<div class="px-margin flex flex-col gap-4">
+<!-- Section A: 아이 정보 -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline-md text-label-md">
+          A
+        </span>
+<h2 class="font-headline-md text-headline-md text-on-surface">
+          아이 정보
+        </h2>
+</div>
+<!-- Age Selector Chips -->
+<div class="mb-4">
+<div class="flex items-center justify-between mb-2">
+<label class="font-label-md text-label-md text-on-surface-variant">아이 나이대</label>
+<span class="font-label-sm text-label-sm text-primary">개월수 맞춤 분석</span>
+</div>
+<div class="grid grid-cols-3 gap-2 sm:grid-cols-5" id="age-selector">
+<button class="age-chip py-2.5 px-2 rounded-lg text-center bg-surface-container-low text-on-surface-variant font-label-md text-label-md transition-all active:scale-95" type="button">
+            12개월 미만
+          </button>
+<button class="age-chip py-2.5 px-2 rounded-lg text-center bg-surface-container-low text-on-surface-variant font-label-md text-label-md transition-all active:scale-95" type="button">
+            1세
+          </button>
+<button class="age-chip active py-2.5 px-2 rounded-lg text-center bg-primary text-on-primary font-label-md text-label-md shadow-sm transition-all active:scale-95" type="button">
+            ● 2세 (13~24)
+          </button>
+<button class="age-chip py-2.5 px-2 rounded-lg text-center bg-surface-container-low text-on-surface-variant font-label-md text-label-md transition-all active:scale-95" type="button">
+            3~4세
+          </button>
+<button class="age-chip py-2.5 px-2 rounded-lg text-center bg-surface-container-low text-on-surface-variant font-label-md text-label-md transition-all active:scale-95" type="button">
+            5세 이상
+          </button>
+</div>
+<!-- Safe Parenting Note -->
+<div class="mt-2 flex items-start gap-1.5 p-2 bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            17개월 아기는 2세 기준으로 넉넉한 기저귀 교환 및 보행 버퍼를 자동 계산해요.
+          </p>
+</div>
+</div>
+<!-- Stroller Segmented Control -->
+<div>
+<label class="font-label-md text-label-md text-on-surface-variant block mb-2">유모차 동행 여부</label>
+<div class="grid grid-cols-2 p-1 bg-surface-container-low rounded-xl gap-1">
+<button class="h-[46px] rounded-lg bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm flex items-center justify-center gap-1.5 transition-all" id="stroller-yes" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            사용해요 (권장)
+          </button>
+<button class="h-[46px] rounded-lg text-on-surface-variant font-label-lg text-label-lg flex items-center justify-center gap-1.5 transition-all" id="stroller-no" type="button">
+            사용하지 않아요
+          </button>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">stroller</span>
+          계단이 없거나 경사로 및 엘리베이터가 확보된 장소를 최우선 추천해요.
+        </p>
+</div>
+</section>
+<!-- Section B: 여행 일정 -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline-md text-label-md">
+            B
+          </span>
+<h2 class="font-headline-md text-headline-md text-on-surface">
+            여행 일정
+          </h2>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container text-secondary">당일 나들이</span>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Departure Location -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px]">my_location</span>
+<span class="font-label-md text-label-md text-on-surface-variant">출발 지역</span>
+</div>
+<button class="font-label-md text-label-md px-3 py-1.5 bg-surface-container-lowest text-on-surface rounded-full shadow-sm flex items-center gap-1 active:bg-surface-container" type="button">
+            서울 구로구 신도림
+            <span class="material-symbols-outlined text-[16px] text-secondary">expand_more</span>
+</button>
+</div>
+<!-- Date Selection -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+<span class="font-label-md text-label-md text-on-surface-variant">여행 날짜</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold">
+            2025년 9월 5일 (토)
+          </span>
+</div>
+<!-- Time Slots Grid -->
+<div class="grid grid-cols-2 gap-2">
+<div class="p-3 bg-surface-container-low rounded-lg">
+<span class="font-label-sm text-label-sm text-secondary block">출발 시간</span>
+<div class="font-numeric-callout text-numeric-callout text-on-surface mt-0.5">10:00 AM</div>
+<span class="font-body-sm text-body-sm text-primary mt-1 block">이천 12:00 도착 예상</span>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg">
+<span class="font-label-sm text-label-sm text-secondary block">귀가 출발 희망</span>
+<div class="font-numeric-callout text-numeric-callout text-on-surface mt-0.5">05:30 PM</div>
+<span class="font-body-sm text-body-sm text-tertiary-container mt-1 block">저녁 정체 전 복귀</span>
+</div>
+</div>
+<!-- Total Stay Buffer Pill -->
+<div class="p-2.5 bg-primary/10 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]">schedule</span>
+<span class="font-label-md text-label-md text-primary font-bold">이천 체류 가능 시간</span>
+</div>
+<span class="font-label-md text-label-md text-primary font-bold">약 5시간 30분</span>
+</div>
+</div>
+</section>
+<!-- Section C: 이동수단 -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline-md text-label-md">
+          C
+        </span>
+<h2 class="font-headline-md text-headline-md text-on-surface">
+          이동수단
+        </h2>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<!-- Private Car (Active) -->
+<div class="p-3 rounded-xl bg-primary/10 flex flex-col justify-between cursor-pointer active:scale-98 transition-all">
+<div class="flex items-center justify-between mb-2">
+<span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg text-primary font-bold">자가용 (권장)</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+              주차 및 승하차 버퍼 10분 자동 포함
+            </p>
+</div>
+</div>
+<!-- Public Transit -->
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col justify-between opacity-80 cursor-pointer active:scale-98 transition-all">
+<div class="flex items-center justify-between mb-2">
+<span class="material-symbols-outlined text-secondary text-[24px]">subway</span>
+<div class="w-4 h-4 rounded-full bg-surface-container"></div>
+</div>
+<div>
+<div class="font-label-lg text-label-lg text-on-surface">경강선 · 대중교통</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+              역사 엘리베이터 동선 중심 설계
+            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section D: 여행 스타일 -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-headline-md text-label-md">
+            D
+          </span>
+<h2 class="font-headline-md text-headline-md text-on-surface">
+            여행 스타일
+          </h2>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">최대 3개 선택</span>
+</div>
+<div class="flex flex-wrap gap-2" id="style-chips">
+<button class="style-chip py-2 px-3.5 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-primary text-on-primary shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+          🌿 자연 속 산책
+        </button>
+<button class="style-chip py-2 px-3.5 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-primary text-on-primary shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+          ☕ 부모도 쉬고 싶어요
+        </button>
+<button class="style-chip py-2 px-3.5 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container-low text-on-surface" type="button">
+          🍚 이천다운 쌀밥 맛집
+        </button>
+<button class="style-chip py-2 px-3.5 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container-low text-on-surface" type="button">
+          🧸 유아 친화 체험
+        </button>
+<button class="style-chip py-2 px-3.5 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container-low text-on-surface" type="button">
+          🏠 쾌적한 실내 위주
+        </button>
+<button class="style-chip py-2 px-3.5 rounded-full font-label-md text-label-md flex items-center gap-1.5 transition-all bg-surface-container-low text-on-surface" type="button">
+          📷 가족 감성 사진
+        </button>
+</div>
+</section>
+<!-- Section E: 세부 맞춤 설정 (Accordion) -->
+<details class="group bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden" open="">
+<summary class="flex items-center justify-between p-space-md cursor-pointer list-none select-none">
+<div class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-headline-md text-label-md">
+            E
+          </span>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">
+              조금 더 맞춤 설정하기
+            </h2>
+<span class="font-body-sm text-body-sm text-secondary">낮잠 시간 &amp; 부모 휴식 비중</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary transition-transform duration-200 group-open:rotate-180">
+          expand_more
+        </span>
+</summary>
+<div class="px-space-md pb-space-md flex flex-col gap-3.5 pt-1">
+<!-- Nap Schedule -->
+<div class="p-3 bg-surface-container-low rounded-lg">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-md text-label-md text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-primary">bedtime</span>
+              아이 낮잠 시간대
+            </span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-lowest text-primary font-bold">오후 1:30 ~ 3:00</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+            이 시간대는 차량 이동 중 차 안 낮잠 구간 또는 소음 없는 조용한 카페로 자동 배치됩니다.
+          </p>
+</div>
+<!-- Lunch Preference -->
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
+<div>
+<div class="font-label-md text-label-md text-on-surface">점심 식사 포함</div>
+<div class="font-body-sm text-body-sm text-secondary">이천 도착 직후 (12:00 경) 권장</div>
+</div>
+<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</div>
+<!-- Parent Rest Priority -->
+<div class="p-3 bg-surface-container-low rounded-lg">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface">부모 휴식 중요도</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">높음 (카페 40분 보장)</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-4/5"></div>
+</div>
+</div>
+</div>
+</details>
+</div>
+<!-- Sticky Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto bg-surface/95 backdrop-blur-md px-margin py-3 z-50">
+<button class="w-full h-[52px] rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all" type="button">
+<span>우리 가족 코스 추천받기 (4개 코스 예상)</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<p class="font-label-sm text-label-sm text-center text-secondary mt-1.5 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified_user</span>
+      아이의 체력을 고려해 무리한 다중 장소는 자동으로 필터링됩니다.
+    </p>
+</div>
+</div>
+<script>
+  // Simple micro-interactions for age chips
+  const ageChips = document.querySelectorAll('.age-chip');
+  ageChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      ageChips.forEach(c => {
+        c.className = 'age-chip py-2.5 px-2 rounded-lg text-center bg-surface-container-low text-on-surface-variant font-label-md text-label-md transition-all active:scale-95';
+      });
+      chip.className = 'age-chip active py-2.5 px-2 rounded-lg text-center bg-primary text-on-primary font-label-md text-label-md shadow-sm transition-all active:scale-95';
+    });
+  });
+
+  // Toggle stroller button state
+  const strollerYes = document.getElementById('stroller-yes');
+  const strollerNo = document.getElementById('stroller-no');
+  if (strollerYes && strollerNo) {
+    strollerYes.addEventListener('click', () => {
+      strollerYes.className = 'h-[46px] rounded-lg bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm flex items-center justify-center gap-1.5 transition-all';
+      strollerNo.className = 'h-[46px] rounded-lg text-on-surface-variant font-label-lg text-label-lg flex items-center justify-center gap-1.5 transition-all';
+    });
+    strollerNo.addEventListener('click', () => {
+      strollerNo.className = 'h-[46px] rounded-lg bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm flex items-center justify-center gap-1.5 transition-all';
+      strollerYes.className = 'h-[46px] rounded-lg text-on-surface-variant font-label-lg text-label-lg flex items-center justify-center gap-1.5 transition-all';
+    });
+  }
+
+  // Toggle multi-select chips up to 3
+  const styleChips = document.querySelectorAll('.style-chip');
+  styleChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const isSelected = chip.classList.contains('bg-primary');
+      if (isSelected) {
+        chip.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+        chip.classList.add('bg-surface-container-low', 'text-on-surface');
+        const checkIcon = chip.querySelector('.material-symbols-outlined');
+        if (checkIcon) checkIcon.remove();
+      } else {
+        const activeCount = document.querySelectorAll('.style-chip.bg-primary').length;
+        if (activeCount < 3) {
+          chip.classList.remove('bg-surface-container-low', 'text-on-surface');
+          chip.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+          const span = document.createElement('span');
+          span.className = 'material-symbols-outlined text-[16px]';
+          span.style.fontVariationSettings = "'FILL' 1";
+          span.textContent = 'check';
+          chip.prepend(span);
+        }
+      }
+    });
+  });
+</script></main></body></html>
