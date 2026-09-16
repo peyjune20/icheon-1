@@ -31,6 +31,13 @@ export const SEED_PLACES: Place[] = [
       "/resources/pic/1-5.jpg"
     ],
     thumbnailImage: "/resources/pic/1-1.jpg",
+    imageDescriptions: [
+      "단차 없는 넓은 입구 전경 및 쾌적한 전용 주차장",
+      "유모차가 부드럽게 진입할 수 있는 완경사 램프 진입로",
+      "테이블 간격이 넉넉하여 유모차 거치가 자유로운 실내 홀",
+      "안전벨트 장착 원목 유아 식탁의자 (8점 완비)",
+      "아이와 함께 먹기 좋은 정갈한 이천 쌀밥 정식 상차림"
+    ],
     verificationStatus: "FIELD_VERIFIED",
     verifiedDate: "2025-09-05",
     editorialReview: "아이와 함께 먹기 좋은 부드러운 쌀밥과 자극 없는 반찬. 유모차 동반 식사에 최적화되어 있습니다.",
@@ -55,8 +62,8 @@ export const SEED_PLACES: Place[] = [
     shade: { value: "YES", sourceType: "FIELD_VISIT", note: "숲 그늘 쉼터 및 휴식 공간 다수" },
     strollerRental: { value: "NO", sourceType: "FIELD_VISIT", note: "대여 미운영" },
     indoorOutdoor: "OUTDOOR",
-    ageMinMonths: 24,
-    ageMaxMonths: 72,
+    ageMinMonths: 12,
+    ageMaxMonths: 84,
     weatherTags: ["HOT_AVOID", "RAIN_AVOID"],
     imageFiles: [
       "/resources/pic/2-1.jpg",
@@ -66,44 +73,55 @@ export const SEED_PLACES: Place[] = [
       "/resources/pic/2-5.jpg"
     ],
     thumbnailImage: "/resources/pic/2-1.jpg",
+    imageDescriptions: [
+      "피톤치드 가득한 완경사 숲길 산책로 (유모차 주행 가능)",
+      "대형 나무 그늘 아래 조성된 평상과 가족 쉼터",
+      "아이와 함께 자연 생태를 관찰할 수 있는 숲속 덱로드",
+      "자연 친화적 모래놀이 공간 및 야외 잔디 마당",
+      "숲속 카페 테라스 및 그늘 휴식 공간"
+    ],
     verificationStatus: "FIELD_VERIFIED",
     verifiedDate: "2025-09-05",
-    editorialReview: "자연 친화적 숲길로 날씨가 선선할 때 최고의 쉼터이지만 폭염 시에는 아이가 지칠 수 있습니다.",
-    recommendationReason: "자연 속에서 아이와 여유롭게 흙과 나무를 만끽하기 좋은 장소입니다."
+    editorialReview: "자연 친화적 숲길로 날씨가 선선할 때 최고의 쉼터. 풍부한 나무 그늘과 평상이 마련되어 가족 산책에 좋습니다.",
+    recommendationReason: "피톤치드 가득한 숲속에서 아이와 여유롭게 흙과 나무를 만끽하기 좋은 자연 쉼터입니다."
   },
   {
     id: "3",
-    name: "이천농업테마공원 & 라이스카페",
+    name: "이천농업테마공원",
     category: "PARK",
     address: "경기 이천시 모가면 공원로 48",
     roadAddress: "경기 이천시 모가면 공원로 48",
     lat: 37.1583,
     lng: 127.4729,
-    recommendedDurationMin: 90,
+    recommendedDurationMin: 60,
     openingHours: { open: "09:30", close: "18:30", closedDays: [1] }, // 월 휴무
     parking: { value: "YES", sourceType: "FIELD_VISIT", note: "150대 무료 전용 주차장, 도보 2분" },
     strollerAccessible: { value: "YES", sourceType: "FIELD_VISIT", note: "턱 없는 완경사 램프 및 덱길 (유모차 가능)" },
     nursingRoom: { value: "YES", sourceType: "FIELD_VISIT", note: "독립 1인 수유부스, 안락소파, 전자레인지 구비" },
     diaperChangingStation: { value: "YES", sourceType: "FIELD_VISIT", note: "쌀문화전시관 1층 독립형 갈이대 및 온수 세면대" },
-    babyChair: { value: "YES", sourceType: "FIELD_VISIT", note: "라이스카페 내 아기의자 보유 (피크 시 확인 권장)" },
+    babyChair: { value: "NO", sourceType: "FIELD_VISIT", note: "공원 야외 쉼터에는 별도 아기의자가 없습니다." },
     toilet: { value: "YES", sourceType: "FIELD_VISIT", note: "가족 전용 다목적 화장실 3개소 (유모차 동반 가능)" },
-    shade: { value: "YES", sourceType: "FIELD_VISIT", note: "대형 느티나무 그늘, 파고라, 라이스카페 실내 휴식 공간 완비" },
+    shade: { value: "YES", sourceType: "FIELD_VISIT", note: "대형 느티나무 그늘과 파고라 쉼터가 있습니다." },
     strollerRental: { value: "NO", sourceType: "FIELD_VISIT", note: "현장 대여 미운영" },
-    indoorOutdoor: "MIXED",
+    indoorOutdoor: "OUTDOOR",
     ageMinMonths: 0,
     ageMaxMonths: 48,
-    weatherTags: ["HOT_OK", "RAIN_OK"],
+    weatherTags: ["HOT_AVOID", "RAIN_AVOID"],
     imageFiles: [
       "/resources/pic/3-1.jpg",
       "/resources/pic/3-2.jpg",
-      "/resources/pic/3-3.jpg",
-      "/resources/pic/3-4.jpg"
+      "/resources/pic/3-3.jpg"
     ],
     thumbnailImage: "/resources/pic/3-1.jpg",
+    imageDescriptions: [
+      "디럭스 유모차도 매끄럽게 달리는 완경사 목재 덱로드",
+      "쌀문화전시관 1층 독립 수유실 및 온수 기저귀 갈이대",
+      "대형 느티나무 그늘 파고라와 잔디 쉼터"
+    ],
     verificationStatus: "FIELD_VERIFIED",
     verifiedDate: "2025-09-05",
-    editorialReview: "디럭스 유모차를 끌고 가장 쾌적하게 거닐 수 있는 대표 쉼터. 공원 내 라이스카페가 결합되어 휴식 편의 우수.",
-    recommendationReason: "완만한 덱길로 유모차 주행이 쾌적하며, 더울 땐 공원 내 라이스카페 실내에서 시원한 휴식이 가능해요."
+    editorialReview: "디럭스 유모차를 끌고 걷기 좋은 완경사 덱길과 넓은 잔디 쉼터가 있는 대표 산책 공간입니다.",
+    recommendationReason: "완만한 덱길과 그늘 쉼터를 따라 아이와 부담 없이 산책하기 좋은 공원이에요."
   },
   {
     id: "4",
@@ -135,6 +153,13 @@ export const SEED_PLACES: Place[] = [
       "/resources/pic/4-5.jpg"
     ],
     thumbnailImage: "/resources/pic/4-1.jpg",
+    imageDescriptions: [
+      "사계절 쾌적한 실내 아열대 온실 관람로 (100% 실내 냉방)",
+      "유모차 이동이 수월한 엘리베이터 및 평지 동선",
+      "영유아 눈높이에 맞춘 대형 수족관 및 물고기 관찰 구역",
+      "푸른 열대 식물 터널과 아기 감성 포토존",
+      "가족 전용 다목적 화장실 및 기저귀 갈이대"
+    ],
     verificationStatus: "FIELD_VERIFIED",
     verifiedDate: "2025-09-05",
     editorialReview: "더운 한낮에 물고기와 아열대 식물을 시원한 실내에서 관람할 수 있어 아기에게 자극이 적고 쾌적함.",
@@ -169,6 +194,12 @@ export const SEED_PLACES: Place[] = [
       "/resources/pic/5-4.jpg"
     ],
     thumbnailImage: "/resources/pic/5-1.jpg",
+    imageDescriptions: [
+      "아이들이 안전하게 뛰어놀 수 있는 탁 트인 천연 잔디마당",
+      "모던하고 감각적인 카페 본관 건축 및 전면 통유리창",
+      "아늑한 실내 좌석과 구비된 원목 아기의자",
+      "야외 파라솔 테라스 그늘 쉼터"
+    ],
     verificationStatus: "FIELD_VERIFIED",
     verifiedDate: "2025-09-05",
     editorialReview: "넓은 잔디밭과 감성적인 건축이 조화로운 카페. 귀가 전 부모가 커피 한 잔으로 에너지를 충전하기 최적.",
@@ -184,45 +215,62 @@ export const SEED_PLACES: Place[] = [
     lng: 127.4729,
     recommendedDurationMin: 30,
     openingHours: { open: "10:00", close: "18:00", closedDays: [1] },
-    parking: { value: "YES", sourceType: "FIELD_VISIT" },
-    strollerAccessible: { value: "YES", sourceType: "FIELD_VISIT" },
-    nursingRoom: { value: "YES", sourceType: "FIELD_VISIT" },
-    diaperChangingStation: { value: "YES", sourceType: "FIELD_VISIT" },
-    babyChair: { value: "YES", sourceType: "FIELD_VISIT" },
-    toilet: { value: "YES", sourceType: "FIELD_VISIT" },
-    shade: { value: "YES", sourceType: "FIELD_VISIT" },
-    strollerRental: { value: "NO", sourceType: "FIELD_VISIT" },
+    parking: { value: "YES", sourceType: "FIELD_VISIT", note: "농업테마공원 공용 무료 주차장을 이용할 수 있습니다." },
+    strollerAccessible: { value: "YES", sourceType: "FIELD_VISIT", note: "공원 덱길에서 이어지는 평지 출입구로 유모차 진입이 가능합니다." },
+    nursingRoom: { value: "YES", sourceType: "FIELD_VISIT", note: "인접 쌀문화전시관 수유실을 이용할 수 있습니다." },
+    diaperChangingStation: { value: "YES", sourceType: "FIELD_VISIT", note: "인접 쌀문화전시관 1층 기저귀 갈이대를 이용할 수 있습니다." },
+    babyChair: { value: "YES", sourceType: "FIELD_VISIT", note: "아기의자를 보유하고 있으며, 혼잡 시간에는 확인을 권장합니다." },
+    toilet: { value: "YES", sourceType: "FIELD_VISIT", note: "공원 가족 화장실을 이용할 수 있습니다." },
+    shade: { value: "YES", sourceType: "FIELD_VISIT", note: "냉방 실내 좌석과 창가 휴식 공간이 있습니다." },
+    strollerRental: { value: "NO", sourceType: "FIELD_VISIT", note: "유모차 대여는 운영하지 않습니다." },
     indoorOutdoor: "INDOOR",
     weatherTags: ["HOT_OK", "RAIN_OK"],
-    imageFiles: ["/resources/pic/3-1.jpg"],
-    thumbnailImage: "/resources/pic/3-1.jpg",
+    imageFiles: ["/resources/pic/3-4.jpg"],
+    thumbnailImage: "/resources/pic/3-4.jpg",
+    imageDescriptions: [
+      "공원 내 쾌적한 냉방 라이스카페 실내 라운지"
+    ],
     verificationStatus: "FIELD_VERIFIED",
-    verifiedDate: "2025-09-05"
+    verifiedDate: "2025-09-05",
+    editorialReview: "공원 산책 후 시원한 실내에서 쌀아이스크림과 음료를 즐기기 좋은 짧은 휴식 공간입니다.",
+    recommendationReason: "이천농업테마공원 산책 뒤 부모와 아이가 실내에서 잠시 쉬어가기 좋은 라이스카페예요."
   },
   {
     id: "7",
     name: "성호호수연꽃단지",
     category: "NATURE",
-    address: "경기 이천시 설성면 장천리",
-    roadAddress: "경기 이천시 설성면 장천리",
+    address: "경기 이천시 설성면 장천리 894",
+    roadAddress: "경기 이천시 설성면 장천리 894",
     lat: 37.1082,
     lng: 127.5684,
-    recommendedDurationMin: 45,
-    openingHours: { open: "00:00", close: "24:00", closedDays: [] },
-    parking: { value: "YES", sourceType: "WEB_PAGE" },
-    strollerAccessible: { value: "UNKNOWN", sourceType: "UNKNOWN", note: "비포장 구간 존재 가능" },
-    nursingRoom: { value: "NO", sourceType: "WEB_PAGE" },
-    diaperChangingStation: { value: "NO", sourceType: "WEB_PAGE" },
-    babyChair: { value: "NO", sourceType: "WEB_PAGE" },
-    toilet: { value: "UNKNOWN", sourceType: "UNKNOWN" },
-    shade: { value: "NO", sourceType: "WEB_PAGE", note: "땡볕 구간 다수" },
-    strollerRental: { value: "NO", sourceType: "WEB_PAGE" },
+    recommendedDurationMin: 50,
+    openingHours: { open: "00:00", close: "24:00", closedDays: [] }, // 연중 상시 개방
+    parking: { value: "YES", sourceType: "FIELD_VISIT", note: "성호호수 생태공원 무료 전용 주차장 구비" },
+    strollerAccessible: { value: "YES", sourceType: "FIELD_VISIT", note: "호수 둘레를 잇는 평지 수변 덱로드 턱 없음 (유모차 최적)" },
+    nursingRoom: { value: "NO", sourceType: "FIELD_VISIT", note: "독립 수유실 부재 (차량 또는 쉼터 활용)" },
+    diaperChangingStation: { value: "YES", sourceType: "FIELD_VISIT", note: "생태공원 방문자 화장실 내 기저귀 갈이대 완비" },
+    babyChair: { value: "NO", sourceType: "FIELD_VISIT", note: "야외 수변 공원으로 유모차 또는 정자 쉼터 이용" },
+    toilet: { value: "YES", sourceType: "FIELD_VISIT", note: "공원 입구 남녀 분리 청결 화장실" },
+    shade: { value: "YES", sourceType: "FIELD_VISIT", note: "호수 바람을 맞으며 쉴 수 있는 대형 수변 전통 정자 및 쉼터 완비" },
+    strollerRental: { value: "NO", sourceType: "FIELD_VISIT", note: "현장 대여 미운영" },
     indoorOutdoor: "OUTDOOR",
-    weatherTags: ["HOT_AVOID", "RAIN_AVOID"],
-    imageFiles: [],
-    thumbnailImage: "",
-    verificationStatus: "UNVERIFIED",
-    verifiedDate: "",
-    recommendationReason: "동선이 멀고 그늘이 부족하여 당일치기 2세 코스에서는 배제 권장."
+    ageMinMonths: 0,
+    ageMaxMonths: 84,
+    weatherTags: ["HOT_OK", "RAIN_AVOID"],
+    imageFiles: [
+      "/resources/pic/7-1.jpg",
+      "/resources/pic/7-2.jpg",
+      "/resources/pic/7-3.jpg"
+    ],
+    thumbnailImage: "/resources/pic/7-1.jpg",
+    imageDescriptions: [
+      "호수 위를 시원하게 가로지르는 평지 수변 덱로드 (유모차 주행 최적)",
+      "호수 바람을 맞으며 쉴 수 있는 대형 전통 수변 정자 쉼터",
+      "여름과 초가을 만개하는 연꽃 군락과 잔잔한 호수 절경"
+    ],
+    verificationStatus: "FIELD_VERIFIED",
+    verifiedDate: "2025-09-05",
+    editorialReview: "탁 트인 수변 데크로드를 따라 평화롭게 유모차 산책을 즐길 수 있는 힐링 명소. 호수 정자와 연꽃 군락이 어우러져 부모와 아이 모두에게 쉼을 선물합니다.",
+    recommendationReason: "호수 위 평탄한 덱길을 따라 유모차로 시원하게 산책하며 가족 감성 사진을 남기기 좋은 자연 쉼터입니다."
   }
 ];

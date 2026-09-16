@@ -104,9 +104,64 @@ export function calculatePlaceScore(
     parentRest = 3;
   }
 
+  // 7. 점심 식사 제외 조건 검사
+  if (!context.trip.includeLunch && place.category === "RESTAURANT") {
+    penalties.push("점심 식사 제외 설정으로 일정 배제");
+    return {
+      placeId: place.id,
+      totalScore: 0,
+      breakdown: {
+        ageFit,
+        familyFacility,
+        routeEfficiency,
+        weatherFit,
+        localIdentity,
+        parentRest: 0,
+      },
+      penalties,
+      reasons: ["점심 식사 제외 조건"],
+    };
+  }
+
+  // 8. 여행 스타일 보너스 (최대 15점)
+  let styleBonus = 0;
+  const styles = context.trip.styles || [];
+  if (styles.includes("NATURE") && (place.category === "NATURE" || place.category === "PARK")) {
+    styleBonus += 10;
+    reasons.push("자연 산책 취향 적합");
+  }
+  if (styles.includes("INDOOR") && place.indoorOutdoor === "INDOOR") {
+    styleBonus += 10;
+    reasons.push("쾌적한 실내 위주 취향 적합");
+  }
+  if (styles.includes("LOCAL_FOOD") && place.category === "RESTAURANT") {
+    styleBonus += 10;
+    reasons.push("이천 쌀밥 맛집 취향 적합");
+  }
+  if (styles.includes("PARENT_REST") && place.category === "CAFE") {
+    styleBonus += 8;
+    reasons.push("부모 쉼표 카페 취향 적합");
+  }
+  if (styles.includes("PHOTO") && (place.category === "CAFE" || place.category === "NATURE")) {
+    styleBonus += 6;
+    reasons.push("가족 감성 사진 명소");
+  }
+  if (styles.includes("EXPERIENCE") && (place.category === "PARK" || place.category === "INDOOR")) {
+    styleBonus += 6;
+    reasons.push("유아 친화 체험 명소");
+  }
+
+  // 9. 대중교통 친화도
+  if (context.trip.transport === "PUBLIC_TRANSPORT") {
+    if (place.id === "1" || place.id === "4") {
+      styleBonus += 4;
+      reasons.push("경강선 및 대중교통 접근 용이");
+    }
+  }
+
   // 총점 계산 (0~100점 클램핑)
   const rawTotal =
-    ageFit + familyFacility + routeEfficiency + weatherFit + localIdentity + parentRest;
+    ageFit + familyFacility + routeEfficiency + weatherFit + localIdentity + parentRest + styleBonus;
   const totalScore = Math.max(0, Math.min(100, rawTotal));
 
   return {

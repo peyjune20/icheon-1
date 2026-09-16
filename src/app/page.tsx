@@ -25,7 +25,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-sm text-on-surface-variant mt-2 leading-relaxed">
-            아이 개월수와 출발 시간만 알려주세요.<br />
+            아이 개월수와 여행 스타일만 알려주세요.<br />
             수유 텀, 기저귀 갈이대, 유모차 길까지 챙긴 진짜 소화 가능한 일정을 선물할게요.
           </p>
 
@@ -47,7 +47,7 @@ export default function HomePage() {
                     <span className="material-symbols-outlined text-[13px]">verified</span> 이천 현장 전수 답사 완료
                   </span>
                   <span className="text-base font-bold text-white drop-shadow-sm">
-                    이천농업테마공원 · 라이스카페
+                    이천농업테마공원
                   </span>
                 </div>
                 <span className="text-xs px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white font-semibold">

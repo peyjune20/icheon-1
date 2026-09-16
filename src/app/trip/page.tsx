@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -33,11 +33,6 @@ export default function TripInputPage() {
   // Form State
   const [selectedAge, setSelectedAge] = useState<AgeOption>(AGE_OPTIONS[2]); // 2세 (17개월)
   const [strollerRequired, setStrollerRequired] = useState(true);
-  const [origin, setOrigin] = useState("서울 구로구 신도림");
-  const [travelDate, setTravelDate] = useState("2025-09-13");
-  const [departureTime, setDepartureTime] = useState("10:00");
-  const [returnTime, setReturnTime] = useState("17:30");
-  const [transport, setTransport] = useState<"CAR" | "PUBLIC_TRANSPORT">("CAR");
   const [selectedStyles, setSelectedStyles] = useState<string[]>(["NATURE", "PARENT_REST"]);
 
   // Optional Accordion State
@@ -46,25 +41,11 @@ export default function TripInputPage() {
   const [includeLunch, setIncludeLunch] = useState(true);
   const [parentRestPriority, setParentRestPriority] = useState<"LOW" | "MEDIUM" | "HIGH">("HIGH");
 
-  // Real-time trip window calculation (Arrival 12:00 ~ Departure 17:30 = 330 min)
-  const tripWindowMinutes = useMemo(() => {
-    const [depH, depM] = departureTime.split(":").map(Number);
-    const [retH, retM] = returnTime.split(":").map(Number);
-    // Assuming 2h travel to Icheon
-    const arrivalH = depH + 2;
-    const totalMinutes = (retH * 60 + retM) - (arrivalH * 60 + depM);
-    return Math.max(60, totalMinutes);
-  }, [departureTime, returnTime]);
-
-  const tripWindowHours = Math.floor(tripWindowMinutes / 60);
-  const tripWindowMins = tripWindowMinutes % 60;
-
-  // Validation: Origin must not be empty, and at least 1 style must be selected (max 3)
-  const isFormValid = origin.trim().length > 0 && selectedStyles.length >= 1;
+  // 여행 시간과 이동수단은 추천 엔진의 안전한 기본값으로 처리한다.
+  // 사용자는 아이 정보와 원하는 여행 스타일만 고르면 된다.
+  const isFormValid = selectedStyles.length >= 1;
   const validationMessage =
-    origin.trim().length === 0
-      ? "출발 지역을 입력해 주세요."
-      : selectedStyles.length === 0
+    selectedStyles.length === 0
       ? "여행 스타일을 최소 1개 이상 선택해 주세요 (최대 3개)."
       : null;
 
@@ -87,13 +68,11 @@ export default function TripInputPage() {
     const params = new URLSearchParams({
       age: String(selectedAge.months),
       stroller: String(strollerRequired),
-      origin,
-      transport,
       lunch: String(includeLunch),
-      date: travelDate,
-      departureTime,
-      returnTime,
       styles: selectedStyles.join(","),
+      napStart,
+      napEnd,
+      parentRestPriority,
     });
 
     router.push(`/itinerary?${params.toString()}`);
@@ -206,150 +185,12 @@ export default function TripInputPage() {
             </div>
           </section>
 
-          {/* Section B: 여행 일정 */}
-          <section className="bg-surface-container-lowest rounded-xl p-4 shadow-xs border border-outline-variant/30" data-testid="section-schedule">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                  B
-                </span>
-                <h2 className="text-base font-bold text-on-surface">여행 일정</h2>
-              </div>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-surface-container text-secondary">
-                당일 나들이
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              {/* Departure Location */}
-              <div className="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-[18px]">my_location</span>
-                  <span className="text-xs font-medium text-on-surface-variant">출발 지역</span>
-                </div>
-                <input
-                  type="text"
-                  value={origin}
-                  onChange={(e) => setOrigin(e.target.value)}
-                  placeholder="예: 서울 구로구 신도림"
-                  className="text-xs font-semibold bg-white border border-outline-variant/40 rounded-lg px-2.5 py-1.5 text-on-surface focus:outline-primary text-right max-w-[170px]"
-                  data-testid="input-origin"
-                />
-              </div>
-
-              {/* Date */}
-              <div className="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
-                  <span className="text-xs font-medium text-on-surface-variant">여행 날짜</span>
-                </div>
-                <input
-                  type="date"
-                  value={travelDate}
-                  onChange={(e) => setTravelDate(e.target.value)}
-                  className="text-xs font-semibold bg-white border border-outline-variant/40 rounded-lg px-2 py-1 text-on-surface focus:outline-primary"
-                  data-testid="input-travel-date"
-                />
-              </div>
-
-              {/* Time Slots */}
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-3 bg-surface-container-low rounded-lg">
-                  <span className="text-[11px] text-secondary block">출발 시간</span>
-                  <input
-                    type="time"
-                    value={departureTime}
-                    onChange={(e) => setDepartureTime(e.target.value)}
-                    className="text-sm font-bold bg-white border border-outline-variant/30 rounded px-1.5 py-0.5 mt-1 w-full text-on-surface"
-                    data-testid="input-departure-time"
-                  />
-                  <span className="text-[11px] text-primary mt-1 block">이천 12:00 도착 예상</span>
-                </div>
-                <div className="p-3 bg-surface-container-low rounded-lg">
-                  <span className="text-[11px] text-secondary block">귀가 출발 희망</span>
-                  <input
-                    type="time"
-                    value={returnTime}
-                    onChange={(e) => setReturnTime(e.target.value)}
-                    className="text-sm font-bold bg-white border border-outline-variant/30 rounded px-1.5 py-0.5 mt-1 w-full text-on-surface"
-                    data-testid="input-return-time"
-                  />
-                  <span className="text-[11px] text-tertiary mt-1 block">저녁 정체 전 복귀</span>
-                </div>
-              </div>
-
-              {/* Real-time Trip Window Badge */}
-              <div className="p-2.5 bg-primary/10 rounded-lg flex items-center justify-between" data-testid="badge-trip-window">
-                <div className="flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
-                  <span className="text-xs font-bold text-primary">이천 체류 가능 시간</span>
-                </div>
-                <span className="text-xs font-bold text-primary">
-                  약 {tripWindowHours}시간 {tripWindowMins > 0 ? `${tripWindowMins}분` : ""}
-                </span>
-              </div>
-            </div>
-          </section>
-
-          {/* Section C: 이동수단 */}
-          <section className="bg-surface-container-lowest rounded-xl p-4 shadow-xs border border-outline-variant/30" data-testid="section-transport">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                C
-              </span>
-              <h2 className="text-base font-bold text-on-surface">이동수단</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div
-                onClick={() => setTransport("CAR")}
-                className={`p-3 rounded-xl border flex flex-col justify-between cursor-pointer transition-all ${
-                  transport === "CAR"
-                    ? "bg-primary/10 border-primary shadow-xs"
-                    : "bg-surface-container-low border-transparent opacity-75"
-                }`}
-                data-testid="transport-car"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="material-symbols-outlined text-primary text-[22px]">directions_car</span>
-                  {transport === "CAR" && (
-                    <span className="material-symbols-outlined text-primary text-[18px]">check_circle</span>
-                  )}
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-primary">자가용 (권장)</div>
-                  <p className="text-[11px] text-on-surface-variant mt-0.5">승하차 버퍼 10분 포함</p>
-                </div>
-              </div>
-
-              <div
-                onClick={() => setTransport("PUBLIC_TRANSPORT")}
-                className={`p-3 rounded-xl border flex flex-col justify-between cursor-pointer transition-all ${
-                  transport === "PUBLIC_TRANSPORT"
-                    ? "bg-primary/10 border-primary shadow-xs"
-                    : "bg-surface-container-low border-transparent opacity-75"
-                }`}
-                data-testid="transport-public"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="material-symbols-outlined text-secondary text-[22px]">subway</span>
-                  {transport === "PUBLIC_TRANSPORT" && (
-                    <span className="material-symbols-outlined text-primary text-[18px]">check_circle</span>
-                  )}
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-on-surface">경강선 · 대중교통</div>
-                  <p className="text-[11px] text-secondary mt-0.5">역사 엘리베이터 동선</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Section D: 여행 스타일 */}
+          {/* Section B: 여행 스타일 */}
           <section className="bg-surface-container-lowest rounded-xl p-4 shadow-xs border border-outline-variant/30" data-testid="section-styles">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                  D
+                  B
                 </span>
                 <h2 className="text-base font-bold text-on-surface">여행 스타일</h2>
               </div>
@@ -383,12 +224,12 @@ export default function TripInputPage() {
             )}
           </section>
 
-          {/* Section E: 세부 맞춤 설정 (Accordion) */}
+          {/* Section C: 세부 맞춤 설정 (Accordion) */}
           <details className="group bg-surface-container-lowest rounded-xl shadow-xs border border-outline-variant/30 overflow-hidden" open>
             <summary className="flex items-center justify-between p-4 cursor-pointer list-none select-none">
               <div className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">
-                  E
+                  C
                 </span>
                 <div>
                   <h2 className="text-sm font-bold text-on-surface">조금 더 맞춤 설정하기</h2>
@@ -401,47 +242,169 @@ export default function TripInputPage() {
             </summary>
             <div className="px-4 pb-4 flex flex-col gap-3 pt-1 border-t border-outline-variant/10">
               {/* Nap Schedule */}
-              <div className="p-3 bg-surface-container-low rounded-lg">
-                <div className="flex items-center justify-between mb-1.5">
+              <div className="p-3 bg-surface-container-low rounded-lg flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-on-surface flex items-center gap-1">
                     <span className="material-symbols-outlined text-[16px] text-primary">bedtime</span>
                     아이 낮잠 시간대
                   </span>
                   <span className="text-[11px] px-2 py-0.5 rounded bg-white text-primary font-bold shadow-xs">
-                    오후 {napStart} ~ {napEnd}
+                    {napStart && napEnd ? `${napStart} ~ ${napEnd}` : "낮잠 없음"}
                   </span>
                 </div>
+
+                {/* Quick preset chips */}
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { label: "12:30 ~ 14:00", start: "12:30", end: "14:00" },
+                    { label: "13:00 ~ 14:30", start: "13:00", end: "14:30" },
+                    { label: "13:30 ~ 15:00", start: "13:30", end: "15:00" },
+                    { label: "14:00 ~ 15:30", start: "14:00", end: "15:30" },
+                    { label: "낮잠 없음", start: "", end: "" },
+                  ].map((preset) => {
+                    const isSelected = napStart === preset.start && napEnd === preset.end;
+                    return (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        onClick={() => {
+                          setNapStart(preset.start);
+                          setNapEnd(preset.end);
+                        }}
+                        className={`text-[11px] px-2.5 py-1 rounded-full font-medium transition-all ${
+                          isSelected
+                            ? "bg-primary text-white font-bold shadow-xs"
+                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                        }`}
+                        data-testid={`preset-nap-${preset.label}`}
+                      >
+                        {preset.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Custom Time Inputs */}
+                {napStart !== "" && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <div className="flex-1 flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-md border border-outline-variant/30 text-xs">
+                      <span className="text-secondary text-[11px]">시작</span>
+                      <input
+                        type="time"
+                        value={napStart}
+                        onChange={(e) => setNapStart(e.target.value)}
+                        className="w-full bg-transparent font-semibold text-on-surface outline-hidden text-xs"
+                        data-testid="input-nap-start"
+                      />
+                    </div>
+                    <span className="text-secondary text-xs">~</span>
+                    <div className="flex-1 flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-md border border-outline-variant/30 text-xs">
+                      <span className="text-secondary text-[11px]">종료</span>
+                      <input
+                        type="time"
+                        value={napEnd}
+                        onChange={(e) => setNapEnd(e.target.value)}
+                        className="w-full bg-transparent font-semibold text-on-surface outline-hidden text-xs"
+                        data-testid="input-nap-end"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-[11px] text-secondary leading-snug">
-                  차량 이동 중 낮잠 구간 또는 조용한 카페로 자동 배치됩니다.
+                  {napStart && napEnd
+                    ? "차량 이동 중 낮잠 구간 또는 조용한 카페/쉼터로 자동 배치됩니다."
+                    : "낮잠 시간 제약 없이 아이와 부모의 컨디션에 맞춘 여유로운 동선으로 구성됩니다."}
                 </p>
               </div>
 
               {/* Lunch Preference */}
               <div className="flex items-center justify-between p-3 bg-surface-container-low rounded-lg">
                 <div>
-                  <div className="text-xs font-semibold text-on-surface">점심 식사 포함</div>
-                  <div className="text-[11px] text-secondary">이천 도착 직후 (12:00 경) 권장</div>
+                  <div className="text-xs font-semibold text-on-surface flex items-center gap-1.5">
+                    <span>점심 식사 포함</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                        includeLunch ? "bg-primary/15 text-primary" : "bg-surface-container text-secondary"
+                      }`}
+                    >
+                      {includeLunch ? "포함" : "제외"}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-secondary mt-0.5">
+                    {includeLunch
+                      ? "이천 도착 직후 (12:00 경) 아기의자 완비 쌀밥 맛집 배정"
+                      : "식사 코스를 제외하고 자연 산책 & 실내 쉼터 위주 구성"}
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIncludeLunch(!includeLunch)}
-                  className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-                    includeLunch ? "bg-primary text-white" : "bg-outline-variant/50 text-white"
+                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                    includeLunch ? "bg-primary text-white shadow-xs" : "bg-outline-variant/40 text-on-surface-variant hover:bg-outline-variant/60"
                   }`}
                   data-testid="toggle-lunch"
+                  aria-label="점심식사 포함 여부 토글"
                 >
-                  <span className="material-symbols-outlined text-[15px]">check</span>
+                  <span className="material-symbols-outlined text-[18px]">
+                    {includeLunch ? "check" : "close"}
+                  </span>
                 </button>
               </div>
 
               {/* Parent Rest Priority */}
-              <div className="p-3 bg-surface-container-low rounded-lg">
-                <div className="flex items-center justify-between mb-2">
+              <div className="p-3 bg-surface-container-low rounded-lg flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-on-surface">부모 휴식 중요도</span>
-                  <span className="text-xs text-primary font-bold">높음 (카페 40분 보장)</span>
+                  <span className="text-xs text-primary font-bold">
+                    {parentRestPriority === "LOW"
+                      ? "가벼움 (카페 20분)"
+                      : parentRestPriority === "MEDIUM"
+                      ? "보통 (카페 40분)"
+                      : "높음 (카페 60분 보장)"}
+                  </span>
                 </div>
+
+                {/* 3-Step Selection Buttons */}
+                <div className="grid grid-cols-3 gap-1.5">
+                  {[
+                    { id: "LOW", label: "가벼움 (20분)", desc: "테이크아웃 위주" },
+                    { id: "MEDIUM", label: "보통 (40분)", desc: "차 한잔의 여유" },
+                    { id: "HIGH", label: "높음 (60분)", desc: "부모 힐링 보장" },
+                  ].map((priority) => {
+                    const isSelected = parentRestPriority === priority.id;
+                    return (
+                      <button
+                        key={priority.id}
+                        type="button"
+                        onClick={() => setParentRestPriority(priority.id as "LOW" | "MEDIUM" | "HIGH")}
+                        className={`p-2 rounded-lg text-center transition-all flex flex-col items-center justify-center gap-0.5 ${
+                          isSelected
+                            ? "bg-primary text-white font-bold shadow-xs scale-[1.02]"
+                            : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                        }`}
+                        data-testid={`priority-${priority.id.toLowerCase()}`}
+                      >
+                        <span className="text-[11px] leading-none">{priority.label}</span>
+                        <span className={`text-[9px] ${isSelected ? "text-white/80" : "text-secondary"}`}>
+                          {priority.desc}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Visual Progress Bar */}
                 <div className="w-full h-2 bg-surface-container rounded-full overflow-hidden">
-                  <div className="h-full bg-primary rounded-full w-4/5" />
+                  <div
+                    className={`h-full bg-primary rounded-full transition-all duration-300 ${
+                      parentRestPriority === "LOW"
+                        ? "w-1/3"
+                        : parentRestPriority === "MEDIUM"
+                        ? "w-2/3"
+                        : "w-full"
+                    }`}
+                  />
                 </div>
               </div>
             </div>

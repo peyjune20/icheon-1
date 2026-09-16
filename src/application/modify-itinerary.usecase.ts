@@ -171,6 +171,6 @@ export class ModifyItineraryUseCase {
   async getReplacementCandidates(currentItinerary: Itinerary): Promise<Place[]> {
     const allPlaces = await this.placeRepo.listCandidates();
     const currentPlaceIds = new Set(this.getPlacesFromItinerary(currentItinerary).map((p) => p.id));
-    return allPlaces.filter((p) => !currentPlaceIds.has(p.id) && p.id !== "7");
+    return allPlaces.filter((p) => !currentPlaceIds.has(p.id));
   }
 }

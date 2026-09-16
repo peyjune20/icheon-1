@@ -33,40 +33,79 @@ export const DestinationCard = ({
       {/* Destination Card Container */}
       <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-3 border border-outline-variant/30 transition-all hover:shadow-md">
         {/* Visual Header with Image */}
+        {/* Visual Header with Image & Gallery Preview */}
         {!isCollapsed && place.thumbnailImage && (
-          <Link href={`/places/${place.id}`} className="block relative h-36 w-full overflow-hidden bg-surface-container group">
-            <Image
-              src={place.thumbnailImage}
-              alt={place.name}
-              fill
-              sizes="(max-width: 480px) 100vw, 480px"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute top-2.5 left-2.5 flex gap-1.5">
-              <span className="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm flex items-center gap-1 font-medium">
-                <span className="material-symbols-outlined text-[13px] text-tertiary">
-                  {place.category === "RESTAURANT"
-                    ? "restaurant"
-                    : place.category === "CAFE"
-                    ? "coffee"
-                    : place.category === "PARK"
-                    ? "park"
-                    : "nature_people"}
+          <div className="flex flex-col bg-surface-container">
+            <Link href={`/places/${place.id}`} className="block relative h-36 w-full overflow-hidden group">
+              <Image
+                src={place.thumbnailImage}
+                alt={place.name}
+                fill
+                sizes="(max-width: 480px) 100vw, 480px"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute top-2.5 left-2.5 flex gap-1.5 z-10">
+                <span className="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm flex items-center gap-1 font-medium">
+                  <span className="material-symbols-outlined text-[13px] text-tertiary">
+                    {place.category === "RESTAURANT"
+                      ? "restaurant"
+                      : place.category === "CAFE"
+                      ? "coffee"
+                      : place.category === "PARK"
+                      ? "park"
+                      : "nature_people"}
+                  </span>
+                  {subtitle || "주요 방문지"}
                 </span>
-                {subtitle || "주요 방문지"}
-              </span>
-              <span className="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface-variant text-label-sm">
-                {place.indoorOutdoor === "INDOOR"
-                  ? "실내 에어컨"
-                  : place.indoorOutdoor === "MIXED"
-                  ? "실내 + 그늘"
-                  : "야외 자연"}
-              </span>
-            </div>
-            <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-black/70 text-white font-numeric text-label-sm">
-              {startTime} — {endTime} ({durationMin}분)
-            </div>
-          </Link>
+                <span className="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface-variant text-label-sm">
+                  {place.indoorOutdoor === "INDOOR"
+                    ? "실내 에어컨"
+                    : place.indoorOutdoor === "MIXED"
+                    ? "실내 + 그늘"
+                    : "야외 자연"}
+                </span>
+              </div>
+
+              {/* Photo Count Badge */}
+              {place.imageFiles && place.imageFiles.length > 1 && (
+                <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-[11px] font-semibold flex items-center gap-1 z-10">
+                  <span className="material-symbols-outlined text-[13px]">photo_library</span>
+                  <span>사진 {place.imageFiles.length}장</span>
+                </div>
+              )}
+
+              <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-black/70 text-white font-numeric text-label-sm z-10">
+                {startTime} — {endTime} ({durationMin}분)
+              </div>
+            </Link>
+
+            {/* Mini Photo Strip Preview */}
+            {place.imageFiles && place.imageFiles.length > 1 && (
+              <div className="flex items-center gap-1.5 px-3 py-2 bg-surface-container-low border-b border-outline-variant/20 overflow-x-auto no-scrollbar">
+                {place.imageFiles.map((img, idx) => (
+                  <Link
+                    key={img + idx}
+                    href={`/places/${place.id}`}
+                    className="relative flex-shrink-0 w-14 h-9 rounded-md overflow-hidden opacity-85 hover:opacity-100 transition-opacity border border-outline-variant/30"
+                  >
+                    <Image
+                      src={img}
+                      alt={`${place.name} 사진 ${idx + 1}`}
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                    />
+                  </Link>
+                ))}
+                <Link
+                  href={`/places/${place.id}`}
+                  className="flex-shrink-0 px-2 text-[10px] text-primary font-bold hover:underline flex items-center"
+                >
+                  갤러리 전체보기 &rarr;
+                </Link>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Content Body */}

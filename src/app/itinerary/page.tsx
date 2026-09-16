@@ -20,6 +20,7 @@ import { ExcludedPlacesCard } from "@/features/itinerary/components/ExcludedPlac
 import { SecondaryActions } from "@/features/itinerary/components/SecondaryActions";
 import { ReplacePlaceModal } from "@/features/itinerary/components/ReplacePlaceModal";
 import { ReorderModal } from "@/features/itinerary/components/ReorderModal";
+import { NavigationModal } from "@/features/itinerary/components/NavigationModal";
 
 function ItineraryContent() {
   const searchParams = useSearchParams();
@@ -27,7 +28,6 @@ function ItineraryContent() {
   const [context, setContext] = useState<RecommendationContext | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isStarting, setIsStarting] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
   // Edit Modals State
@@ -35,6 +35,7 @@ function ItineraryContent() {
   const [targetPlaceToReplace, setTargetPlaceToReplace] = useState<Place | null>(null);
   const [replaceCandidates, setReplaceCandidates] = useState<Place[]>([]);
   const [isReorderOpen, setIsReorderOpen] = useState(false);
+  const [isNavModalOpen, setIsNavModalOpen] = useState(false);
 
   const placeRepo = useMemo(() => new SeedPlaceRepository(), []);
   const travelAdapter = useMemo(() => new SeedTravelTimeAdapter(), []);
@@ -47,21 +48,34 @@ function ItineraryContent() {
     setError(null);
     const childAge = searchParams.get("age") ? Number(searchParams.get("age")) : 17;
     const stroller = searchParams.get("stroller") !== "false";
-    const origin = searchParams.get("origin") || "서울 구로구 신도림";
-    const departureTime = searchParams.get("departureTime") || "10:00";
-    const returnTime = searchParams.get("returnTime") || "17:30";
-    const transport = (searchParams.get("transport") as "CAR" | "PUBLIC_TRANSPORT") || "CAR";
+    // 여행 일정과 이동수단은 별도 입력 없이 안전한 당일 코스 기본값으로 생성한다.
+    // 길찾기 출발지는 NavigationModal에서 기기의 현재 위치를 사용한다.
+    const origin = "현재 위치";
+    const departureTime = "10:00";
+    const returnTime = "17:30";
+    const transport = "CAR" as const;
     const stylesParam = searchParams.get("styles");
     const styles = (stylesParam ? stylesParam.split(",") : ["NATURE", "PARENT_REST"]) as any[];
     const includeLunch = searchParams.get("lunch") !== "false";
-    const tripDate = searchParams.get("date") || "2025-09-05";
+    const tripDate = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
+    const napStart = searchParams.get("napStart") ?? "13:30";
+    const napEnd = searchParams.get("napEnd") ?? "15:00";
+    const parentRestPriority = (searchParams.get("parentRestPriority") as "LOW" | "MEDIUM" | "HIGH") || "HIGH";
+
+    const [depH, depM] = departureTime.split(":").map(Number);
+    const arrH = (depH + 2) % 24;
+    const arrivalInIcheon = `${String(arrH).padStart(2, "0")}:${String(depM || 0).padStart(2, "0")}`;
+
+    const [retH, retM] = returnTime.split(":").map(Number);
+    const totalWindowMin = (retH * 60 + (retM || 0)) - (arrH * 60 + (depM || 0));
+    const tripWindowMin = Math.max(120, totalWindowMin);
 
     const defaultContext: RecommendationContext = {
       trip: {
         originText: origin,
         tripDate,
         departureTime,
-        arrivalInIcheon: "12:00",
+        arrivalInIcheon,
         desiredDepartureFromIcheon: returnTime,
         childAgeMonths: childAge,
         displayAge: childAge <= 12 ? "12개월 미만" : childAge <= 24 ? "2세" : childAge <= 48 ? "3~4세" : "5세 이상",
@@ -69,13 +83,15 @@ function ItineraryContent() {
         transport,
         styles,
         includeLunch,
-        parentRestPriority: "HIGH",
+        parentRestPriority,
+        napTimeStart: napStart,
+        napTimeEnd: napEnd,
       },
       weather: {
-        temperatureC: 31,
-        condition: "HOT",
+        temperatureC: styles.includes("INDOOR") ? 31 : 23,
+        condition: styles.includes("INDOOR") ? "HOT" : "NORMAL",
       },
-      tripWindowMin: 330,
+      tripWindowMin,
       maxBlocks: 4,
     };
 
@@ -86,11 +102,15 @@ function ItineraryContent() {
       strollerRequired: stroller,
       originText: origin,
       departureTime,
+      arrivalInIcheon,
       desiredDepartureFromIcheon: returnTime,
       transport,
       styles,
       includeLunch,
       tripDate,
+      napTimeStart: napStart,
+      napTimeEnd: napEnd,
+      parentRestPriority,
     })
       .then((data) => {
         setItinerary(data);
@@ -151,11 +171,7 @@ function ItineraryContent() {
   const currentPlaces = modifyUseCase.getPlacesFromItinerary(itinerary);
 
   const handleStartItinerary = () => {
-    setIsStarting(true);
-    setTimeout(() => {
-      alert("김민지 가족의 안심 이천 일정이 시작되었습니다. 1번째 블록으로 내비게이션을 연동합니다.");
-      setIsStarting(false);
-    }, 600);
+    setIsNavModalOpen(true);
   };
 
   // STORY-307: Remove Place
@@ -283,22 +299,10 @@ function ItineraryContent() {
             <button
               type="button"
               onClick={handleStartItinerary}
-              disabled={isStarting}
               className="w-full h-[52px] rounded-full bg-primary text-on-primary text-label-lg font-bold flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(49,99,66,0.25)] active:scale-[0.98] transition-all hover:bg-primary-container"
             >
-              {isStarting ? (
-                <>
-                  <span className="material-symbols-outlined text-[20px] animate-spin">
-                    refresh
-                  </span>
-                  <span>코스 안내를 시작합니다...</span>
-                </>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-[20px]">navigation</span>
-                  <span>이 코스로 하루 시작하기</span>
-                </>
-              )}
+              <span className="material-symbols-outlined text-[20px]">navigation</span>
+              <span>이 코스로 하루 시작하기</span>
             </button>
           </section>
         </div>
@@ -322,6 +326,13 @@ function ItineraryContent() {
         places={currentPlaces}
         onClose={() => setIsReorderOpen(false)}
         onApplyOrder={handleApplyReorder}
+      />
+
+      {/* Real-time Course Navigation Modal (Kakao Map & Google Maps) */}
+      <NavigationModal
+        isOpen={isNavModalOpen}
+        places={currentPlaces}
+        onClose={() => setIsNavModalOpen(false)}
       />
 
       <BottomNavBar activeTab="itinerary" />

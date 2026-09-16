@@ -28,7 +28,16 @@ export async function buildTimelineBlocks(
 
   for (let i = 0; i < places.length; i++) {
     const place = places[i];
-    const durationMin = place.recommendedDurationMin || 60;
+    let durationMin = place.recommendedDurationMin || 60;
+    if (place.category === "CAFE") {
+      if (context.trip.parentRestPriority === "HIGH") {
+        durationMin = 60;
+      } else if (context.trip.parentRestPriority === "MEDIUM") {
+        durationMin = 40;
+      } else if (context.trip.parentRestPriority === "LOW") {
+        durationMin = 25;
+      }
+    }
     const startTime = minutesToTime(currentMin);
     const endTime = minutesToTime(currentMin + durationMin);
 
@@ -43,7 +52,18 @@ export async function buildTimelineBlocks(
       placeId: place.id,
       place,
       title: place.name,
-      subtitle: place.category === "RESTAURANT" ? "점심 식사" : place.category === "CAFE" ? "부모 휴식" : "체험 & 쉼",
+      subtitle:
+        place.category === "RESTAURANT"
+          ? "점심 식사"
+          : place.category === "CAFE"
+          ? context.trip.parentRestPriority === "HIGH"
+            ? "부모 집중 힐링 (60분)"
+            : "부모 휴식"
+          : place.category === "NATURE"
+          ? "자연 힐링 산책"
+          : place.category === "PARK"
+          ? "생태 공원 & 덱 산책"
+          : "실내 관람 & 쉼",
       badges: [
         place.indoorOutdoor === "INDOOR" ? "실내 에어컨" : place.indoorOutdoor === "MIXED" ? "실내 + 그늘" : "야외 자연",
       ],
@@ -61,10 +81,18 @@ export async function buildTimelineBlocks(
       const travelStartTime = minutesToTime(currentMin);
       const travelEndTime = minutesToTime(currentMin + travelDurationMin);
 
-      // 낮잠 시간대 검사 (13:30 ~ 15:00 시간대에 20분 이상 이동 시 낮잠 칩 부여)
-      const isNapTiming = currentMin >= timeToMinutes("13:30") && currentMin <= timeToMinutes("15:00");
-      const transitNote = isNapTiming
-        ? "🚗 이동 30분 (아기 낮잠 타이밍으로 추천 😴)"
+      // 낮잠 시간대 검사 (사용자 지정 낮잠 시간대에 이동 시 낮잠 추천 코멘트 부여)
+      const hasNap = Boolean(context.trip.napTimeStart && context.trip.napTimeEnd);
+      const napStartMin = hasNap ? timeToMinutes(context.trip.napTimeStart!) : timeToMinutes("13:30");
+      const napEndMin = hasNap ? timeToMinutes(context.trip.napTimeEnd!) : timeToMinutes("15:00");
+      const isNapTiming = hasNap && currentMin >= napStartMin && currentMin <= napEndMin;
+      const isThemeParkCafeTransfer =
+        (place.id === "3" && nextPlace.id === "6") ||
+        (place.id === "6" && nextPlace.id === "3");
+      const transitNote = isThemeParkCafeTransfer
+        ? "도보 2분 · 공원 내 라이스카페로 이동"
+        : isNapTiming
+        ? `🚗 이동 ${travelDurationMin}분 (아기 낮잠 타이밍으로 추천 😴)`
         : `이동 ${travelDurationMin}분 · 주차 및 승하차 버퍼 10분 포함`;
 
       blocks.push({

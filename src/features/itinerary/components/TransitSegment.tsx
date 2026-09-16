@@ -5,6 +5,7 @@ interface TransitSegmentProps {
 
 export const TransitSegment = ({ note }: TransitSegmentProps) => {
   const isNap = note.includes("낮잠");
+  const isWalking = note.startsWith("도보");
 
   if (isNap) {
     return (
@@ -17,7 +18,9 @@ export const TransitSegment = ({ note }: TransitSegmentProps) => {
 
   return (
     <div className="flex items-center gap-2 py-1.5 px-3 rounded-full bg-surface-container-low text-on-surface-variant text-label-sm self-start my-2 w-fit shadow-xs">
-      <span className="material-symbols-outlined text-[16px] text-primary">directions_car</span>
+      <span className="material-symbols-outlined text-[16px] text-primary">
+        {isWalking ? "directions_walk" : "directions_car"}
+      </span>
       <span>{note}</span>
     </div>
   );

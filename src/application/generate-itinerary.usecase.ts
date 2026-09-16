@@ -14,16 +14,29 @@ export async function generateItineraryUseCase(input: Partial<TripInput>): Promi
   // Zod-based server/application layer validation & normalization
   const fullTripInput = validateAndNormalizeTripInput(input);
 
+  // Calculate arrival in Icheon dynamically based on departure time (approx 2h travel from capital area)
+  if (!input.arrivalInIcheon && fullTripInput.departureTime) {
+    const [depH, depM] = fullTripInput.departureTime.split(":").map(Number);
+    const arrH = (depH + 2) % 24;
+    fullTripInput.arrivalInIcheon = `${String(arrH).padStart(2, "0")}:${String(depM || 0).padStart(2, "0")}`;
+  }
+
   const startMin = timeToMinutes(fullTripInput.arrivalInIcheon);
   const endMin = timeToMinutes(fullTripInput.desiredDepartureFromIcheon);
-  const tripWindowMin = Math.max(180, endMin - startMin); // e.g. 330 min (5h 30m)
+  const tripWindowMin = Math.max(120, endMin - startMin);
+
+  // Weather condition: if user prefers INDOOR style, simulate HOT (31C) for AC recommendation;
+  // If NATURE / outdoor styles, use pleasant NORMAL (23C) autumn weather.
+  const isIndoorPriority = fullTripInput.styles.includes("INDOOR");
+  const weatherCondition = isIndoorPriority ? "HOT" : "NORMAL";
+  const temperatureC = isIndoorPriority ? 31 : 23;
 
   const context: RecommendationContext = {
     trip: fullTripInput,
     tripWindowMin,
     weather: {
-      condition: "HOT", // 무더운 날씨 시나리오
-      temperatureC: 31,
+      condition: weatherCondition,
+      temperatureC,
     },
     maxBlocks: 4,
   };

@@ -52,6 +52,7 @@ export interface Place {
 
   imageFiles: string[];
   thumbnailImage: string;
+  imageDescriptions?: string[];
 
   verificationStatus: VerificationStatus;
   verifiedDate: string;

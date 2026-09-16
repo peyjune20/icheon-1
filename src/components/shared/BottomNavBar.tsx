@@ -29,7 +29,7 @@ export const BottomNavBar = ({ activeTab = "itinerary" }: BottomNavBarProps) => 
           <span className="text-label-sm">코스 추천</span>
         </Link>
         <Link
-          href="/places/1"
+          href="/places"
           className={`flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] transition-all active:scale-95 ${
             activeTab === "places" ? "text-primary font-semibold" : "text-on-surface-variant hover:text-primary"
           }`}

@@ -8,7 +8,7 @@ interface ParentReviewBoxProps {
 export const ParentReviewBox: React.FC<ParentReviewBoxProps> = ({ place }) => {
   const getReviewContent = () => {
     if (place.id === "3") {
-      return `"이천에서 무거운 디럭스 유모차를 끌고 가장 쾌적하게 거닐 수 있는 대표적인 쉼터입니다. 탁 트인 잔디밭과 바닥분수가 시원함을 주며, 걷다가 더워질 때쯤 바로 옆 라이스카페의 시원한 통창 실내에서 쌀 아이스크림과 쌀빵을 함께 나누기 좋습니다. 2세 전후 아기 동반 시 피로도가 가장 적은 안심 코스입니다."`;
+      return `"이천에서 무거운 디럭스 유모차를 끌고 가장 쾌적하게 거닐 수 있는 대표적인 쉼터입니다. 탁 트인 잔디밭과 바닥분수, 완만한 덱길이 있어 2세 전후 아이와 산책하기 좋습니다."`;
     }
     if (place.editorialReview) {
       return `"${place.editorialReview}"`;
