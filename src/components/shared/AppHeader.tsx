@@ -21,9 +21,6 @@ export const AppHeader = () => {
           >
             <span className="material-symbols-outlined text-[22px]">notifications</span>
           </button>
-          <div className="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-label-sm shadow-[0_0_0_1.5px_#4A7C59]">
-            민지
-          </div>
         </div>
       </div>
     </header>

@@ -37,16 +37,15 @@ export const BottomNavBar = ({ activeTab = "itinerary" }: BottomNavBarProps) => 
           <span className="material-symbols-outlined text-[24px]">explore</span>
           <span className="text-label-sm">장소 탐색</span>
         </Link>
-        <button
-          type="button"
-          onClick={() => alert("내 일정 보관함 기능은 준비 중입니다.")}
+        <Link
+          href="/my-trip"
           className={`flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] transition-all active:scale-95 ${
             activeTab === "mytrip" ? "text-primary font-semibold" : "text-on-surface-variant hover:text-primary"
           }`}
         >
           <span className="material-symbols-outlined text-[24px]">calendar_month</span>
           <span className="text-label-sm">내 일정</span>
-        </button>
+        </Link>
       </div>
     </nav>
   );

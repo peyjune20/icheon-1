@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Place } from "@/domain/models/place";
+import { isPlaceSaved, savePlace, toggleSavedPlace } from "@/features/saved-places/saved-places.storage";
 
 interface BottomActionBarProps {
   place: Place;
@@ -11,11 +12,17 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
 
+  useEffect(() => {
+    setIsBookmarked(isPlaceSaved(place.id));
+  }, [place.id]);
+
   const handleToggleBookmark = () => {
-    setIsBookmarked((prev) => !prev);
+    setIsBookmarked(toggleSavedPlace(place.id));
   };
 
   const handleAddToCourse = () => {
+    savePlace(place.id);
+    setIsBookmarked(true);
     setIsAdded(true);
     setTimeout(() => {
       setIsAdded(false);
