@@ -33,8 +33,8 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-surface font-body text-on-surface min-h-screen antialiased flex flex-col items-center overflow-x-hidden">
-        <div className="w-full max-w-[480px] min-h-screen flex flex-col relative bg-surface shadow-sm overflow-x-hidden">
+      <body className="bg-surface font-body text-on-surface min-h-screen antialiased overflow-x-hidden">
+        <div className="w-full min-h-screen flex flex-col relative bg-surface overflow-x-hidden">
           {children}
         </div>
       </body>

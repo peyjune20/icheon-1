@@ -57,14 +57,14 @@ export default function PlacesListPage() {
     <div className="min-h-screen bg-surface flex flex-col text-on-surface">
       <AppHeader />
 
-      <main className="flex-1 w-full max-w-[480px] mx-auto px-4 pt-16 pb-28">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-28 lg:pb-12">
         {/* Page Header */}
         <section className="pt-2 mb-4">
           <div className="flex items-center gap-1.5 text-xs text-primary font-bold mb-1">
             <span className="material-symbols-outlined text-[16px]">verified</span>
             <span>이천베베로드 100% 현장 전수 실측</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface">
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-on-surface">
             안심 장소 탐색
           </h1>
           <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
@@ -110,7 +110,7 @@ export default function PlacesListPage() {
         </div>
 
         {/* Places List Cards */}
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredPlaces.length === 0 ? (
             <div className="py-16 text-center text-on-surface-variant text-xs">
               검색 조건에 일치하는 장소가 없습니다.

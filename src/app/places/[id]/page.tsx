@@ -36,7 +36,7 @@ export default async function PlaceDetailPage({ params }: PlaceDetailPageProps) 
     <div className="min-h-screen bg-surface flex flex-col text-on-surface">
       {/* Top Header */}
       <header className="sticky top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-surface-container-high pt-safe">
-        <div className="max-w-[480px] mx-auto h-14 px-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between">
           <div className="flex items-center gap-1">
             <Link
               href="/itinerary"
@@ -60,7 +60,7 @@ export default async function PlaceDetailPage({ params }: PlaceDetailPageProps) 
       </header>
 
       {/* Main Detail Container */}
-      <main className="flex-1 w-full max-w-[480px] mx-auto px-4 pt-3 pb-28">
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-28 lg:pb-12">
         {/* STORY-301: Hero Banner */}
         <HeroBanner place={place} />
 

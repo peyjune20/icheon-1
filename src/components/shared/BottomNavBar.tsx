@@ -8,7 +8,7 @@ interface BottomNavBarProps {
 
 export const BottomNavBar = ({ activeTab = "itinerary" }: BottomNavBarProps) => {
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(43,43,43,0.05)]">
+    <nav className="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(43,43,43,0.05)] lg:hidden">
       <div className="max-w-[480px] mx-auto flex justify-around items-center h-16 px-gutter-mobile">
         <Link
           href="/"

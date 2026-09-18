@@ -34,7 +34,7 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
       className="fixed bottom-0 inset-x-0 bg-surface/95 backdrop-blur-md border-t border-outline-variant/30 shadow-[0_-4px_20px_rgba(43,43,43,0.06)] z-40 pb-safe"
       data-testid="bottom-action-bar"
     >
-      <div className="max-w-[480px] mx-auto px-4 py-3 flex items-center gap-2.5">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2.5">
         {/* Bookmark Button with Toggle Animation */}
         <button
           type="button"

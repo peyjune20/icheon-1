@@ -220,8 +220,8 @@ function ItineraryContent() {
   return (
     <>
       <AppHeader />
-      <main className="flex-1 flex flex-col relative w-full max-w-[480px] mx-auto px-margin-mobile pt-16 pb-24 bg-surface">
-        <div className="flex flex-col w-full pb-20">
+      <main className="flex-1 flex flex-col relative w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-12 bg-surface">
+        <div className="flex flex-col w-full max-w-3xl mx-auto pb-8">
           {/* Feasibility & Metrics (STORY-207) */}
           <FeasibilitySummary
             status={itinerary.status}
@@ -295,7 +295,7 @@ function ItineraryContent() {
           />
 
           {/* Primary Sticky Action Anchor */}
-          <section className="sticky bottom-20 z-40 pt-2 pb-1">
+          <section className="sticky bottom-20 lg:bottom-6 z-40 pt-2 pb-1">
             <button
               type="button"
               onClick={handleStartItinerary}

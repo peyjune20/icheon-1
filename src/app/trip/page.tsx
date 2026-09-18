@@ -82,7 +82,7 @@ export default function TripInputPage() {
     <div className="min-h-screen bg-surface flex flex-col text-on-surface">
       {/* Top Header & Progress */}
       <header className="sticky top-0 inset-x-0 z-40 bg-surface/90 backdrop-blur-md border-b border-surface-container-high pt-safe">
-        <div className="max-w-[480px] mx-auto px-4 pt-3 pb-2">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-3 pb-2">
           <div className="flex items-center justify-between text-on-surface-variant mb-2">
             <span className="text-xs text-primary font-bold flex items-center gap-1">
               <span className="material-symbols-outlined text-[16px]">eco</span>
@@ -96,7 +96,7 @@ export default function TripInputPage() {
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-[480px] mx-auto px-4 pt-4 pb-32">
+      <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 pt-4 pb-32">
         {/* Title */}
         <div className="mb-4">
           <h1 className="text-xl font-bold text-on-surface tracking-tight">
@@ -419,7 +419,8 @@ export default function TripInputPage() {
           )}
 
           {/* Sticky Bottom Submit Action */}
-          <div className="fixed bottom-0 inset-x-0 max-w-[480px] mx-auto bg-surface/95 backdrop-blur-md px-4 py-3 border-t border-outline-variant/30 z-50">
+          <div className="fixed bottom-0 inset-x-0 mx-auto bg-surface/95 backdrop-blur-md px-4 sm:px-6 py-3 border-t border-outline-variant/30 z-50">
+            <div className="max-w-3xl mx-auto">
             <button
               type="submit"
               disabled={!isFormValid}
@@ -437,6 +438,7 @@ export default function TripInputPage() {
               <span className="material-symbols-outlined text-[13px]">verified_user</span>
               아이의 체력을 고려해 무리한 다중 장소는 자동으로 필터링됩니다.
             </p>
+            </div>
           </div>
         </form>
       </main>
