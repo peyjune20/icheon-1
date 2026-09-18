@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #fff9fb;
-  --foreground: #482a38;
+  --background: #fffdf9;
+  --foreground: #423748;
 }
 
 @layer base {
@@ -13,8 +13,8 @@
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: #fff9fb;
-    color: #482a38;
+    background-color: #fffdf9;
+    color: #423748;
     word-break: keep-all;
     -webkit-font-smoothing: antialiased;
   }
@@ -49,12 +49,12 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #fff0f5;
+  background: #f7f4ff;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #f2b4c4;
-  border: 3px solid #fff0f5;
+  background: #cfc5ea;
+  border: 3px solid #f7f4ff;
   border-radius: 999px;
 }
 

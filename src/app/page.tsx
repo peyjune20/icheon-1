@@ -77,7 +77,7 @@ export default function HomePage() {
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#6b2942]/90 via-[#a75b77]/15 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#453564]/90 via-[#7866b2]/15 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-7">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold backdrop-blur-md">
                 <span className="material-symbols-outlined text-[15px]">verified</span>

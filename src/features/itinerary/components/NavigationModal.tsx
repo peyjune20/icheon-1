@@ -39,9 +39,9 @@ function RouteMapPreview({ places }: { places: Place[] }) {
     .join(" ");
 
   return (
-    <div className="relative h-64 overflow-hidden rounded-2xl border border-primary/15 bg-[#fff3f7]" role="img" aria-label="현재 위치에서 전체 코스 방문지를 잇는 이천 투어 경로 지도">
-      <div className="absolute inset-0 opacity-60" style={{ backgroundImage: "radial-gradient(#f7c7d5 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
-      <div className="absolute -right-8 top-5 h-28 w-48 rotate-[-20deg] rounded-full border-[14px] border-[#dfe4ff]/70" />
+    <div className="relative h-64 overflow-hidden rounded-2xl border border-secondary/15 bg-[#f7f4ff]" role="img" aria-label="현재 위치에서 전체 코스 방문지를 잇는 이천 투어 경로 지도">
+      <div className="absolute inset-0 opacity-60" style={{ backgroundImage: "radial-gradient(#d7cff3 1px, transparent 1px)", backgroundSize: "18px 18px" }} />
+      <div className="absolute -right-8 top-5 h-28 w-48 rotate-[-20deg] rounded-full border-[14px] border-[#e5f2ff]/80" />
       <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold text-secondary shadow-xs">
         <span className="material-symbols-outlined mr-1 text-[14px]">map</span>
         이천 하루 투어 맵
@@ -144,7 +144,7 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({ isOpen, places
           : "이 기기에서는 현재 위치를 확인할 수 없어요.";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#482a38]/45 p-0 backdrop-blur-xs sm:items-center sm:p-4" data-testid="navigation-modal">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#463a63]/45 p-0 backdrop-blur-xs sm:items-center sm:p-4" data-testid="navigation-modal">
       <div className="flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-3xl bg-surface p-5 shadow-2xl sm:rounded-3xl sm:p-6">
         <div className="flex items-center justify-between border-b border-outline-variant/40 pb-4">
           <div className="flex items-center gap-3">

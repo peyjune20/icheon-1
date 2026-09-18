@@ -17,6 +17,7 @@ import {
   TOUR_STAMPS_CHANGED_EVENT,
 } from "@/features/tour-stamps/tour-stamps.storage";
 import { TourStamp } from "@/features/tour-stamps/TourStamp";
+import { TourMascot } from "@/features/tour-stamps/TourMascot";
 import { SEED_PLACES } from "@/infrastructure/data/seed-places.data";
 
 export default function MyTripPage() {
@@ -77,13 +78,13 @@ export default function MyTripPage() {
       <AppHeader />
 
       <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-24 sm:px-6 lg:pb-16 lg:pt-32">
-        <section className="grid gap-5 rounded-[28px] bg-primary p-6 text-white shadow-[0_10px_30px_-12px_rgba(49,99,66,0.55)] sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+        <section className="grid gap-5 rounded-[28px] bg-secondary p-6 text-white shadow-[0_10px_30px_-12px_rgba(120,102,178,0.45)] sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold">
               <span className="material-symbols-outlined text-[15px]">map</span>
               MY ICHEON TOUR
             </div>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">나의 이천 투어</h1>
+            <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">나의 이천 베베 투어</h1>
             <p className="mt-3 max-w-xl text-sm leading-6 text-white/85 sm:text-base">
               마음에 담아 둔 장소와 직접 다녀온 순간을 한 장의 여행 기록으로 모아보세요.
             </p>
@@ -110,7 +111,7 @@ export default function MyTripPage() {
           </div>
           {stampedTours.length === 0 ? (
             <div className="mt-5 flex min-h-40 flex-col items-center justify-center rounded-2xl border border-dashed border-outline-variant/70 bg-white/70 px-5 text-center">
-              <span className="material-symbols-outlined text-[34px] text-primary">workspace_premium</span>
+              <TourMascot />
               <p className="mt-2 text-sm font-bold">첫 번째 이천 투어 스탬프를 남겨보세요</p>
               <p className="mt-1 text-xs text-on-surface-variant">찜한 장소에서 ‘다녀왔어요’를 누르면 스탬프가 찍혀요.</p>
             </div>
