@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --background: #fcf9f8;
-  --foreground: #1b1c1c;
+  --background: #f8fcf8;
+  --foreground: #173125;
 }
 
 @layer base {
   html,
   body {
-    width: 100vw;
+    width: 100%;
     margin: 0;
     padding: 0;
-    background-color: #fcf9f8;
-    color: #1b1c1c;
+    background-color: #f8fcf8;
+    color: #173125;
     word-break: keep-all;
     -webkit-font-smoothing: antialiased;
   }
 
   body {
-    min-height: max(884px, 100dvh);
-    overscroll-behavior: none;
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
   }
 
   .pb-safe {
@@ -45,7 +45,17 @@
 }
 
 ::-webkit-scrollbar {
-  display: none;
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f8f2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b6d8bd;
+  border: 3px solid #f1f8f2;
+  border-radius: 999px;
 }
 
 /* Accessible Keyboard Navigation Focus Indicator (WCAG 2.2 AA) */

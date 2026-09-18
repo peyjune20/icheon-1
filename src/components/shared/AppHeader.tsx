@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { WeatherIndicator } from "@/components/shared/WeatherIndicator";
 
 export const AppHeader = () => {
   const pathname = usePathname();
@@ -38,15 +39,7 @@ export const AppHeader = () => {
             );
           })}
         </nav>
-        <div className="flex items-center gap-space-sm">
-          <button
-            aria-label="알림 및 안심팁"
-            onClick={() => alert("오늘의 날씨 안심팁: 최고기온 31℃ 무더위로 오후 실내 일정이 우선 추천되었습니다.")}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container-low hover:text-on-surface"
-          >
-            <span className="material-symbols-outlined text-[22px]">notifications</span>
-          </button>
-        </div>
+        <WeatherIndicator />
       </div>
     </header>
   );
