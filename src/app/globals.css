@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8fcf8;
-  --foreground: #173125;
+  --background: #fff9fb;
+  --foreground: #482a38;
 }
 
 @layer base {
@@ -13,8 +13,8 @@
     width: 100%;
     margin: 0;
     padding: 0;
-    background-color: #f8fcf8;
-    color: #173125;
+    background-color: #fff9fb;
+    color: #482a38;
     word-break: keep-all;
     -webkit-font-smoothing: antialiased;
   }
@@ -49,17 +49,17 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f8f2;
+  background: #fff0f5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #b6d8bd;
-  border: 3px solid #f1f8f2;
+  background: #f2b4c4;
+  border: 3px solid #fff0f5;
   border-radius: 999px;
 }
 
 /* Accessible Keyboard Navigation Focus Indicator (WCAG 2.2 AA) */
 :focus-visible {
-  outline: 2px solid #4A7C59 !important;
+  outline: 2px solid #ed7185 !important;
   outline-offset: 2px !important;
 }

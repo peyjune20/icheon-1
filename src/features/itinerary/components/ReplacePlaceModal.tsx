@@ -92,12 +92,12 @@ export const ReplacePlaceModal: React.FC<ReplacePlaceModalProps> = ({
                   <div className="flex items-center justify-between pt-1">
                     <div className="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
                       {candidate.strollerAccessible.value === "YES" && (
-                        <span className="px-1.5 py-0.5 rounded bg-surface-container text-[#2D8A4E]">
+                        <span className="px-1.5 py-0.5 rounded bg-surface-container text-primary">
                           유모차✓
                         </span>
                       )}
                       {candidate.parking.value === "YES" && (
-                        <span className="px-1.5 py-0.5 rounded bg-surface-container text-[#2D8A4E]">
+                        <span className="px-1.5 py-0.5 rounded bg-surface-container text-primary">
                           주차✓
                         </span>
                       )}

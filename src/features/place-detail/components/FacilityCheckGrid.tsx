@@ -135,13 +135,13 @@ export const FacilityCheckGrid: React.FC<FacilityCheckGridProps> = ({ place }) =
                 className="bg-surface-container-lowest rounded-xl p-3.5 flex items-start gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-outline-variant/20"
                 data-testid={`facility-${item.id}-YES`}
               >
-                <div className="w-7 h-7 rounded-full bg-[#EAF5ED] text-[#2D8A4E] flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
                   <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-on-surface">{item.name}</span>
-                    <span className="text-xs text-[#2D8A4E] bg-[#EAF5ED] px-2 py-0.5 rounded font-medium flex items-center gap-0.5">
+                    <span className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded font-medium flex items-center gap-0.5">
                       <span className="material-symbols-outlined text-[13px]">check</span> 확인됨
                     </span>
                   </div>

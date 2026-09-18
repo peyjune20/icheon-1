@@ -66,7 +66,7 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
           disabled={isAdded}
           className={`flex-1 h-12 rounded-full flex items-center justify-center gap-2 text-sm font-bold shadow-md transition-all active:scale-[0.98] ${
             isAdded
-              ? "bg-[#2D8A4E] text-white"
+              ? "bg-primary-container text-white"
               : "bg-primary text-white hover:bg-primary-container"
           }`}
           data-testid="btn-add-to-course"
