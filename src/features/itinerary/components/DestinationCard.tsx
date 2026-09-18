@@ -21,7 +21,7 @@ export const DestinationCard = ({
   if (!place) return null;
 
   return (
-    <div className="relative pl-7 pb-2 timeline-item" data-testid={`destination-card-${place.id}`}>
+    <div className="relative pl-9 pb-8 timeline-item" data-testid={`destination-card-${place.id}`}>
       {/* Connector line */}
       <div className="absolute left-[13px] top-7 bottom-0 w-[2px] bg-secondary-container"></div>
 
@@ -31,18 +31,21 @@ export const DestinationCard = ({
       </div>
 
       {/* Destination Card Container */}
-      <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden mb-3 border border-outline-variant/30 transition-all hover:shadow-md">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden border border-outline-variant/30 transition-all hover:shadow-md">
         {/* Visual Header with Image */}
         {/* Visual Header with Image & Gallery Preview */}
         {!isCollapsed && place.thumbnailImage && (
           <div className="flex flex-col bg-surface-container">
-            <Link href={`/places/${place.id}`} className="block relative h-36 w-full overflow-hidden group">
+            <Link
+              href={`/places/${place.id}`}
+              className="block relative aspect-[16/9] min-h-[210px] w-full overflow-hidden group"
+            >
               <Image
                 src={place.thumbnailImage}
                 alt={place.name}
                 fill
-                sizes="(max-width: 480px) 100vw, 480px"
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 720px"
+                className="object-contain bg-surface-container-low transition-transform duration-300 group-hover:scale-[1.02]"
               />
               <div className="absolute top-2.5 left-2.5 flex gap-1.5 z-10">
                 <span className="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm flex items-center gap-1 font-medium">
@@ -81,25 +84,25 @@ export const DestinationCard = ({
 
             {/* Mini Photo Strip Preview */}
             {place.imageFiles && place.imageFiles.length > 1 && (
-              <div className="flex items-center gap-1.5 px-3 py-2 bg-surface-container-low border-b border-outline-variant/20 overflow-x-auto no-scrollbar">
+              <div className="grid grid-cols-5 gap-2 px-4 py-3 bg-surface-container-low border-b border-outline-variant/20">
                 {place.imageFiles.map((img, idx) => (
                   <Link
                     key={img + idx}
                     href={`/places/${place.id}`}
-                    className="relative flex-shrink-0 w-14 h-9 rounded-md overflow-hidden opacity-85 hover:opacity-100 transition-opacity border border-outline-variant/30"
+                    className="relative aspect-[4/3] w-full rounded-lg overflow-hidden opacity-85 hover:opacity-100 transition-opacity border border-outline-variant/30"
                   >
                     <Image
                       src={img}
                       alt={`${place.name} 사진 ${idx + 1}`}
                       fill
-                      sizes="56px"
+                      sizes="(max-width: 768px) 18vw, 130px"
                       className="object-cover"
                     />
                   </Link>
                 ))}
                 <Link
                   href={`/places/${place.id}`}
-                  className="flex-shrink-0 px-2 text-[10px] text-primary font-bold hover:underline flex items-center"
+                  className="col-span-full justify-self-end text-xs text-primary font-bold hover:underline flex items-center pt-0.5"
                 >
                   갤러리 전체보기 &rarr;
                 </Link>
@@ -109,7 +112,7 @@ export const DestinationCard = ({
         )}
 
         {/* Content Body */}
-        <div className="p-space-md flex flex-col gap-2.5">
+        <div className="p-5 flex flex-col gap-4">
           <div className="flex items-baseline justify-between">
             <Link
               href={`/places/${place.id}`}
@@ -132,7 +135,7 @@ export const DestinationCard = ({
           </div>
 
           {/* Facility Badges Grid */}
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {place.parking.value === "YES" && (
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary text-label-sm font-medium">
                 <span className="material-symbols-outlined text-[14px]">check</span>주차 편리
@@ -182,7 +185,7 @@ export const DestinationCard = ({
           )}
 
           {/* Action Row: Replace / Remove Buttons */}
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/20">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-outline-variant/20">
             {onOpenReplace && (
               <button
                 type="button"

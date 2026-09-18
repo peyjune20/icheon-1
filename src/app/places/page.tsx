@@ -110,7 +110,7 @@ export default function PlacesListPage() {
         </div>
 
         {/* Places List Cards */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-7 xl:grid-cols-3">
           {filteredPlaces.length === 0 ? (
             <div className="py-16 text-center text-on-surface-variant text-xs">
               검색 조건에 일치하는 장소가 없습니다.
@@ -144,7 +144,7 @@ function PlaceCardItem({ place }: { place: Place }) {
 
   return (
     <article
-      className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 shadow-xs overflow-hidden hover:shadow-md transition-all flex flex-col"
+      className="bg-surface-container-lowest rounded-3xl border border-outline-variant/30 shadow-xs overflow-hidden hover:shadow-md transition-all flex flex-col"
       data-testid={`place-item-${place.id}`}
     >
       {/* Visual Header Image */}
@@ -190,25 +190,25 @@ function PlaceCardItem({ place }: { place: Place }) {
 
       {/* Mini Photo Strip Preview */}
       {place.imageFiles && place.imageFiles.length > 1 && (
-        <div className="flex items-center gap-1.5 px-3 py-2 bg-surface-container-low border-b border-outline-variant/20 overflow-x-auto no-scrollbar">
+        <div className="grid grid-cols-3 gap-2 px-4 py-3 bg-surface-container-low border-b border-outline-variant/20">
           {place.imageFiles.map((img, idx) => (
             <Link
               key={img + idx}
               href={`/places/${place.id}`}
-              className="relative flex-shrink-0 w-14 h-9 rounded-md overflow-hidden border border-outline-variant/30 hover:opacity-100 opacity-85 transition-opacity"
+              className="relative aspect-[4/3] w-full rounded-lg overflow-hidden border border-outline-variant/30 hover:opacity-100 opacity-85 transition-opacity"
             >
               <Image
                 src={img}
                 alt={`${place.name} 썸네일 ${idx + 1}`}
                 fill
-                sizes="56px"
+                sizes="(max-width: 768px) 28vw, 110px"
                 className="object-cover"
               />
             </Link>
           ))}
           <Link
             href={`/places/${place.id}`}
-            className="flex-shrink-0 px-2 text-[10px] text-primary font-bold hover:underline flex items-center"
+            className="col-span-full justify-self-end text-xs text-primary font-bold hover:underline flex items-center pt-0.5"
           >
             전체 사진 &rarr;
           </Link>
@@ -216,8 +216,8 @@ function PlaceCardItem({ place }: { place: Place }) {
       )}
 
       {/* Facility Amenities Chips */}
-      <div className="p-3.5 flex flex-col gap-2.5">
-        <div className="flex flex-wrap gap-1.5 text-[11px]">
+      <div className="p-5 flex flex-col gap-4">
+        <div className="flex flex-wrap gap-2 text-[11px]">
           <span
             className={`px-2 py-0.5 rounded-md font-medium flex items-center gap-1 ${
               place.strollerAccessible.value === "YES"
@@ -265,7 +265,7 @@ function PlaceCardItem({ place }: { place: Place }) {
 
         {/* Editorial Review Summary */}
         {place.editorialReview && (
-          <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed bg-surface-container-low p-2.5 rounded-xl">
+          <p className="text-xs text-on-surface-variant line-clamp-2 leading-relaxed bg-surface-container-low p-3.5 rounded-xl">
             💬 &ldquo;{place.editorialReview}&rdquo;
           </p>
         )}
@@ -273,7 +273,7 @@ function PlaceCardItem({ place }: { place: Place }) {
         {/* Action Button */}
         <Link
           href={`/places/${place.id}`}
-          className="w-full h-10 rounded-xl bg-primary/10 hover:bg-primary text-primary hover:text-white flex items-center justify-center gap-1.5 text-xs font-bold transition-all active:scale-[0.98]"
+          className="w-full h-11 mt-1 rounded-xl bg-primary/10 hover:bg-primary text-primary hover:text-white flex items-center justify-center gap-1.5 text-xs font-bold transition-all active:scale-[0.98]"
         >
           <span>현장 실측 정보 및 사진 갤러리 보기</span>
           <span className="material-symbols-outlined text-[16px]">arrow_forward</span>

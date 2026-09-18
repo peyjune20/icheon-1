@@ -255,7 +255,7 @@ function ItineraryContent() {
 
               if (block.type === "TRAVEL") {
                 return (
-                  <div key={block.id} className="relative pl-7 pb-2 timeline-item">
+                <div key={block.id} className="relative pl-9 pb-5 timeline-item">
                     <div className="absolute left-[13px] top-0 bottom-0 w-[2px] bg-secondary-container"></div>
                     <TransitSegment
                       note={block.transitNote || block.title}
