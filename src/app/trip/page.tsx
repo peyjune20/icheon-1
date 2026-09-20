@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -27,6 +27,13 @@ const STYLE_OPTIONS = [
   { id: "PHOTO", label: "📷 가족 감성 사진" },
 ];
 
+const TOUR_PREP_STORAGE_KEY = "icheon-bebe-road:tour-prep-checks";
+const TOUR_PREP_ITEMS = [
+  { id: "stroller", icon: "stroller", title: "유모차와 얇은 겉옷", description: "산책 코스와 실내 온도차에 대비해요." },
+  { id: "snack", icon: "bakery_dining", title: "간식·물·물티슈", description: "아이의 기분 전환을 위한 든든한 세트예요." },
+  { id: "weather", icon: "wb_sunny", title: "오늘 날씨 확인", description: "비 소식에는 실내 명소를 먼저 담아보세요." },
+];
+
 export default function TripInputPage() {
   const router = useRouter();
 
@@ -40,6 +47,21 @@ export default function TripInputPage() {
   const [napEnd, setNapEnd] = useState("15:00");
   const [includeLunch, setIncludeLunch] = useState(true);
   const [parentRestPriority, setParentRestPriority] = useState<"LOW" | "MEDIUM" | "HIGH">("HIGH");
+  const [prepCheckIds, setPrepCheckIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const savedChecks = window.localStorage.getItem(TOUR_PREP_STORAGE_KEY);
+    if (!savedChecks) return;
+
+    try {
+      const parsed = JSON.parse(savedChecks);
+      if (Array.isArray(parsed)) {
+        setPrepCheckIds(parsed.filter((item): item is string => typeof item === "string"));
+      }
+    } catch {
+      window.localStorage.removeItem(TOUR_PREP_STORAGE_KEY);
+    }
+  }, []);
 
   // 여행 시간과 이동수단은 추천 엔진의 안전한 기본값으로 처리한다.
   // 사용자는 아이 정보와 원하는 여행 스타일만 고르면 된다.
@@ -59,6 +81,16 @@ export default function TripInputPage() {
       }
       setSelectedStyles([...selectedStyles, styleId]);
     }
+  };
+
+  const togglePrepCheck = (checkId: string) => {
+    setPrepCheckIds((current) => {
+      const next = current.includes(checkId)
+        ? current.filter((id) => id !== checkId)
+        : [...current, checkId];
+      window.localStorage.setItem(TOUR_PREP_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -409,6 +441,41 @@ export default function TripInputPage() {
               </div>
             </div>
           </details>
+
+          <section className="rounded-2xl border border-outline-variant/30 bg-secondary-container/45 p-4 shadow-xs" data-testid="section-trip-prep">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-primary">READY, BEBE!</p>
+                <h2 className="mt-1 text-base font-bold text-on-surface">코스 만들기 전 준비 체크</h2>
+                <p className="mt-1 text-xs leading-5 text-on-surface-variant">출발 전 챙길 것을 확인하고, 안심 코스를 시작해요.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-xs font-bold text-primary">{prepCheckIds.length} / {TOUR_PREP_ITEMS.length}</span>
+            </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              {TOUR_PREP_ITEMS.map((item) => {
+                const checked = prepCheckIds.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-pressed={checked}
+                    onClick={() => togglePrepCheck(item.id)}
+                    className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition-colors ${
+                      checked ? "border-primary/25 bg-primary-fixed" : "border-white bg-white/80 hover:border-primary/30"
+                    }`}
+                  >
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${checked ? "bg-primary text-white" : "bg-surface-container text-primary"}`}>
+                      <span className="material-symbols-outlined text-[18px]">{checked ? "check" : item.icon}</span>
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-xs font-bold text-on-surface">{item.title}</span>
+                      <span className="mt-0.5 block text-[11px] leading-4 text-on-surface-variant">{item.description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
 
           {/* Validation Notice Banner (if invalid) */}
           {validationMessage && (

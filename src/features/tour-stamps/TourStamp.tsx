@@ -5,9 +5,10 @@ interface TourStampProps {
   place: Place;
   visitedAt: string;
   compact?: boolean;
+  onRemove?: () => void;
 }
 
-export function TourStamp({ place, visitedAt, compact = false }: TourStampProps) {
+export function TourStamp({ place, visitedAt, compact = false, onRemove }: TourStampProps) {
   const visitDate = new Intl.DateTimeFormat("ko-KR", {
     month: "short",
     day: "numeric",
@@ -37,6 +38,16 @@ export function TourStamp({ place, visitedAt, compact = false }: TourStampProps)
       }`}
       aria-label={`${place.name} 방문 스탬프`}
     >
+      {onRemove && !compact && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="absolute right-1.5 top-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-on-surface-variant shadow-xs transition-colors hover:bg-primary hover:text-white"
+          aria-label={`${place.name} 스탬프 해제`}
+        >
+          <span className="material-symbols-outlined text-[15px]">close</span>
+        </button>
+      )}
       <TourMascot compact={compact} category={place.category} />
       <strong className={`${compact ? "mt-0.5 max-w-12 text-[8px]" : "mt-1 max-w-28 text-xs"} truncate font-bold`}>
         {place.name}

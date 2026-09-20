@@ -7,7 +7,7 @@ const COURSE_STOPS = [
   { time: "10:30", name: "이천농업테마공원", detail: "유모차로 걷기 좋은 호수 산책" },
   { time: "12:00", name: "미솥지음", detail: "아기의자와 가족 좌석이 있는 쌀밥 식사" },
   { time: "13:30", name: "라이스카페", detail: "낮잠 시간에도 편안한 부모 쉼표" },
-  { time: "15:30", name: "덕평공룡수목원", detail: "아이 눈높이의 가벼운 마무리 산책" },
+  { time: "15:30", name: "덕평공룡수목원", detail: "AI 추천 후보 · 아이 눈높이의 가벼운 마무리 산책" },
 ];
 
 const COURSE_POINTS = [
@@ -54,16 +54,16 @@ export default function HomePage() {
             </div>
             <div className="mt-8 grid max-w-xl grid-cols-3 gap-3 border-t border-outline-variant/40 pt-5">
               <div>
-                <p className="text-2xl font-bold text-primary">4</p>
-                <p className="mt-1 text-xs text-on-surface-variant">여유 있는 방문지</p>
+                <p className="text-2xl font-bold text-primary">20</p>
+                <p className="mt-1 text-xs text-on-surface-variant">코스 조합 후보</p>
               </div>
               <div>
                 <p className="text-2xl font-bold text-primary">5.5h</p>
                 <p className="mt-1 text-xs text-on-surface-variant">아이 컨디션을 고려한 하루</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-primary">100%</p>
-                <p className="mt-1 text-xs text-on-surface-variant">현장 확인 정보</p>
+                <p className="text-2xl font-bold text-primary">7 + 13</p>
+                <p className="mt-1 text-xs text-on-surface-variant">실측 + AI 추천</p>
               </div>
             </div>
           </div>

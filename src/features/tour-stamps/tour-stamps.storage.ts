@@ -38,11 +38,11 @@ export function getTourStamps(): TourStampRecord[] {
   return readTourStamps();
 }
 
-export function createTourStamp(placeId: string): TourStampRecord[] {
+export function createTourStamp(placeId: string, visitedAt = new Date().toISOString()): TourStampRecord[] {
   const stamps = readTourStamps();
   if (stamps.some((stamp) => stamp.placeId === placeId)) return stamps;
 
-  const nextStamps = [...stamps, { placeId, visitedAt: new Date().toISOString() }];
+  const nextStamps = [...stamps, { placeId, visitedAt }];
   writeTourStamps(nextStamps);
   return nextStamps;
 }

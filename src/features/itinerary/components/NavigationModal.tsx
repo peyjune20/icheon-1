@@ -106,14 +106,20 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({ isOpen, places
   const firstPlace = places[0];
   const hasCurrentLocation = gpsStatus === "SUCCESS" && currentCoords !== null;
 
-  const getKakaoMapUrl = (place: Place) =>
-    `https://map.kakao.com/link/from/${encodeURIComponent("현재 위치")},${currentCoords?.lat},${currentCoords?.lng}/to/${encodeURIComponent(place.name)},${place.lat},${place.lng}`;
+  const getKakaoMapUrl = (place: Place) => {
+    if (place.recommendationSource === "AI_RECOMMENDED") {
+      return `https://map.kakao.com/?q=${encodeURIComponent(`${place.name} ${place.roadAddress || place.address}`)}`;
+    }
+    return `https://map.kakao.com/link/from/${encodeURIComponent("현재 위치")},${currentCoords?.lat},${currentCoords?.lng}/to/${encodeURIComponent(place.name)},${place.lat},${place.lng}`;
+  };
 
   const getGoogleMapsUrl = (place: Place) => {
     const params = new URLSearchParams({
       api: "1",
       origin: `${currentCoords?.lat},${currentCoords?.lng}`,
-      destination: `${place.lat},${place.lng}`,
+      destination: place.recommendationSource === "AI_RECOMMENDED"
+        ? `${place.name} ${place.roadAddress || place.address}`
+        : `${place.lat},${place.lng}`,
       travelmode: "driving",
       dir_action: "navigate",
     });
@@ -125,11 +131,15 @@ export const NavigationModal: React.FC<NavigationModalProps> = ({ isOpen, places
     const params = new URLSearchParams({
       api: "1",
       origin: `${currentCoords?.lat},${currentCoords?.lng}`,
-      destination: `${lastPlace.lat},${lastPlace.lng}`,
+      destination: lastPlace.recommendationSource === "AI_RECOMMENDED"
+        ? `${lastPlace.name} ${lastPlace.roadAddress || lastPlace.address}`
+        : `${lastPlace.lat},${lastPlace.lng}`,
       travelmode: "driving",
       dir_action: "navigate",
     });
-    const waypointCoordinates = places.slice(0, -1).map((place) => `${place.lat},${place.lng}`).join("|");
+    const waypointCoordinates = places.slice(0, -1).map((place) => place.recommendationSource === "AI_RECOMMENDED"
+      ? `${place.name} ${place.roadAddress || place.address}`
+      : `${place.lat},${place.lng}`).join("|");
     if (waypointCoordinates) params.set("waypoints", waypointCoordinates);
     return `https://www.google.com/maps/dir/?${params.toString()}`;
   };

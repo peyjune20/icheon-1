@@ -146,7 +146,7 @@ export function calculatePlaceScore(
     styleBonus += 6;
     reasons.push("가족 감성 사진 명소");
   }
-  if (styles.includes("EXPERIENCE") && (place.category === "PARK" || place.category === "INDOOR")) {
+  if (styles.includes("EXPERIENCE") && (place.category === "PARK" || place.category === "INDOOR" || place.category === "EXPERIENCE")) {
     styleBonus += 6;
     reasons.push("유아 친화 체험 명소");
   }

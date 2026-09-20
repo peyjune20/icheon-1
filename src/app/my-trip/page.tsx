@@ -13,6 +13,7 @@ import {
 import {
   createTourStamp,
   getTourStamps,
+  removeTourStamp,
   TourStampRecord,
   TOUR_STAMPS_CHANGED_EVENT,
 } from "@/features/tour-stamps/tour-stamps.storage";
@@ -20,26 +21,21 @@ import { TourStamp } from "@/features/tour-stamps/TourStamp";
 import { TourMascot } from "@/features/tour-stamps/TourMascot";
 import { SEED_PLACES } from "@/infrastructure/data/seed-places.data";
 
-const TOUR_PREP_STORAGE_KEY = "icheon-bebe-road:tour-prep-checks";
-
-const TOUR_PREP_ITEMS = [
-  { id: "stroller", icon: "stroller", title: "유모차와 얇은 겉옷", description: "산책 코스와 실내 온도차에 대비해요." },
-  { id: "snack", icon: "bakery_dining", title: "간식·물·물티슈", description: "아이의 기분 전환을 위한 든든한 세트예요." },
-  { id: "weather", icon: "wb_sunny", title: "오늘 날씨 확인", description: "비 소식에는 실내 명소를 먼저 담아보세요." },
-];
-
 const STAMP_COLLECTIONS = [
-  { category: "RESTAURANT" as const, title: "쌀밥 미식가", description: "든든한 이천 한 끼", tone: "bg-[#fff8e9] text-tertiary" },
-  { category: "NATURE" as const, title: "숲속 탐험가", description: "나무와 호수 산책", tone: "bg-[#f3fbf1] text-secondary" },
-  { category: "PARK" as const, title: "공원 새싹", description: "넓은 잔디와 놀이터", tone: "bg-[#fff7ed] text-primary" },
-  { category: "CAFE" as const, title: "카페 휴식가", description: "부모도 쉬어가는 시간", tone: "bg-[#fff5f8] text-primary" },
-  { category: "INDOOR" as const, title: "실내 탐험대", description: "날씨 걱정 없는 나들이", tone: "bg-[#f5f2ff] text-secondary" },
+  { category: "RESTAURANT" as const, title: "쌀밥 미식가", description: "든든한 이천 한 끼", position: "left-[18%] top-[18%]" },
+  { category: "NATURE" as const, title: "숲속 탐험가", description: "나무와 호수 산책", position: "right-[18%] top-[15%]" },
+  { category: "EXPERIENCE" as const, title: "체험 놀이터", description: "공룡·도자·계절 체험", position: "left-[51%] top-[24%]" },
+  { category: "PARK" as const, title: "공원 새싹", description: "넓은 잔디와 놀이터", position: "left-[44%] top-[43%]" },
+  { category: "CAFE" as const, title: "카페 휴식가", description: "부모도 쉬어가는 시간", position: "left-[16%] bottom-[13%]" },
+  { category: "INDOOR" as const, title: "실내 탐험대", description: "날씨 걱정 없는 나들이", position: "right-[14%] bottom-[12%]" },
 ];
+
+const getToday = () => new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
 
 export default function MyTripPage() {
   const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>([]);
   const [tourStamps, setTourStamps] = useState<TourStampRecord[]>([]);
-  const [prepCheckIds, setPrepCheckIds] = useState<string[]>([]);
+  const [visitDates, setVisitDates] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const syncSavedPlaces = () => setSavedPlaceIds(getSavedPlaceIds());
@@ -59,20 +55,6 @@ export default function MyTripPage() {
       window.removeEventListener(TOUR_STAMPS_CHANGED_EVENT, syncTourStamps);
       window.removeEventListener("storage", syncAll);
     };
-  }, []);
-
-  useEffect(() => {
-    const savedChecks = window.localStorage.getItem(TOUR_PREP_STORAGE_KEY);
-    if (!savedChecks) return;
-
-    try {
-      const parsed = JSON.parse(savedChecks);
-      if (Array.isArray(parsed)) {
-        setPrepCheckIds(parsed.filter((item): item is string => typeof item === "string"));
-      }
-    } catch {
-      window.localStorage.removeItem(TOUR_PREP_STORAGE_KEY);
-    }
   }, []);
 
   const savedPlaces = useMemo(
@@ -109,17 +91,12 @@ export default function MyTripPage() {
   };
 
   const handleCreateStamp = (placeId: string) => {
-    setTourStamps(createTourStamp(placeId));
+    const visitDate = visitDates[placeId] || getToday();
+    setTourStamps(createTourStamp(placeId, new Date(`${visitDate}T12:00:00`).toISOString()));
   };
 
-  const togglePrepCheck = (checkId: string) => {
-    setPrepCheckIds((current) => {
-      const next = current.includes(checkId)
-        ? current.filter((id) => id !== checkId)
-        : [...current, checkId];
-      window.localStorage.setItem(TOUR_PREP_STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
+  const handleRemoveStamp = (placeId: string) => {
+    setTourStamps(removeTourStamp(placeId));
   };
 
   return (
@@ -167,70 +144,44 @@ export default function MyTripPage() {
           ) : (
             <div className="mt-6 flex flex-wrap gap-4 sm:gap-5">
               {stampedTours.map(({ place, stamp }) => (
-                <TourStamp key={place.id} place={place} visitedAt={stamp.visitedAt} />
+                <TourStamp key={place.id} place={place} visitedAt={stamp.visitedAt} onRemove={() => handleRemoveStamp(place.id)} />
               ))}
             </div>
           )}
         </section>
 
-        <section className="mt-8 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+        <section className="mt-8">
           <div className="rounded-[28px] border border-outline-variant/30 bg-white p-5 sm:p-6">
             <div className="flex flex-wrap items-end justify-between gap-2">
               <div>
                 <p className="text-xs font-bold text-primary">BEBE COLLECTION</p>
-                <h2 className="mt-1 text-xl font-bold">테마별 베베 탐험대</h2>
+                <h2 className="mt-1 text-xl font-bold">이천 마을을 완성해요</h2>
               </div>
-              <span className="text-xs font-medium text-on-surface-variant">테마를 모아 나만의 이천 지도를 완성해요</span>
+              <span className="rounded-full bg-primary-fixed px-3 py-1.5 text-xs font-bold text-on-primary-fixed">깃발 {stampCollections.filter((collection) => collection.count > 0).length} / {stampCollections.length}</span>
             </div>
-            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="relative mt-5 aspect-[16/10] overflow-hidden rounded-3xl border border-outline-variant/25 bg-surface-container-low shadow-inner">
+              <Image src="/assets/icheon-village-map.png" alt="이천베베로드 마을 지도" fill sizes="(max-width: 1024px) 100vw, 960px" className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#453564]/20 via-transparent to-transparent" />
+              <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-on-surface shadow-xs sm:left-5 sm:top-5">
+                다녀온 테마에 깃발이 꽂혀요
+              </div>
               {stampCollections.map((collection) => (
-                <div key={collection.category} className={`flex items-center gap-3 rounded-2xl p-3 ${collection.tone}`}>
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/80">
+                <div key={collection.category} className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 text-center ${collection.position}`}>
+                  <div className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white shadow-lg transition-all sm:h-14 sm:w-14 ${collection.count > 0 ? "scale-100" : "scale-90 grayscale opacity-65"}`}>
                     <TourMascot compact category={collection.category} />
+                    <span className={`absolute -right-1 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white ${collection.count > 0 ? "bg-primary" : "bg-on-surface-variant"}`}>{collection.count}</span>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-on-surface">{collection.title}</p>
-                    <p className="mt-0.5 truncate text-[11px] text-on-surface-variant">{collection.description}</p>
-                    <p className="mt-1 text-[11px] font-bold">{collection.count > 0 ? `${collection.count}곳 달성!` : "첫 스탬프 도전"}</p>
-                  </div>
+                  <span className={`mt-1 hidden whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold shadow-sm sm:block ${collection.count > 0 ? "bg-white text-primary" : "bg-white/85 text-on-surface-variant"}`}>{collection.title}</span>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="rounded-[28px] border border-outline-variant/30 bg-surface-container-low p-5 sm:p-6">
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <p className="text-xs font-bold text-primary">READY, BEBE!</p>
-                <h2 className="mt-1 text-xl font-bold">출발 전 베베 체크</h2>
-              </div>
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-primary">{prepCheckIds.length} / {TOUR_PREP_ITEMS.length}</span>
-            </div>
-            <div className="mt-4 space-y-2">
-              {TOUR_PREP_ITEMS.map((item) => {
-                const checked = prepCheckIds.includes(item.id);
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    aria-pressed={checked}
-                    onClick={() => togglePrepCheck(item.id)}
-                    className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${
-                      checked
-                        ? "border-primary/25 bg-primary-fixed"
-                        : "border-white bg-white/80 hover:border-primary/30"
-                    }`}
-                  >
-                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${checked ? "bg-primary text-white" : "bg-surface-container text-primary"}`}>
-                      <span className="material-symbols-outlined text-[19px]">{checked ? "check" : item.icon}</span>
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-xs font-bold">{item.title}</span>
-                      <span className="mt-0.5 block text-[11px] text-on-surface-variant">{item.description}</span>
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {stampCollections.map((collection) => (
+                <span key={collection.category} className="inline-flex items-center gap-1.5 rounded-full bg-surface-container-low px-3 py-1.5 text-xs text-on-surface-variant">
+                  <span className={`h-2 w-2 rounded-full ${collection.count > 0 ? "bg-primary" : "bg-outline-variant"}`} />
+                  {collection.title} {collection.count > 0 ? `${collection.count}곳` : "미방문"}
+                </span>
+              ))}
             </div>
           </div>
         </section>
@@ -274,16 +225,23 @@ export default function MyTripPage() {
                       </div>
                       <div className="mt-auto flex items-center justify-between gap-2 pt-3">
                         {stamp ? (
-                          <div className="flex items-center gap-2 text-xs font-bold text-primary">
+                          <div className="flex min-w-0 items-center gap-2 text-xs font-bold text-primary">
                             <TourStamp place={place} visitedAt={stamp.visitedAt} compact />
-                            <span>방문 완료</span>
+                            <div className="min-w-0">
+                              <span className="block">방문 완료</span>
+                              <span className="mt-0.5 block whitespace-nowrap text-[10px] font-medium text-on-surface-variant">{new Intl.DateTimeFormat("ko-KR", { year: "numeric", month: "long", day: "numeric" }).format(new Date(stamp.visitedAt))}</span>
+                            </div>
                           </div>
                         ) : (
-                          <button type="button" onClick={() => handleCreateStamp(place.id)} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-bold text-white transition-colors hover:bg-primary-container">
-                            <span className="material-symbols-outlined text-[16px]">workspace_premium</span>
-                            다녀왔어요
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <input type="date" max={getToday()} value={visitDates[place.id] || getToday()} onChange={(event) => setVisitDates((current) => ({ ...current, [place.id]: event.target.value }))} aria-label={`${place.name} 방문 날짜`} className="h-9 rounded-lg border border-outline-variant/40 bg-surface-container-low px-2 text-[11px] font-semibold text-on-surface outline-none focus:border-primary" />
+                            <button type="button" onClick={() => handleCreateStamp(place.id)} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-bold text-white transition-colors hover:bg-primary-container">
+                              <span className="material-symbols-outlined text-[16px]">workspace_premium</span>
+                              다녀왔어요
+                            </button>
+                          </div>
                         )}
+                        {stamp && <button type="button" onClick={() => handleRemoveStamp(place.id)} className="shrink-0 text-[11px] font-bold text-on-surface-variant hover:text-primary hover:underline">스탬프 해제</button>}
                         <Link href={`/places/${place.id}`} className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline">
                           상세
                           <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

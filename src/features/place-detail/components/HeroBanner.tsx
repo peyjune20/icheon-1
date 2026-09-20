@@ -18,6 +18,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ place }) => {
       ? "부모 휴식 · 카페"
       : place.category === "NATURE"
       ? "자연 힐링"
+      : place.category === "EXPERIENCE"
+      ? "아이 체험 · 문화"
       : "추천 명소";
 
   const indoorOutdoorLabel =
@@ -45,6 +47,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ place }) => {
           </span>
           <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-medium text-xs">
             {indoorOutdoorLabel}
+          </span>
+          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-xs ${place.recommendationSource === "AI_RECOMMENDED" ? "bg-secondary-container text-on-secondary-container" : "bg-primary/10 text-primary"}`}>
+            <span className="material-symbols-outlined text-[13px]">{place.recommendationSource === "AI_RECOMMENDED" ? "auto_awesome" : "verified"}</span>
+            {place.recommendationSource === "AI_RECOMMENDED" ? "AI 추천" : "현장 실측"}
           </span>
         </div>
 

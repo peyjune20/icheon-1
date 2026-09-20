@@ -6,6 +6,7 @@ interface PracticalInfoGridProps {
 }
 
 export const PracticalInfoGrid: React.FC<PracticalInfoGridProps> = ({ place }) => {
+  const isAiRecommended = place.recommendationSource === "AI_RECOMMENDED";
   // 1. Duration
   const durationText = `${place.recommendedDurationMin}분 내외`;
   const durationDesc =
@@ -18,21 +19,27 @@ export const PracticalInfoGrid: React.FC<PracticalInfoGridProps> = ({ place }) =
       : "여유로운 관람 및 쉼터";
 
   // 2. Opening Hours
-  const hoursText = `${place.openingHours.open} ~ ${place.openingHours.close}`;
+  const hoursText = isAiRecommended ? "공식 채널 확인" : `${place.openingHours.open} ~ ${place.openingHours.close}`;
   const daysMap = ["일", "월", "화", "수", "목", "금", "토"];
   const closedDaysText =
-    place.openingHours.closedDays.length === 0
+    isAiRecommended
+      ? "운영시간·휴무일 변동 가능"
+      : place.openingHours.closedDays.length === 0
       ? "연중무휴"
       : `매주 ${place.openingHours.closedDays.map((d) => daysMap[d]).join(", ")}요일 정기 휴무`;
 
   // 3. Cost
-  const costText =
+  const costText = isAiRecommended
+    ? "현장 요금 확인"
+    :
     place.category === "PARK" || place.category === "INDOOR"
       ? "입장료 무료"
       : place.category === "RESTAURANT"
       ? "1인 15,000~20,000원"
       : "1인 6,000~8,000원";
-  const costDesc =
+  const costDesc = isAiRecommended
+    ? "AI 추천 후보 · 방문 전 확인"
+    :
     place.category === "PARK"
       ? "카페 음료 및 체험 별도"
       : place.category === "RESTAURANT"

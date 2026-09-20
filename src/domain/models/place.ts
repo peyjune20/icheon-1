@@ -19,6 +19,14 @@ export type VerificationStatus =
   | "USER_REPORTED"
   | "UNVERIFIED";
 
+export type RecommendationSource = "FIELD_VISIT" | "AI_RECOMMENDED";
+
+export interface PlaceMedia {
+  src: string;
+  type: "IMAGE" | "VIDEO";
+  description?: string;
+}
+
 export interface Place {
   id: string;
   name: string;
@@ -53,6 +61,12 @@ export interface Place {
   imageFiles: string[];
   thumbnailImage: string;
   imageDescriptions?: string[];
+  mediaFiles?: PlaceMedia[];
+
+  /** 현장 실측 장소와 AI 탐색 추천 장소를 화면에서 정직하게 구분합니다. */
+  recommendationSource?: RecommendationSource;
+  /** AI 추천 장소의 공식 안내를 다시 확인할 수 있는 링크입니다. */
+  sourceUrl?: string;
 
   verificationStatus: VerificationStatus;
   verifiedDate: string;

@@ -9,8 +9,9 @@ import { SEED_PLACES } from "@/infrastructure/data/seed-places.data";
 import { Place, PlaceCategory } from "@/domain/models/place";
 
 const FILTER_CATEGORIES = [
-  { id: "ALL", label: "전체 명소 (7곳)" },
+  { id: "ALL", label: "전체 명소" },
   { id: "NATURE_PARK", label: "🌿 자연 · 숲 · 호수" },
+  { id: "EXPERIENCE", label: "🧸 체험 · 문화" },
   { id: "CAFE", label: "☕ 부모 휴식 카페" },
   { id: "INDOOR", label: "🏠 실내 관람" },
   { id: "RESTAURANT", label: "🍚 이천 쌀밥 식당" },
@@ -26,6 +27,9 @@ export default function PlacesListPage() {
     return standalonePlaces.filter((place) => {
       // Category filter
       if (activeFilter === "NATURE_PARK" && place.category !== "NATURE" && place.category !== "PARK") {
+        return false;
+      }
+      if (activeFilter === "EXPERIENCE" && place.category !== "EXPERIENCE") {
         return false;
       }
       // 미솥지음은 식사 장소이면서 부모가 편히 쉬기 좋은 공간으로 검증되어
@@ -60,15 +64,18 @@ export default function PlacesListPage() {
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-28 lg:pb-12">
         {/* Page Header */}
         <section className="pt-2 mb-4">
-          <div className="flex items-center gap-1.5 text-xs text-primary font-bold mb-1">
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-primary font-bold mb-1">
             <span className="material-symbols-outlined text-[16px]">verified</span>
-            <span>이천베베로드 100% 현장 전수 실측</span>
+            <span>현장 실측 {standalonePlaces.filter((place) => place.recommendationSource !== "AI_RECOMMENDED").length}곳</span>
+            <span className="text-on-surface-variant">·</span>
+            <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+            <span>AI 추천 {standalonePlaces.filter((place) => place.recommendationSource === "AI_RECOMMENDED").length}곳</span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-on-surface">
             안심 장소 탐색
           </h1>
           <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
-            유모차 완경사로, 기저귀 갈이대, 수유실까지 에디터가 직접 방문해 검증한 이천의 안심 명소 목록입니다.
+            현장 실측 장소와 AI가 공개 관광 정보를 바탕으로 찾은 추천 후보를 구분해 살펴보세요.
           </p>
         </section>
 
@@ -103,7 +110,7 @@ export default function PlacesListPage() {
                 }`}
                 data-testid={`filter-${cat.id.toLowerCase()}`}
               >
-                {cat.label}
+                {cat.id === "ALL" ? `${cat.label} (${standalonePlaces.length}곳)` : cat.label}
               </button>
             );
           })}
@@ -129,6 +136,7 @@ export default function PlacesListPage() {
 }
 
 function PlaceCardItem({ place }: { place: Place }) {
+  const isAiRecommended = place.recommendationSource === "AI_RECOMMENDED";
   const categoryBadge =
     place.category === "RESTAURANT"
       ? "이천 쌀밥 식사"
@@ -140,6 +148,8 @@ function PlaceCardItem({ place }: { place: Place }) {
       ? "실내 아열대 온실"
       : place.category === "NATURE"
       ? "자연 힐링"
+      : place.category === "EXPERIENCE"
+      ? "아이 체험 · 문화"
       : "추천 명소";
 
   return (
@@ -151,28 +161,39 @@ function PlaceCardItem({ place }: { place: Place }) {
       <Link href={`/places/${place.id}`} className="relative aspect-[16/9] w-full bg-surface-container overflow-hidden group block">
         <Image
           src={place.thumbnailImage || place.imageFiles[0]}
-          alt={place.name}
+          alt={isAiRecommended ? `${place.name} AI 추천 안내 지도` : place.name}
           fill
           sizes="(max-width: 480px) 100vw, 480px"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className={`transition-transform duration-300 group-hover:scale-105 ${isAiRecommended ? "object-cover opacity-35" : "object-cover"}`}
         />
+        {isAiRecommended && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-secondary/15 text-center text-white">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-secondary shadow-sm">
+              <span className="material-symbols-outlined text-[23px]">auto_awesome</span>
+            </span>
+            <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold">AI가 찾은 이천 추천 후보</span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex gap-1.5">
+        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
           <span className="px-2.5 py-0.5 rounded-full bg-primary text-white text-[11px] font-bold shadow-xs">
             {categoryBadge}
           </span>
           <span className="px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-on-surface text-[11px] font-medium">
             {place.indoorOutdoor === "INDOOR" ? "실내 냉방" : place.indoorOutdoor === "MIXED" ? "실내+실외" : "야외 숲/호수"}
           </span>
+          <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold shadow-xs ${isAiRecommended ? "bg-secondary text-white" : "bg-white/90 text-primary"}`}>
+            {isAiRecommended ? "AI 추천" : "현장 실측"}
+          </span>
         </div>
 
         {/* Total Photos Badge */}
         {place.imageFiles && place.imageFiles.length > 0 && (
           <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold flex items-center gap-1">
-            <span className="material-symbols-outlined text-[13px]">photo_library</span>
-            <span>사진 {place.imageFiles.length}장</span>
+            <span className="material-symbols-outlined text-[13px]">{isAiRecommended ? "auto_awesome" : "photo_library"}</span>
+            <span>{isAiRecommended ? "AI 안내" : `사진 ${place.imageFiles.length}장`}</span>
           </div>
         )}
 
@@ -275,7 +296,7 @@ function PlaceCardItem({ place }: { place: Place }) {
           href={`/places/${place.id}`}
           className="w-full h-11 mt-1 rounded-xl bg-primary/10 hover:bg-primary text-primary hover:text-white flex items-center justify-center gap-1.5 text-xs font-bold transition-all active:scale-[0.98]"
         >
-          <span>현장 실측 정보 및 사진 갤러리 보기</span>
+          <span>{isAiRecommended ? "추천 이유와 공식 안내 보기" : "현장 실측 정보 및 사진 갤러리 보기"}</span>
           <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
         </Link>
       </div>
