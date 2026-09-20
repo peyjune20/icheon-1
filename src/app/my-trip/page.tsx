@@ -20,9 +20,26 @@ import { TourStamp } from "@/features/tour-stamps/TourStamp";
 import { TourMascot } from "@/features/tour-stamps/TourMascot";
 import { SEED_PLACES } from "@/infrastructure/data/seed-places.data";
 
+const TOUR_PREP_STORAGE_KEY = "icheon-bebe-road:tour-prep-checks";
+
+const TOUR_PREP_ITEMS = [
+  { id: "stroller", icon: "stroller", title: "유모차와 얇은 겉옷", description: "산책 코스와 실내 온도차에 대비해요." },
+  { id: "snack", icon: "bakery_dining", title: "간식·물·물티슈", description: "아이의 기분 전환을 위한 든든한 세트예요." },
+  { id: "weather", icon: "wb_sunny", title: "오늘 날씨 확인", description: "비 소식에는 실내 명소를 먼저 담아보세요." },
+];
+
+const STAMP_COLLECTIONS = [
+  { category: "RESTAURANT" as const, title: "쌀밥 미식가", description: "든든한 이천 한 끼", tone: "bg-[#fff8e9] text-tertiary" },
+  { category: "NATURE" as const, title: "숲속 탐험가", description: "나무와 호수 산책", tone: "bg-[#f3fbf1] text-secondary" },
+  { category: "PARK" as const, title: "공원 새싹", description: "넓은 잔디와 놀이터", tone: "bg-[#fff7ed] text-primary" },
+  { category: "CAFE" as const, title: "카페 휴식가", description: "부모도 쉬어가는 시간", tone: "bg-[#fff5f8] text-primary" },
+  { category: "INDOOR" as const, title: "실내 탐험대", description: "날씨 걱정 없는 나들이", tone: "bg-[#f5f2ff] text-secondary" },
+];
+
 export default function MyTripPage() {
   const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>([]);
   const [tourStamps, setTourStamps] = useState<TourStampRecord[]>([]);
+  const [prepCheckIds, setPrepCheckIds] = useState<string[]>([]);
 
   useEffect(() => {
     const syncSavedPlaces = () => setSavedPlaceIds(getSavedPlaceIds());
@@ -42,6 +59,20 @@ export default function MyTripPage() {
       window.removeEventListener(TOUR_STAMPS_CHANGED_EVENT, syncTourStamps);
       window.removeEventListener("storage", syncAll);
     };
+  }, []);
+
+  useEffect(() => {
+    const savedChecks = window.localStorage.getItem(TOUR_PREP_STORAGE_KEY);
+    if (!savedChecks) return;
+
+    try {
+      const parsed = JSON.parse(savedChecks);
+      if (Array.isArray(parsed)) {
+        setPrepCheckIds(parsed.filter((item): item is string => typeof item === "string"));
+      }
+    } catch {
+      window.localStorage.removeItem(TOUR_PREP_STORAGE_KEY);
+    }
   }, []);
 
   const savedPlaces = useMemo(
@@ -65,12 +96,30 @@ export default function MyTripPage() {
     [tourStamps],
   );
 
+  const stampCollections = useMemo(
+    () => STAMP_COLLECTIONS.map((collection) => ({
+      ...collection,
+      count: stampedTours.filter(({ place }) => place.category === collection.category).length,
+    })),
+    [stampedTours],
+  );
+
   const handleRemove = (placeId: string) => {
     setSavedPlaceIds(removeSavedPlace(placeId));
   };
 
   const handleCreateStamp = (placeId: string) => {
     setTourStamps(createTourStamp(placeId));
+  };
+
+  const togglePrepCheck = (checkId: string) => {
+    setPrepCheckIds((current) => {
+      const next = current.includes(checkId)
+        ? current.filter((id) => id !== checkId)
+        : [...current, checkId];
+      window.localStorage.setItem(TOUR_PREP_STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
   };
 
   return (
@@ -122,6 +171,68 @@ export default function MyTripPage() {
               ))}
             </div>
           )}
+        </section>
+
+        <section className="mt-8 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="rounded-[28px] border border-outline-variant/30 bg-white p-5 sm:p-6">
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <p className="text-xs font-bold text-primary">BEBE COLLECTION</p>
+                <h2 className="mt-1 text-xl font-bold">테마별 베베 탐험대</h2>
+              </div>
+              <span className="text-xs font-medium text-on-surface-variant">테마를 모아 나만의 이천 지도를 완성해요</span>
+            </div>
+            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {stampCollections.map((collection) => (
+                <div key={collection.category} className={`flex items-center gap-3 rounded-2xl p-3 ${collection.tone}`}>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/80">
+                    <TourMascot compact category={collection.category} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-on-surface">{collection.title}</p>
+                    <p className="mt-0.5 truncate text-[11px] text-on-surface-variant">{collection.description}</p>
+                    <p className="mt-1 text-[11px] font-bold">{collection.count > 0 ? `${collection.count}곳 달성!` : "첫 스탬프 도전"}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[28px] border border-outline-variant/30 bg-surface-container-low p-5 sm:p-6">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-primary">READY, BEBE!</p>
+                <h2 className="mt-1 text-xl font-bold">출발 전 베베 체크</h2>
+              </div>
+              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-primary">{prepCheckIds.length} / {TOUR_PREP_ITEMS.length}</span>
+            </div>
+            <div className="mt-4 space-y-2">
+              {TOUR_PREP_ITEMS.map((item) => {
+                const checked = prepCheckIds.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-pressed={checked}
+                    onClick={() => togglePrepCheck(item.id)}
+                    className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${
+                      checked
+                        ? "border-primary/25 bg-primary-fixed"
+                        : "border-white bg-white/80 hover:border-primary/30"
+                    }`}
+                  >
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${checked ? "bg-primary text-white" : "bg-surface-container text-primary"}`}>
+                      <span className="material-symbols-outlined text-[19px]">{checked ? "check" : item.icon}</span>
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-xs font-bold">{item.title}</span>
+                      <span className="mt-0.5 block text-[11px] text-on-surface-variant">{item.description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </section>
 
         <section className="mt-10">
