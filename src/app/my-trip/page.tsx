@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AppHeader } from "@/components/shared/AppHeader";
 import { BottomNavBar } from "@/components/shared/BottomNavBar";
 import {
   getSavedPlaceIds,
@@ -22,12 +21,12 @@ import { TourMascot } from "@/features/tour-stamps/TourMascot";
 import { SEED_PLACES } from "@/infrastructure/data/seed-places.data";
 
 const STAMP_COLLECTIONS = [
-  { category: "RESTAURANT" as const, title: "쌀밥 미식가", description: "든든한 이천 한 끼", position: "left-[18%] top-[18%]" },
-  { category: "NATURE" as const, title: "숲속 탐험가", description: "나무와 호수 산책", position: "right-[18%] top-[15%]" },
-  { category: "EXPERIENCE" as const, title: "체험 놀이터", description: "공룡·도자·계절 체험", position: "left-[51%] top-[24%]" },
-  { category: "PARK" as const, title: "공원 새싹", description: "넓은 잔디와 놀이터", position: "left-[44%] top-[43%]" },
-  { category: "CAFE" as const, title: "카페 휴식가", description: "부모도 쉬어가는 시간", position: "left-[16%] bottom-[13%]" },
-  { category: "INDOOR" as const, title: "실내 탐험대", description: "날씨 걱정 없는 나들이", position: "right-[14%] bottom-[12%]" },
+  { category: "RESTAURANT" as const, title: "쌀밥 요리사", description: "든든한 이천 한 끼", icon: "restaurant", position: "left-[18%] top-[18%]", color: "#ffbd60" },
+  { category: "NATURE" as const, title: "숲 해설가", description: "나무와 호수 산책", icon: "forest", position: "right-[18%] top-[15%]", color: "#76b96f" },
+  { category: "EXPERIENCE" as const, title: "체험 놀이터 지기", description: "공룡·도자·계절 체험", icon: "toys", position: "left-[51%] top-[24%]", color: "#f1ad43" },
+  { category: "PARK" as const, title: "공원 지킴이", description: "넓은 잔디와 놀이터", icon: "park", position: "left-[44%] top-[43%]", color: "#72b985" },
+  { category: "CAFE" as const, title: "카페 바리스타", description: "부모도 쉬어가는 시간", icon: "local_cafe", position: "left-[16%] bottom-[13%]", color: "#ed7185" },
+  { category: "INDOOR" as const, title: "실내 큐레이터", description: "날씨 걱정 없는 나들이", icon: "museum", position: "right-[14%] bottom-[12%]", color: "#8f7bd5" },
 ];
 
 const getToday = () => new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
@@ -101,8 +100,6 @@ export default function MyTripPage() {
 
   return (
     <div className="min-h-screen bg-surface text-on-surface">
-      <AppHeader />
-
       <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-24 sm:px-6 lg:pb-16 lg:pt-32">
         <section className="grid gap-5 rounded-[28px] bg-secondary p-6 text-white shadow-[0_10px_30px_-12px_rgba(120,102,178,0.45)] sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div>
@@ -157,18 +154,18 @@ export default function MyTripPage() {
                 <p className="text-xs font-bold text-primary">BEBE COLLECTION</p>
                 <h2 className="mt-1 text-xl font-bold">이천 마을을 완성해요</h2>
               </div>
-              <span className="rounded-full bg-primary-fixed px-3 py-1.5 text-xs font-bold text-on-primary-fixed">깃발 {stampCollections.filter((collection) => collection.count > 0).length} / {stampCollections.length}</span>
+              <span className="rounded-full bg-primary-fixed px-3 py-1.5 text-xs font-bold text-on-primary-fixed">마을 스티커 {stampCollections.filter((collection) => collection.count > 0).length} / {stampCollections.length}</span>
             </div>
             <div className="relative mt-5 aspect-[16/10] overflow-hidden rounded-3xl border border-outline-variant/25 bg-surface-container-low shadow-inner">
-              <Image src="/assets/icheon-village-map.png" alt="이천베베로드 마을 지도" fill sizes="(max-width: 1024px) 100vw, 960px" className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#453564]/20 via-transparent to-transparent" />
+              <Image src="/assets/icheon-village-map.png" alt="이천베베로드 마을 지도" fill sizes="(max-width: 1024px) 100vw, 960px" className="object-cover grayscale opacity-45" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white/25 via-white/5 to-white/15" />
               <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-on-surface shadow-xs sm:left-5 sm:top-5">
-                다녀온 테마에 깃발이 꽂혀요
+                다녀온 테마마다 마을 스티커가 컬러로 채워져요
               </div>
               {stampCollections.map((collection) => (
                 <div key={collection.category} className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 text-center ${collection.position}`}>
-                  <div className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-white bg-white shadow-lg transition-all sm:h-14 sm:w-14 ${collection.count > 0 ? "scale-100" : "scale-90 grayscale opacity-65"}`}>
-                    <TourMascot compact category={collection.category} />
+                  <div className={`relative flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-white shadow-lg transition-all sm:h-16 sm:w-16 ${collection.count > 0 ? "scale-100" : "scale-90 grayscale opacity-55"}`} style={{ backgroundColor: collection.count > 0 ? collection.color : "#d8d3d0" }}>
+                    <span className="material-symbols-outlined text-[30px] text-white sm:text-[34px]">{collection.icon}</span>
                     <span className={`absolute -right-1 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white ${collection.count > 0 ? "bg-primary" : "bg-on-surface-variant"}`}>{collection.count}</span>
                   </div>
                   <span className={`mt-1 hidden whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-bold shadow-sm sm:block ${collection.count > 0 ? "bg-white text-primary" : "bg-white/85 text-on-surface-variant"}`}>{collection.title}</span>

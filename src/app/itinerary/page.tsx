@@ -9,7 +9,6 @@ import { generateItineraryUseCase } from "@/application/generate-itinerary.useca
 import { ModifyItineraryUseCase } from "@/application/modify-itinerary.usecase";
 import { SeedPlaceRepository } from "@/infrastructure/repositories/seed-place-repository";
 import { SeedTravelTimeAdapter } from "@/adapters/travel-time/seed-travel-time.adapter";
-import { AppHeader } from "@/components/shared/AppHeader";
 import { BottomNavBar } from "@/components/shared/BottomNavBar";
 import { FeasibilitySummary } from "@/features/itinerary/components/FeasibilitySummary";
 import { TimelineToggle } from "@/features/itinerary/components/TimelineToggle";
@@ -21,6 +20,7 @@ import { SecondaryActions } from "@/features/itinerary/components/SecondaryActio
 import { ReplacePlaceModal } from "@/features/itinerary/components/ReplacePlaceModal";
 import { ReorderModal } from "@/features/itinerary/components/ReorderModal";
 import { NavigationModal } from "@/features/itinerary/components/NavigationModal";
+import { RECOMMENDATION_CONFIG } from "@/domain/config/recommendation.config";
 
 function ItineraryContent() {
   const searchParams = useSearchParams();
@@ -61,6 +61,13 @@ function ItineraryContent() {
     const napStart = searchParams.get("napStart") ?? "13:30";
     const napEnd = searchParams.get("napEnd") ?? "15:00";
     const parentRestPriority = (searchParams.get("parentRestPriority") as "LOW" | "MEDIUM" | "HIGH") || "HIGH";
+    const requestedWeather = searchParams.get("weather") as "AUTO" | "NORMAL" | "HOT" | "RAIN" | "COLD" | null;
+    const weatherCondition = requestedWeather && requestedWeather !== "AUTO"
+      ? requestedWeather
+      : styles.includes("INDOOR")
+      ? "HOT"
+      : "NORMAL";
+    const weatherLabel = weatherCondition === "HOT" ? "더운 날" : weatherCondition === "RAIN" ? "비 오는 날" : weatherCondition === "COLD" ? "추운 날" : "맑은 날";
 
     const [depH, depM] = departureTime.split(":").map(Number);
     const arrH = (depH + 2) % 24;
@@ -69,6 +76,12 @@ function ItineraryContent() {
     const [retH, retM] = returnTime.split(":").map(Number);
     const totalWindowMin = (retH * 60 + (retM || 0)) - (arrH * 60 + (depM || 0));
     const tripWindowMin = Math.max(120, totalWindowMin);
+    const stopRange = childAge <= 24
+      ? RECOMMENDATION_CONFIG.stopLimits.age0to2
+      : childAge <= 60
+      ? RECOMMENDATION_CONFIG.stopLimits.age3to5
+      : RECOMMENDATION_CONFIG.stopLimits.age6plus;
+    const maxBlocks = Math.max(stopRange.min, stopRange.max - (weatherCondition === "HOT" || weatherCondition === "RAIN" ? 1 : 0));
 
     const defaultContext: RecommendationContext = {
       trip: {
@@ -88,11 +101,11 @@ function ItineraryContent() {
         napTimeEnd: napEnd,
       },
       weather: {
-        temperatureC: styles.includes("INDOOR") ? 31 : 23,
-        condition: styles.includes("INDOOR") ? "HOT" : "NORMAL",
+        temperatureC: weatherCondition === "HOT" ? 31 : weatherCondition === "COLD" ? 4 : weatherCondition === "RAIN" ? 18 : 23,
+        condition: weatherCondition,
       },
       tripWindowMin,
-      maxBlocks: 4,
+      maxBlocks,
     };
 
     setContext(defaultContext);
@@ -111,6 +124,7 @@ function ItineraryContent() {
       napTimeStart: napStart,
       napTimeEnd: napEnd,
       parentRestPriority,
+      weatherCondition: requestedWeather || "AUTO",
     })
       .then((data) => {
         setItinerary(data);
@@ -169,6 +183,13 @@ function ItineraryContent() {
   const placeBlocks = itinerary.blocks.filter((b) => b.type === "PLACE");
   const departureBlock = itinerary.blocks.find((b) => b.type === "DEPARTURE");
   const currentPlaces = modifyUseCase.getPlacesFromItinerary(itinerary);
+  const weatherLabel = context.weather.condition === "HOT"
+    ? "더운 날"
+    : context.weather.condition === "RAIN"
+    ? "비 오는 날"
+    : context.weather.condition === "COLD"
+    ? "추운 날"
+    : "맑은 날";
 
   const handleStartItinerary = () => {
     setIsNavModalOpen(true);
@@ -219,7 +240,6 @@ function ItineraryContent() {
 
   return (
     <>
-      <AppHeader />
       <main className="flex-1 flex flex-col relative w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-12 bg-surface">
         <div className="flex flex-col w-full max-w-3xl mx-auto pb-8">
           {/* Feasibility & Metrics (STORY-207) */}
@@ -229,6 +249,15 @@ function ItineraryContent() {
             totalTravelMin={itinerary.totalTravelMin}
             slackMin={itinerary.slackMin}
             blockCount={placeBlocks.length}
+            displayAge={context.trip.displayAge}
+            weatherLabel={weatherLabel}
+            selectedConditions={[
+              `${context.trip.displayAge} 아이`,
+              weatherLabel,
+              context.trip.strollerRequired ? "유모차 동행" : "유모차 없이",
+              context.trip.includeLunch ? "점심 포함" : "점심 제외",
+              ...context.trip.styles.slice(0, 2).map((style) => ({ NATURE: "자연 산책", PARENT_REST: "부모 휴식", LOCAL_FOOD: "쌀밥 식사", EXPERIENCE: "체험", INDOOR: "실내", PHOTO: "사진" }[style] || style)),
+            ]}
           />
 
           {/* Timeline Section (STORY-208, 209, 212) */}
@@ -283,7 +312,12 @@ function ItineraryContent() {
           </section>
 
           {/* Recommendation Rationale (STORY-210) */}
-          <RationaleCard reasons={itinerary.reasons} />
+          <RationaleCard
+            reasons={itinerary.reasons}
+            displayAge={context.trip.displayAge}
+            weatherLabel={weatherLabel}
+            napTimeLabel={context.trip.napTimeStart && context.trip.napTimeEnd ? `${context.trip.napTimeStart}~${context.trip.napTimeEnd} 낮잠 시간` : "낮잠 제약이 없는 시간"}
+          />
 
           {/* Excluded Places Section (STORY-211) */}
           <ExcludedPlacesCard excludedPlaces={itinerary.excludedPlaces} />

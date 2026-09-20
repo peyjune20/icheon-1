@@ -5,6 +5,7 @@ import { SeedMatrixTravelTimeAdapter } from "@/adapters/travel-time/seed-travel-
 import { RuleBasedRecommendationEngine } from "@/domain/recommendation/recommendation-engine";
 import { timeToMinutes } from "@/domain/scheduling/timeline-scheduler";
 import { validateAndNormalizeTripInput } from "@/domain/validation/trip-input.schema";
+import { RECOMMENDATION_CONFIG } from "@/domain/config/recommendation.config";
 
 export async function generateItineraryUseCase(input: Partial<TripInput>): Promise<Itinerary> {
   const repo = new SeedPlaceRepository();
@@ -25,11 +26,19 @@ export async function generateItineraryUseCase(input: Partial<TripInput>): Promi
   const endMin = timeToMinutes(fullTripInput.desiredDepartureFromIcheon);
   const tripWindowMin = Math.max(120, endMin - startMin);
 
-  // Weather condition: if user prefers INDOOR style, simulate HOT (31C) for AC recommendation;
-  // If NATURE / outdoor styles, use pleasant NORMAL (23C) autumn weather.
-  const isIndoorPriority = fullTripInput.styles.includes("INDOOR");
-  const weatherCondition = isIndoorPriority ? "HOT" : "NORMAL";
-  const temperatureC = isIndoorPriority ? 31 : 23;
+  const requestedWeather = fullTripInput.weatherCondition ?? "AUTO";
+  const weatherCondition = requestedWeather === "AUTO"
+    ? (fullTripInput.styles.includes("INDOOR") ? "HOT" : "NORMAL")
+    : requestedWeather;
+  const temperatureC = weatherCondition === "HOT" ? 31 : weatherCondition === "COLD" ? 4 : weatherCondition === "RAIN" ? 18 : 23;
+
+  const stopRange = fullTripInput.childAgeMonths <= 24
+    ? RECOMMENDATION_CONFIG.stopLimits.age0to2
+    : fullTripInput.childAgeMonths <= 60
+    ? RECOMMENDATION_CONFIG.stopLimits.age3to5
+    : RECOMMENDATION_CONFIG.stopLimits.age6plus;
+  const conditionReduction = weatherCondition === "HOT" || weatherCondition === "RAIN" ? 1 : 0;
+  const maxBlocks = Math.max(stopRange.min, stopRange.max - conditionReduction);
 
   const context: RecommendationContext = {
     trip: fullTripInput,
@@ -38,7 +47,7 @@ export async function generateItineraryUseCase(input: Partial<TripInput>): Promi
       condition: weatherCondition,
       temperatureC,
     },
-    maxBlocks: 4,
+    maxBlocks,
   };
 
   return await engine.generate(context);

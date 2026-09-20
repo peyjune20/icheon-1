@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { AppHeader } from "@/components/shared/AppHeader";
 import { BottomNavBar } from "@/components/shared/BottomNavBar";
 import { SEED_PLACES } from "@/infrastructure/data/seed-places.data";
 import { Place, PlaceCategory } from "@/domain/models/place";
@@ -59,8 +58,6 @@ export default function PlacesListPage() {
 
   return (
     <div className="min-h-screen bg-surface flex flex-col text-on-surface">
-      <AppHeader />
-
       <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-24 pb-28 lg:pb-12">
         {/* Page Header */}
         <section className="pt-2 mb-4">
@@ -161,30 +158,22 @@ function PlaceCardItem({ place }: { place: Place }) {
       <Link href={`/places/${place.id}`} className="relative aspect-[16/9] w-full bg-surface-container overflow-hidden group block">
         <Image
           src={place.thumbnailImage || place.imageFiles[0]}
-          alt={isAiRecommended ? `${place.name} AI 추천 안내 지도` : place.name}
+          alt={isAiRecommended ? `${place.name} AI 추천 분위기 이미지` : place.name}
           fill
           sizes="(max-width: 480px) 100vw, 480px"
-          className={`transition-transform duration-300 group-hover:scale-105 ${isAiRecommended ? "object-cover opacity-35" : "object-cover"}`}
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        {isAiRecommended && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-secondary/15 text-center text-white">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 text-secondary shadow-sm">
-              <span className="material-symbols-outlined text-[23px]">auto_awesome</span>
-            </span>
-            <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold">AI가 찾은 이천 추천 후보</span>
-          </div>
-        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
 
         {/* Top Badges */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-          <span className="px-2.5 py-0.5 rounded-full bg-primary text-white text-[11px] font-bold shadow-xs">
+            <span className="inline-flex items-center justify-center rounded-full bg-primary px-2.5 py-0.5 text-center text-[11px] font-bold text-white shadow-xs">
             {categoryBadge}
           </span>
-          <span className="px-2 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-on-surface text-[11px] font-medium">
+          <span className="inline-flex items-center justify-center rounded-full bg-white/90 px-2 py-0.5 text-center text-[11px] font-medium text-on-surface backdrop-blur-md">
             {place.indoorOutdoor === "INDOOR" ? "실내 냉방" : place.indoorOutdoor === "MIXED" ? "실내+실외" : "야외 숲/호수"}
           </span>
-          <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold shadow-xs ${isAiRecommended ? "bg-secondary text-white" : "bg-white/90 text-primary"}`}>
+          <span className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-center text-[11px] font-bold shadow-xs ${isAiRecommended ? "bg-secondary text-white" : "bg-white/90 text-primary"}`}>
             {isAiRecommended ? "AI 추천" : "현장 실측"}
           </span>
         </div>
@@ -193,7 +182,7 @@ function PlaceCardItem({ place }: { place: Place }) {
         {place.imageFiles && place.imageFiles.length > 0 && (
           <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold flex items-center gap-1">
             <span className="material-symbols-outlined text-[13px]">{isAiRecommended ? "auto_awesome" : "photo_library"}</span>
-            <span>{isAiRecommended ? "AI 안내" : `사진 ${place.imageFiles.length}장`}</span>
+            <span>{isAiRecommended ? `AI 이미지 ${place.imageFiles.length}장` : `사진 ${place.imageFiles.length}장`}</span>
           </div>
         )}
 

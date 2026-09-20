@@ -27,7 +27,7 @@ export function evaluateDensity(
   // 30분 이상의 여유가 확보되면 안심 일정 (RELAXED)
   if (slackMin >= 30) {
     status = "RELAXED";
-    statusMessage = "무리 없는 일정이에요 (2세 아이 기준 안심)";
+    statusMessage = "선택한 아이 컨디션 기준으로 여유 있는 일정이에요.";
   } else if (slackMin < 15) {
     status = "TIGHT";
     statusMessage = "조금 빠듯한 일정이에요.";

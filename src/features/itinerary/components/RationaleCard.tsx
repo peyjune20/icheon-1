@@ -1,8 +1,11 @@
 interface RationaleCardProps {
   reasons: string[];
+  displayAge: string;
+  weatherLabel: string;
+  napTimeLabel: string;
 }
 
-export const RationaleCard = ({ reasons }: RationaleCardProps) => {
+export const RationaleCard = ({ reasons, displayAge, weatherLabel, napTimeLabel }: RationaleCardProps) => {
   return (
     <section className="rounded-xl bg-surface-container-lowest shadow-sm p-space-md mb-space-lg">
       <div className="flex items-center gap-2 mb-3">
@@ -26,9 +29,8 @@ export const RationaleCard = ({ reasons }: RationaleCardProps) => {
 
       {/* Rationale Text */}
       <p className="text-body-sm text-on-surface-variant leading-relaxed bg-surface-container-low p-3 rounded-lg">
-        오늘 최고 기온이 31℃로 예보되어 오후 햇볕이 가장 강한 15시대에 실내 온실 및 수족관 코스를
-        배치했습니다. 2세 아이의 수면 리듬을 고려하여 14:50 공원 출발 직후 카시트에서 숙면을 취할
-        수 있도록 30분 거리 구간으로 최적화했습니다.
+        {weatherLabel} 컨디션과 {displayAge} 아이의 이동 리듬을 함께 고려했습니다. {napTimeLabel}에는
+        이동 거리나 조용한 휴식 공간을 우선 배치하고, 선택한 취향에 맞는 장소를 앞쪽으로 추천했어요.
       </p>
     </section>
   );

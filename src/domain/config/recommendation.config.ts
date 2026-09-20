@@ -27,7 +27,7 @@ export const RECOMMENDATION_CONFIG = {
   },
   stopLimits: {
     age0to2: { min: 3, max: 4 },
-    age3to5: { min: 4, max: 4 },
+    age3to5: { min: 3, max: 4 },
     age6plus: { min: 4, max: 5 },
   },
   slackTime: {

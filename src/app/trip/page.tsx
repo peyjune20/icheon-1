@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 interface AgeOption {
   label: string;
@@ -13,7 +12,7 @@ interface AgeOption {
 const AGE_OPTIONS: AgeOption[] = [
   { label: "12개월 미만", months: 9, displayAge: "1세 미만" },
   { label: "1세", months: 12, displayAge: "1세" },
-  { label: "● 2세 (13~24)", months: 17, displayAge: "2세" },
+  { label: "2세 (13~24개월)", months: 17, displayAge: "2세" },
   { label: "3~4세", months: 36, displayAge: "3~4세" },
   { label: "5세 이상", months: 60, displayAge: "5세 이상" },
 ];
@@ -28,11 +27,21 @@ const STYLE_OPTIONS = [
 ];
 
 const TOUR_PREP_STORAGE_KEY = "icheon-bebe-road:tour-prep-checks";
-const TOUR_PREP_ITEMS = [
-  { id: "stroller", icon: "stroller", title: "유모차와 얇은 겉옷", description: "산책 코스와 실내 온도차에 대비해요." },
-  { id: "snack", icon: "bakery_dining", title: "간식·물·물티슈", description: "아이의 기분 전환을 위한 든든한 세트예요." },
+const getTourPrepItems = (ageMonths: number, strollerRequired: boolean) => [
+  ageMonths <= 24
+    ? { id: "outfit", icon: "checkroom", title: "여벌 옷·기저귀", description: "영유아 컨디션 변화에 대비해요." }
+    : { id: "outfit", icon: "hiking", title: "편한 신발·여벌 옷", description: "활동량이 많은 아이를 위한 준비예요." },
+  strollerRequired
+    ? { id: "stroller", icon: "stroller", title: "유모차와 얇은 겉옷", description: "산책 코스와 실내 온도차에 대비해요." }
+    : { id: "snack", icon: "bakery_dining", title: "간식·물·물티슈", description: "아이의 기분 전환을 위한 든든한 세트예요." },
   { id: "weather", icon: "wb_sunny", title: "오늘 날씨 확인", description: "비 소식에는 실내 명소를 먼저 담아보세요." },
 ];
+
+const AGE_GUIDES = (ageMonths: number) => {
+  if (ageMonths <= 24) return "낮잠과 유모차 이동, 영유아 편의시설을 넉넉히 반영해요.";
+  if (ageMonths <= 48) return "스스로 걷는 시간과 짧은 휴식을 균형 있게 배치해요.";
+  return "체험 활동과 충분한 휴식, 화장실 동선을 함께 고려해요.";
+};
 
 export default function TripInputPage() {
   const router = useRouter();
@@ -47,7 +56,14 @@ export default function TripInputPage() {
   const [napEnd, setNapEnd] = useState("15:00");
   const [includeLunch, setIncludeLunch] = useState(true);
   const [parentRestPriority, setParentRestPriority] = useState<"LOW" | "MEDIUM" | "HIGH">("HIGH");
+  const [weatherCondition, setWeatherCondition] = useState<"AUTO" | "NORMAL" | "HOT" | "RAIN" | "COLD">("AUTO");
   const [prepCheckIds, setPrepCheckIds] = useState<string[]>([]);
+  const [prepPrompt, setPrepPrompt] = useState<"CONFIRM" | "REMINDER" | null>(null);
+  const prepItems = getTourPrepItems(selectedAge.months, strollerRequired);
+  const estimatedStopCount = Math.max(
+    3,
+    (selectedAge.months <= 24 ? 3 : selectedAge.months <= 60 ? 4 : 5) - (weatherCondition === "HOT" || weatherCondition === "RAIN" ? 1 : 0),
+  );
 
   useEffect(() => {
     const savedChecks = window.localStorage.getItem(TOUR_PREP_STORAGE_KEY);
@@ -93,9 +109,7 @@ export default function TripInputPage() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isFormValid) return;
+  const buildItineraryUrl = () => {
 
     const params = new URLSearchParams({
       age: String(selectedAge.months),
@@ -105,30 +119,25 @@ export default function TripInputPage() {
       napStart,
       napEnd,
       parentRestPriority,
+      weather: weatherCondition,
     });
 
-    router.push(`/itinerary?${params.toString()}`);
+    return `/itinerary?${params.toString()}`;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid) return;
+    if (prepCheckIds.filter((id) => prepItems.some((item) => item.id === id)).length < prepItems.length) {
+      setPrepPrompt("CONFIRM");
+      return;
+    }
+    router.push(buildItineraryUrl());
   };
 
   return (
     <div className="min-h-screen bg-surface flex flex-col text-on-surface">
-      {/* Top Header & Progress */}
-      <header className="sticky top-0 inset-x-0 z-40 bg-surface/90 backdrop-blur-md border-b border-surface-container-high pt-safe">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-3 pb-2">
-          <div className="flex items-center justify-between text-on-surface-variant mb-2">
-            <span className="text-xs text-primary font-bold flex items-center gap-1">
-              <span className="material-symbols-outlined text-[16px]">eco</span>
-              1/2 기본 조건 설정
-            </span>
-            <span className="text-xs text-secondary">약 1분 소요</span>
-          </div>
-          <div className="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
-            <div className="h-full bg-primary rounded-full w-1/2 transition-all duration-300" />
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 pt-4 pb-32">
+      <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-32">
         {/* Title */}
         <div className="mb-4">
           <h1 className="text-xl font-bold text-on-surface tracking-tight">
@@ -175,7 +184,7 @@ export default function TripInputPage() {
               <div className="mt-2 flex items-start gap-1.5 p-2 bg-surface-container-low rounded-lg">
                 <span className="material-symbols-outlined text-primary text-[16px] shrink-0 mt-0.5">info</span>
                 <p className="text-xs text-on-surface-variant">
-                  {selectedAge.displayAge} 아이 기준으로 넉넉한 기저귀 교환 및 보행 버퍼를 자동 계산해요.
+                  {AGE_GUIDES(selectedAge.months)}
                 </p>
               </div>
             </div>
@@ -265,7 +274,7 @@ export default function TripInputPage() {
                 </span>
                 <div>
                   <h2 className="text-sm font-bold text-on-surface">조금 더 맞춤 설정하기</h2>
-                  <span className="text-[11px] text-secondary">낮잠 시간 &amp; 부모 휴식 비중</span>
+                  <span className="text-[11px] text-secondary">날씨 · 낮잠 시간 · 부모 휴식 비중</span>
                 </div>
               </div>
               <span className="material-symbols-outlined text-secondary transition-transform duration-200 group-open:rotate-180">
@@ -273,6 +282,37 @@ export default function TripInputPage() {
               </span>
             </summary>
             <div className="px-4 pb-4 flex flex-col gap-3 pt-1 border-t border-outline-variant/10">
+              <div className="p-3 bg-surface-container-low rounded-lg">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <span className="text-xs font-semibold text-on-surface flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px] text-primary">partly_cloudy_day</span>
+                      여행 날씨 컨디션
+                    </span>
+                    <p className="mt-1 text-[11px] text-secondary">날씨에 맞지 않는 야외 장소는 자동으로 뒤로 미뤄요.</p>
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {[
+                    { id: "AUTO", label: "자동 판단" },
+                    { id: "NORMAL", label: "맑음" },
+                    { id: "HOT", label: "더움" },
+                    { id: "RAIN", label: "비" },
+                    { id: "COLD", label: "추움" },
+                  ].map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => setWeatherCondition(option.id as "AUTO" | "NORMAL" | "HOT" | "RAIN" | "COLD")}
+                      className={`rounded-full px-3 py-1.5 text-[11px] font-bold transition-colors ${weatherCondition === option.id ? "bg-primary text-white" : "bg-white text-on-surface-variant hover:bg-surface-container"}`}
+                      data-testid={`weather-${option.id.toLowerCase()}`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Nap Schedule */}
               <div className="p-3 bg-surface-container-low rounded-lg flex flex-col gap-2.5">
                 <div className="flex items-center justify-between">
@@ -449,10 +489,10 @@ export default function TripInputPage() {
                 <h2 className="mt-1 text-base font-bold text-on-surface">코스 만들기 전 준비 체크</h2>
                 <p className="mt-1 text-xs leading-5 text-on-surface-variant">출발 전 챙길 것을 확인하고, 안심 코스를 시작해요.</p>
               </div>
-              <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-xs font-bold text-primary">{prepCheckIds.length} / {TOUR_PREP_ITEMS.length}</span>
+              <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-xs font-bold text-primary">{prepCheckIds.filter((id) => prepItems.some((item) => item.id === id)).length} / {prepItems.length}</span>
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {TOUR_PREP_ITEMS.map((item) => {
+              {prepItems.map((item) => {
                 const checked = prepCheckIds.includes(item.id);
                 return (
                   <button
@@ -498,7 +538,7 @@ export default function TripInputPage() {
               }`}
               data-testid="btn-submit-trip"
             >
-              <span>우리 가족 코스 추천받기 (4개 코스 예상)</span>
+              <span>우리 가족 코스 추천받기 ({estimatedStopCount}곳 예상)</span>
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
             <p className="text-[11px] text-center text-secondary mt-1.5 flex items-center justify-center gap-1">
@@ -509,6 +549,36 @@ export default function TripInputPage() {
           </div>
         </form>
       </main>
+
+      {prepPrompt && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-on-surface/45 px-4" role="dialog" aria-modal="true" aria-labelledby="prep-dialog-title">
+          <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-fixed text-primary">
+              <span className="material-symbols-outlined">backpack</span>
+            </span>
+            <h2 id="prep-dialog-title" className="mt-4 text-lg font-bold">
+              {prepPrompt === "CONFIRM" ? "다 준비되었나요?" : "준비가 덜 되었군요"}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+              {prepPrompt === "CONFIRM"
+                ? `준비 체크 ${prepCheckIds.filter((id) => prepItems.some((item) => item.id === id)).length}/${prepItems.length}개가 완료되었어요. 필요한 물건을 한 번 더 확인해 주세요.`
+                : "체크를 마친 뒤 추천을 시작하면 더 편안해요. 그래도 지금 코스를 볼 수 있어요."}
+            </p>
+            {prepPrompt === "CONFIRM" ? (
+              <div className="mt-5 grid gap-2">
+                <button type="button" onClick={() => router.push(buildItineraryUrl())} className="h-11 rounded-xl bg-primary text-sm font-bold text-white">네, 코스 추천 보기</button>
+                <button type="button" onClick={() => setPrepPrompt("REMINDER")} className="h-11 rounded-xl bg-surface-container-low text-sm font-bold text-on-surface">아니오, 아직 준비 중이에요</button>
+                <button type="button" onClick={() => router.push(buildItineraryUrl())} className="h-10 text-sm font-bold text-primary">무시해도 돼요 · 코스 보기</button>
+              </div>
+            ) : (
+              <div className="mt-5 grid grid-cols-2 gap-2">
+                <button type="button" onClick={() => setPrepPrompt(null)} className="h-11 rounded-xl bg-surface-container-low text-sm font-bold text-on-surface">체크하러 갈게요</button>
+                <button type="button" onClick={() => router.push(buildItineraryUrl())} className="h-11 rounded-xl bg-primary text-sm font-bold text-white">무시하고 보기</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

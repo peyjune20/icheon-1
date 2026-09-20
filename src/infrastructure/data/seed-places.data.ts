@@ -1,6 +1,10 @@
 import { Place } from "@/domain/models/place";
 
-const AI_PLACE_PREVIEW = "/assets/icheon-village-map.png";
+const AI_PLACE_VISUALS = {
+  NATURE: ["/assets/ai-nature-forest.png", "/assets/ai-nature-lake.png", "/assets/ai-nature-garden.png"],
+  CULTURE: ["/assets/ai-culture-pottery.png", "/assets/ai-culture-gallery.png", "/assets/ai-culture-play.png"],
+  FAMILY: ["/assets/ai-family-cafe.png", "/assets/ai-family-spa.png", "/assets/ai-family-market.png"],
+};
 
 type AiPlaceInput = Pick<
   Place,
@@ -25,7 +29,15 @@ const aiEvidence = (note: string) => ({
   note,
 });
 
-const createAiPlace = (place: AiPlaceInput): Place => ({
+const getAiVisuals = (place: AiPlaceInput) => {
+  if (place.category === "NATURE" || place.category === "PARK") return AI_PLACE_VISUALS.NATURE;
+  if (place.category === "CAFE" || place.category === "RESTAURANT") return AI_PLACE_VISUALS.FAMILY;
+  return AI_PLACE_VISUALS.CULTURE;
+};
+
+const createAiPlace = (place: AiPlaceInput): Place => {
+  const visuals = getAiVisuals(place);
+  return {
   ...place,
   openingHours: { open: "방문 전 확인", close: "공식 채널 확인", closedDays: [] },
   parking: aiEvidence("AI 추천 장소로, 주차 정보는 공식 안내에서 확인해 주세요."),
@@ -38,13 +50,18 @@ const createAiPlace = (place: AiPlaceInput): Place => ({
   strollerRental: aiEvidence("유모차 대여 여부는 공식 안내에서 확인해 주세요."),
   ageMinMonths: 0,
   ageMaxMonths: 120,
-  imageFiles: [AI_PLACE_PREVIEW],
-  thumbnailImage: AI_PLACE_PREVIEW,
-  imageDescriptions: ["AI가 공개 관광 정보를 바탕으로 찾은 추천 후보예요. 사진과 세부 운영 정보는 공식 안내를 확인해 주세요."],
+  imageFiles: visuals,
+  thumbnailImage: visuals[Number(place.id) % visuals.length],
+  imageDescriptions: [
+    "AI가 장소 성격을 바탕으로 만든 분위기 이미지예요. 실제 현장 모습은 공식 안내를 확인해 주세요.",
+    "가족이 공간의 분위기를 미리 가늠할 수 있도록 만든 AI 안내 이미지예요.",
+    "방문 전에는 운영 정보와 실제 사진을 공식 채널에서 다시 확인해 주세요.",
+  ],
   verificationStatus: "WEB_VERIFIED",
   verifiedDate: "2026-09-20",
   recommendationSource: "AI_RECOMMENDED",
-});
+  };
+};
 
 const AI_RECOMMENDED_PLACES: Place[] = [
   createAiPlace({
@@ -111,6 +128,56 @@ const AI_RECOMMENDED_PLACES: Place[] = [
     id: "20", name: "이천치유의숲", category: "NATURE", address: "경기 이천시 관고동 설봉산 일원", roadAddress: "경기 이천시 관고동 설봉산 일원", lat: 37.2854, lng: 127.48,
     recommendedDurationMin: 70, indoorOutdoor: "OUTDOOR", weatherTags: ["HOT_AVOID", "RAIN_AVOID"],
     editorialReview: "설봉산 자락에서 계절에 따라 숲길과 휴식을 즐길 수 있는 자연 산책 후보예요.", recommendationReason: "유모차 동선과 실제 프로그램을 확인한 뒤 선선한 날 자연 코스로 담아보세요.", sourceUrl: "https://www.icheon.go.kr/tour/index.do?searchField=ALL",
+  }),
+  createAiPlace({
+    id: "21", name: "산수유마을", category: "NATURE", address: "경기 이천시 백사면 원적로 일원", roadAddress: "경기 이천시 백사면 원적로 일원", lat: 37.284, lng: 127.542,
+    recommendedDurationMin: 70, indoorOutdoor: "OUTDOOR", weatherTags: ["HOT_AVOID", "RAIN_AVOID"],
+    editorialReview: "원적산 자락의 계절 풍경과 마을길을 만날 수 있는 이천9경 후보예요.", recommendationReason: "꽃이 피는 계절에는 짧은 마을 산책과 가족 사진을 계획할 때 살펴볼 만해요.", sourceUrl: "https://www.icheon.go.kr/tour/cultureTour/manage/view.do?idx=199&mid=0101060000",
+  }),
+  createAiPlace({
+    id: "22", name: "사기막골도예촌", category: "EXPERIENCE", address: "경기 이천시 사음동 도예촌 일원", roadAddress: "경기 이천시 사음동 도예촌 일원", lat: 37.291, lng: 127.43,
+    recommendedDurationMin: 80, indoorOutdoor: "MIXED", weatherTags: ["HOT_OK", "RAIN_AVOID"],
+    editorialReview: "작업실과 전시, 도자 문화를 만날 수 있는 이천 도예 여행 후보예요.", recommendationReason: "도자 마을의 분위기를 가볍게 둘러보고 싶은 가족에게 추천해요.", sourceUrl: "https://www.icheon.go.kr/tour/contents.do?mid=0102010000",
+  }),
+  createAiPlace({
+    id: "23", name: "반룡송", category: "NATURE", address: "경기 이천시 백사면 도립리", roadAddress: "경기 이천시 백사면 도립리", lat: 37.282, lng: 127.526,
+    recommendedDurationMin: 35, indoorOutdoor: "OUTDOOR", weatherTags: ["HOT_AVOID", "RAIN_AVOID"],
+    editorialReview: "이천9경으로 소개되는 오래된 소나무와 주변 풍경을 만나는 짧은 자연 방문지예요.", recommendationReason: "긴 일정 대신 짧은 자연 정차와 사진 시간을 원할 때 후보로 남겨둘 수 있어요.", sourceUrl: "https://www.icheon.go.kr/tour/main.do",
+  }),
+  createAiPlace({
+    id: "24", name: "애련정", category: "PARK", address: "경기 이천시 안흥동 안흥지 일원", roadAddress: "경기 이천시 안흥동 안흥지 일원", lat: 37.276, lng: 127.445,
+    recommendedDurationMin: 40, indoorOutdoor: "OUTDOOR", weatherTags: ["HOT_AVOID", "RAIN_AVOID"],
+    editorialReview: "안흥지 주변의 단청 정자와 산책 풍경을 만날 수 있는 도심 휴식 후보예요.", recommendationReason: "설봉 권역에서 짧은 호수 산책을 더하고 싶을 때 살펴볼 만해요.", sourceUrl: "https://www.icheon.go.kr/tour/main.do",
+  }),
+  createAiPlace({
+    id: "25", name: "도드람산 삼봉", category: "NATURE", address: "경기 이천시 마장면 목리 일원", roadAddress: "경기 이천시 마장면 목리 일원", lat: 37.25, lng: 127.38,
+    recommendedDurationMin: 60, indoorOutdoor: "OUTDOOR", weatherTags: ["HOT_AVOID", "RAIN_AVOID"],
+    editorialReview: "이천9경으로 소개되는 바위 능선과 산 풍경을 만나는 자연 후보예요.", recommendationReason: "등산 코스 난이도와 아이 동반 가능 구간은 공식 안내를 확인한 뒤 계획해 주세요.", sourceUrl: "https://www.icheon.go.kr/tour/main.do",
+  }),
+  createAiPlace({
+    id: "26", name: "청강만화역사박물관", category: "INDOOR", address: "경기 이천시 마장면 청강가창로 389-94", roadAddress: "경기 이천시 마장면 청강가창로 389-94", lat: 37.27, lng: 127.37,
+    recommendedDurationMin: 60, indoorOutdoor: "INDOOR", weatherTags: ["HOT_OK", "RAIN_OK"],
+    editorialReview: "만화와 일러스트 문화 콘텐츠를 만날 수 있는 실내 관람 후보예요.", recommendationReason: "비나 더위에 실내 문화 시간을 더하고 싶을 때 공식 운영 정보를 확인해 보세요.", sourceUrl: "https://www.icheon.go.kr/tour/",
+  }),
+  createAiPlace({
+    id: "27", name: "서희역사관", category: "INDOOR", address: "경기 이천시 부발읍 무촌로 일원", roadAddress: "경기 이천시 부발읍 무촌로 일원", lat: 37.28, lng: 127.5,
+    recommendedDurationMin: 50, indoorOutdoor: "INDOOR", weatherTags: ["HOT_OK", "RAIN_OK"],
+    editorialReview: "이천의 역사 인물을 중심으로 지역 이야기를 살펴볼 수 있는 실내 문화 후보예요.", recommendationReason: "차분한 실내 관람을 넣고 싶은 날 공식 운영 일정을 확인해 보세요.", sourceUrl: "https://www.icheon.go.kr/tour/",
+  }),
+  createAiPlace({
+    id: "28", name: "이천무형문화재전수교육관", category: "EXPERIENCE", address: "경기 이천시 관고동 설봉공원 일원", roadAddress: "경기 이천시 관고동 설봉공원 일원", lat: 37.287, lng: 127.452,
+    recommendedDurationMin: 55, indoorOutdoor: "INDOOR", weatherTags: ["HOT_OK", "RAIN_OK"],
+    editorialReview: "이천의 전통 공예와 무형문화재 이야기를 만날 수 있는 문화 체험 후보예요.", recommendationReason: "설봉공원 인근에서 이천다운 문화 요소를 더하고 싶을 때 추천해요.", sourceUrl: "https://www.icheon.go.kr/tour/",
+  }),
+  createAiPlace({
+    id: "29", name: "덕평자연휴게소", category: "CAFE", address: "경기 이천시 마장면 덕이로154번길 287-76", roadAddress: "경기 이천시 마장면 덕이로154번길 287-76", lat: 37.251, lng: 127.367,
+    recommendedDurationMin: 45, indoorOutdoor: "MIXED", weatherTags: ["HOT_OK", "RAIN_OK"],
+    editorialReview: "휴식과 식사, 야외 정원을 함께 살펴볼 수 있는 이동 중 쉼표 후보예요.", recommendationReason: "마장 권역 이동 중 짧은 휴식이 필요할 때 공식 운영 정보를 확인해 보세요.", sourceUrl: "https://www.icheon.go.kr/tour/cultureTour/manage/view.do?idx=37&mid=0302040000",
+  }),
+  createAiPlace({
+    id: "30", name: "부래미마을", category: "EXPERIENCE", address: "경기 이천시 율면 부래미로 일원", roadAddress: "경기 이천시 율면 부래미로 일원", lat: 37.09, lng: 127.53,
+    recommendedDurationMin: 90, indoorOutdoor: "MIXED", weatherTags: ["HOT_OK", "RAIN_AVOID"],
+    editorialReview: "농촌 풍경과 계절 체험 프로그램을 확인할 수 있는 이천 남부 체험 후보예요.", recommendationReason: "아이 연령에 맞는 체험 운영일을 확인한 뒤 여유 있는 하루 코스로 넣어보세요.", sourceUrl: "https://www.icheon.go.kr/tour/contents.do?mid=0102040000",
   }),
 ];
 
@@ -386,14 +453,14 @@ export const SEED_PLACES: Place[] = [
     lng: 127.5684,
     recommendedDurationMin: 50,
     openingHours: { open: "00:00", close: "24:00", closedDays: [] }, // 연중 상시 개방
-    parking: { value: "YES", sourceType: "FIELD_VISIT", note: "성호호수 생태공원 무료 전용 주차장 구비" },
-    strollerAccessible: { value: "YES", sourceType: "FIELD_VISIT", note: "호수 둘레를 잇는 평지 수변 덱로드 턱 없음 (유모차 최적)" },
-    nursingRoom: { value: "NO", sourceType: "FIELD_VISIT", note: "독립 수유실 부재 (차량 또는 쉼터 활용)" },
-    diaperChangingStation: { value: "YES", sourceType: "FIELD_VISIT", note: "생태공원 방문자 화장실 내 기저귀 갈이대 완비" },
-    babyChair: { value: "NO", sourceType: "FIELD_VISIT", note: "야외 수변 공원으로 유모차 또는 정자 쉼터 이용" },
-    toilet: { value: "YES", sourceType: "FIELD_VISIT", note: "공원 입구 남녀 분리 청결 화장실" },
-    shade: { value: "YES", sourceType: "FIELD_VISIT", note: "호수 바람을 맞으며 쉴 수 있는 대형 수변 전통 정자 및 쉼터 완비" },
-    strollerRental: { value: "NO", sourceType: "FIELD_VISIT", note: "현장 대여 미운영" },
+    parking: aiEvidence("주차 정보는 공식 안내에서 확인해 주세요."),
+    strollerAccessible: aiEvidence("유모차 동선은 방문 전 공식 안내에서 확인해 주세요."),
+    nursingRoom: aiEvidence("수유실 운영 여부는 공식 안내에서 확인해 주세요."),
+    diaperChangingStation: aiEvidence("기저귀 갈이대 운영 여부는 공식 안내에서 확인해 주세요."),
+    babyChair: aiEvidence("아기의자 보유 여부는 공식 안내에서 확인해 주세요."),
+    toilet: aiEvidence("화장실 위치와 운영 여부는 현장에서 확인해 주세요."),
+    shade: aiEvidence("계절별 그늘과 쉼터는 방문 전 확인해 주세요."),
+    strollerRental: aiEvidence("유모차 대여 여부는 공식 안내에서 확인해 주세요."),
     indoorOutdoor: "OUTDOOR",
     ageMinMonths: 0,
     ageMaxMonths: 84,
@@ -409,10 +476,12 @@ export const SEED_PLACES: Place[] = [
       "호수 바람을 맞으며 쉴 수 있는 대형 전통 수변 정자 쉼터",
       "여름과 초가을 만개하는 연꽃 군락과 잔잔한 호수 절경"
     ],
-    verificationStatus: "FIELD_VERIFIED",
-    verifiedDate: "2025-09-05",
-    editorialReview: "탁 트인 수변 데크로드를 따라 평화롭게 유모차 산책을 즐길 수 있는 힐링 명소. 호수 정자와 연꽃 군락이 어우러져 부모와 아이 모두에게 쉼을 선물합니다.",
-    recommendationReason: "호수 위 평탄한 덱길을 따라 유모차로 시원하게 산책하며 가족 감성 사진을 남기기 좋은 자연 쉼터입니다."
+    verificationStatus: "WEB_VERIFIED",
+    verifiedDate: "2026-09-21",
+    recommendationSource: "AI_RECOMMENDED",
+    sourceUrl: "https://www.icheon.go.kr/tour/index.do?searchField=ALL",
+    editorialReview: "성호호수와 연꽃 풍경을 중심으로 공개 관광 정보를 탐색해 추가한 자연 산책 후보예요.",
+    recommendationReason: "수변 풍경을 좋아하는 가족에게 제안하지만, 유모차·편의시설 정보는 방문 전 공식 안내를 확인해 주세요."
   },
   ...AI_RECOMMENDED_PLACES,
 ];

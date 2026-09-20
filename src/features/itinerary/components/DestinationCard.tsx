@@ -48,7 +48,7 @@ export const DestinationCard = ({
                 className="object-contain bg-surface-container-low transition-transform duration-300 group-hover:scale-[1.02]"
               />
               <div className="absolute top-2.5 left-2.5 flex gap-1.5 z-10">
-                <span className="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface text-label-sm flex items-center gap-1 font-medium">
+                <span className="inline-flex items-center justify-center gap-1 rounded-full bg-surface-container-lowest/90 px-2 py-0.5 text-center text-label-sm font-medium text-on-surface backdrop-blur-sm">
                   <span className="material-symbols-outlined text-[13px] text-tertiary">
                     {place.category === "RESTAURANT"
                       ? "restaurant"
@@ -60,7 +60,7 @@ export const DestinationCard = ({
                   </span>
                   {subtitle || "주요 방문지"}
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-surface-container-lowest/90 backdrop-blur-sm text-on-surface-variant text-label-sm">
+                <span className="inline-flex items-center justify-center rounded-full bg-surface-container-lowest/90 px-2 py-0.5 text-center text-label-sm text-on-surface-variant backdrop-blur-sm">
                   {place.indoorOutdoor === "INDOOR"
                     ? "실내 에어컨"
                     : place.indoorOutdoor === "MIXED"

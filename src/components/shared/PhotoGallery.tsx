@@ -75,7 +75,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ place, compact = fal
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md text-primary font-bold text-xs shadow-xs">
             <span className="material-symbols-outlined text-[14px]">{isVideo ? "video_library" : isAiRecommended ? "auto_awesome" : "photo_library"}</span>
-            <span>{isAiRecommended ? "AI 추천 장소 안내" : isVideo ? "현장 영상" : "현장 실측 갤러리"}</span>
+            <span>{isAiRecommended ? "AI 생성 분위기 이미지" : isVideo ? "현장 영상" : "현장 실측 갤러리"}</span>
           </span>
           <span className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-xs font-semibold">
             {currentIndex + 1} / {mediaItems.length}
@@ -108,7 +108,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ place, compact = fal
         <div className="absolute bottom-0 inset-x-0 p-3.5 z-10 flex flex-col gap-1 pointer-events-none text-white">
           <div className="flex items-center gap-1.5 text-xs text-primary-container font-semibold">
             <span className="material-symbols-outlined text-[15px]">verified</span>
-            <span>{isAiRecommended ? "AI 추천 포인트" : isVideo ? "현장 영상" : `에디터 실측 포인트 #${currentIndex + 1}`}</span>
+            <span>{isAiRecommended ? "AI 안내 이미지" : isVideo ? "현장 영상" : `에디터 실측 포인트 #${currentIndex + 1}`}</span>
           </div>
           <p className="text-sm font-medium text-white drop-shadow-md line-clamp-2 leading-snug">
             {currentDescription}
@@ -236,7 +236,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ place, compact = fal
             onClick={(e) => e.stopPropagation()}
           >
             <span className="text-xs text-primary-container font-semibold block mb-0.5">
-              {isAiRecommended ? "AI 추천 포인트" : isVideo ? "현장 영상" : `실측 포인트 #${currentIndex + 1}`}
+              {isAiRecommended ? "AI 안내 이미지" : isVideo ? "현장 영상" : `실측 포인트 #${currentIndex + 1}`}
             </span>
             <p className="text-sm font-medium leading-relaxed">
               {currentDescription}

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { AppHeader } from "@/components/shared/AppHeader";
 
 export const metadata: Metadata = {
   title: "이천베베로드 - 아이와 함께, 무리 없는 이천 하루",
@@ -35,6 +36,7 @@ export default function RootLayout({
       </head>
       <body className="bg-surface font-body text-on-surface min-h-screen antialiased overflow-x-hidden">
         <div className="w-full min-h-screen flex flex-col relative bg-surface overflow-x-hidden">
+          <AppHeader />
           {children}
         </div>
       </body>

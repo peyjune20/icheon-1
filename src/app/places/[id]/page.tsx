@@ -34,33 +34,15 @@ export default async function PlaceDetailPage({ params }: PlaceDetailPageProps) 
 
   return (
     <div className="min-h-screen bg-surface flex flex-col text-on-surface">
-      {/* Top Header */}
-      <header className="sticky top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-surface-container-high pt-safe">
-        <div className="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Link
-              href="/itinerary"
-              aria-label="뒤로 가기"
-              className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full text-on-surface hover:bg-surface-container active:scale-95 transition-all"
-            >
-              <span className="material-symbols-outlined text-[24px]">arrow_back_ios_new</span>
-            </Link>
-            <span className="text-base font-bold text-on-surface truncate">장소 상세 정보</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-label="공유하기"
-              className="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors"
-            >
-              <span className="material-symbols-outlined text-[22px]">share</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
       {/* Main Detail Container */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-28 lg:pb-12">
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-28 lg:pb-12">
+        <div className="mb-4 flex items-center justify-between">
+          <Link href="/places" className="inline-flex h-9 items-center gap-1 rounded-full bg-surface-container-low px-3 text-xs font-bold text-primary hover:bg-surface-container">
+            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+            장소 탐색으로
+          </Link>
+          <span className="text-xs font-semibold text-on-surface-variant">장소 상세 정보</span>
+        </div>
         {/* STORY-301: Hero Banner */}
         <HeroBanner place={place} />
 

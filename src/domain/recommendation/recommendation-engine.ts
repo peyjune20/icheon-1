@@ -64,8 +64,8 @@ export class RuleBasedRecommendationEngine {
 
     // 3. Selection of Places dynamically based on tripWindowMin, includeLunch, and styles
     // Determine max stops based on time window
-    const maxStops =
-      context.tripWindowMin < 200 ? 2 : context.tripWindowMin <= 300 ? 3 : 4;
+    const timeWindowCap = context.tripWindowMin < 200 ? 2 : context.tripWindowMin <= 300 ? 3 : context.maxBlocks;
+    const maxStops = Math.max(2, Math.min(context.maxBlocks, timeWindowCap));
 
     const selectedPlaces: Place[] = [];
 
@@ -169,7 +169,7 @@ export class RuleBasedRecommendationEngine {
 
     // 7. Contextual Dynamic Reasons
     const reasons = [
-      `👶 ${context.trip.displayAge || "2세"} 아이 발걸음`,
+      `👶 ${context.trip.displayAge} 아이 발걸음`,
       context.trip.strollerRequired ? "🦽 유모차 완경사로 보장" : "👟 자유로운 자연 산책로",
       context.trip.includeLunch ? "🍚 이천 쌀밥 영양 점심" : "🌿 자연 쉼표 & 카페 집중 코스",
       context.trip.parentRestPriority === "HIGH"

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { AppHeader } from "@/components/shared/AppHeader";
 import { BottomNavBar } from "@/components/shared/BottomNavBar";
 
 const COURSE_STOPS = [
@@ -19,8 +18,6 @@ const COURSE_POINTS = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-surface text-on-surface">
-      <AppHeader />
-
       <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-24 sm:px-6 lg:pb-16 lg:pt-32">
         <section className="grid items-stretch gap-7 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
           <div className="flex flex-col justify-center py-2 lg:py-8">
@@ -54,7 +51,7 @@ export default function HomePage() {
             </div>
             <div className="mt-8 grid max-w-xl grid-cols-3 gap-3 border-t border-outline-variant/40 pt-5">
               <div>
-                <p className="text-2xl font-bold text-primary">20</p>
+                <p className="text-2xl font-bold text-primary">30</p>
                 <p className="mt-1 text-xs text-on-surface-variant">코스 조합 후보</p>
               </div>
               <div>
@@ -62,13 +59,13 @@ export default function HomePage() {
                 <p className="mt-1 text-xs text-on-surface-variant">아이 컨디션을 고려한 하루</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-primary">7 + 13</p>
+                <p className="text-2xl font-bold text-primary">6 + 24</p>
                 <p className="mt-1 text-xs text-on-surface-variant">실측 + AI 추천</p>
               </div>
             </div>
           </div>
 
-          <div className="relative min-h-[390px] overflow-hidden rounded-[28px] bg-surface-container shadow-lg lg:min-h-[540px]">
+          <Link href="/itinerary?age=36&stroller=true&lunch=true&styles=NATURE%2CLOCAL_FOOD%2CPARENT_REST&napStart=13%3A30&napEnd=15%3A00&parentRestPriority=MEDIUM&weather=AUTO" className="group relative min-h-[390px] overflow-hidden rounded-[28px] bg-surface-container shadow-lg lg:min-h-[540px]" aria-label="이천 베베 추천 코스 01 결과 보기">
             <Image
               src="/resources/pic/3-1.jpg"
               alt="이천농업테마공원의 산책 풍경"
@@ -87,8 +84,9 @@ export default function HomePage() {
               <p className="mt-2 max-w-md text-sm leading-6 text-white/85">
                 도착 직후 뛰어다니지 않아도 되는 산책과 식사, 잠깐의 휴식을 차례로 이어갑니다.
               </p>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-white underline underline-offset-4">이 추천 루트로 바로 보기 <span className="material-symbols-outlined text-[17px] transition-transform group-hover:translate-x-1">arrow_forward</span></span>
             </div>
-          </div>
+          </Link>
         </section>
 
         <section id="course-intro" className="mt-16 scroll-mt-28 rounded-[28px] bg-surface-container-low p-5 sm:p-8 lg:mt-20">
@@ -99,18 +97,21 @@ export default function HomePage() {
               <p className="mt-4 text-sm leading-6 text-on-surface-variant">
                 관광지를 많이 넣기보다, 아이가 즐길 시간과 부모가 숨을 고를 시간을 남기는 것을 이 코스의 기준으로 삼았습니다.
               </p>
-              <Link href="/itinerary" className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline">
-                내 조건으로 코스 확인하기
+              <Link href="/trip" className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline">
+                내 조건으로 다시 추천받기
                 <span className="material-symbols-outlined text-[17px]">arrow_forward</span>
               </Link>
             </div>
             <ol className="relative grid gap-3 md:grid-cols-2">
               {COURSE_STOPS.map((stop, index) => (
-                <li key={stop.name} className="relative rounded-2xl bg-white p-4 shadow-xs">
+                <li key={stop.name}>
+                  <Link href={stop.name === "이천농업테마공원" ? "/places/3" : stop.name === "미솥지음" ? "/places/1" : stop.name === "라이스카페" ? "/places/6" : "/places/8"} className="relative block rounded-2xl bg-white p-4 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md">
                   <span className="absolute right-4 top-4 text-xs font-bold text-primary/60">0{index + 1}</span>
                   <p className="text-sm font-bold text-primary">{stop.time}</p>
                   <h3 className="mt-2 text-base font-bold">{stop.name}</h3>
                   <p className="mt-1 text-xs leading-5 text-on-surface-variant">{stop.detail}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-primary">장소 상세 보기 <span className="material-symbols-outlined text-[14px]">arrow_forward</span></span>
+                  </Link>
                 </li>
               ))}
             </ol>

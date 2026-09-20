@@ -38,6 +38,7 @@ export const TripInputSchema = z.object({
   napTimeStart: z.string().optional().default("13:30"),
   napTimeEnd: z.string().optional().default("15:00"),
   preferIndoor: z.boolean().optional(),
+  weatherCondition: z.enum(["AUTO", "NORMAL", "HOT", "RAIN", "COLD"]).optional().default("AUTO"),
 });
 
 export type ValidatedTripInput = z.infer<typeof TripInputSchema>;

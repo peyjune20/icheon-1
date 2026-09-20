@@ -8,6 +8,8 @@ export type TravelStyle =
   | "INDOOR"
   | "PHOTO";
 
+export type WeatherCondition = "AUTO" | "NORMAL" | "HOT" | "RAIN" | "COLD";
+
 export interface TripInput {
   originText: string;
   childAgeMonths: number;
@@ -25,6 +27,7 @@ export interface TripInput {
   includeLunch: boolean;
   parentRestPriority: "LOW" | "MEDIUM" | "HIGH";
   preferIndoor?: boolean;
+  weatherCondition?: WeatherCondition;
 }
 
 export interface RecommendationContext {

@@ -4,6 +4,9 @@ interface FeasibilitySummaryProps {
   totalTravelMin: number;
   slackMin: number;
   blockCount: number;
+  displayAge: string;
+  weatherLabel: string;
+  selectedConditions: string[];
 }
 
 export const FeasibilitySummary = ({
@@ -12,6 +15,9 @@ export const FeasibilitySummary = ({
   totalTravelMin,
   slackMin,
   blockCount,
+  displayAge,
+  weatherLabel,
+  selectedConditions,
 }: FeasibilitySummaryProps) => {
   const totalHours = Math.floor(totalDurationMin / 60);
   const totalMins = totalDurationMin % 60;
@@ -24,14 +30,21 @@ export const FeasibilitySummary = ({
       <section className="flex flex-col gap-2 pt-3 pb-5">
         <div className="inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed text-label-sm">
           <span className="material-symbols-outlined text-[14px]">family_star</span>
-          <span>김민지 가족 맞춤 코스</span>
+          <span>우리 가족 맞춤 코스</span>
         </div>
         <h1 className="font-headline text-headline-lg text-on-surface tracking-tight mt-1">
-          오늘은 {blockCount}개 블록이 적당해요
+          오늘은 {blockCount}곳으로 천천히 즐겨요
         </h1>
         <p className="text-body-md text-on-surface-variant leading-relaxed">
-          2세 아이와 무더운 날씨, 유모차 사용을 고려해 무리 없는 동선으로 구성했어요.
+          {displayAge} 아이와 {weatherLabel} 컨디션, 선택한 여행 취향을 반영해 동선을 구성했어요.
         </p>
+        <div className="mt-1 flex flex-wrap gap-1.5" aria-label="선택한 여행 조건">
+          {selectedConditions.map((condition) => (
+            <span key={condition} className="rounded-full bg-surface-container-low px-2.5 py-1 text-[11px] font-semibold text-on-surface-variant">
+              {condition}
+            </span>
+          ))}
+        </div>
       </section>
 
       {/* Summary Metrics Feasibility Card */}
@@ -43,7 +56,7 @@ export const FeasibilitySummary = ({
           </span>
           <span className="text-label-md text-primary font-semibold">
             {status === "RELAXED"
-              ? "무리 없는 일정이에요 (2세 아이 기준 안심)"
+              ? `${displayAge} 아이 기준으로 여유 있는 일정이에요`
               : status === "TIGHT"
               ? "조금 빠듯한 일정이에요 (장소를 줄여보세요)"
               : "소화 가능한 표준 일정이에요"}
