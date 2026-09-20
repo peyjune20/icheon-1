@@ -5,6 +5,15 @@
 2026-09-21 후속 요청: Kakao JS Places 검색, Supabase Auth/Storage/Database 개인 기록, 주소 30곳 대조, 연결된 마을 30개 슬롯, 카카오 자동차 경유 길찾기 구현 및 GitHub push.
 코드 구현과 로컬 검증 완료. 실제 키/외부 프로젝트 설정 전이므로 실서비스 연결 검증은 남아 있습니다.
 
+### 도메인 등록 후 재개 점검
+
+- 사용자 확인: Kakao SDK 도메인 3개(https://icheon-1.vercel.app, https://icheon-bebe-road.grayngell.chatgpt.site, http://localhost:3000) 등록 완료.
+- 재점검 결과: .env와 .env.local의 NEXT_PUBLIC_KAKAO_MAP_KEY, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY 모두 비어 있음. 프로세스 환경변수에도 없음. 값은 출력하지 않고 설정 여부만 검사함.
+- Sites 환경변수 조회 결과 등록 항목 없음. 접근 가능한 브라우저에는 Kakao/Supabase/Vercel 설정 탭이 없어 해당 계정에서 키를 가져오지 못함.
+- 도메인 등록과 API 키 연결은 별개. 실제 키 없이 외부 API 성공을 검증하거나 완료로 보고하지 말 것.
+- 이번 재개에서는 기능 코드를 불필요하게 변경하지 않고 등록 완료 상태/다음 설정 위치를 문서에 반영함. 입력 요청을 사용자에게 전달함.
+- 재개 후 node scripts/verify.mjs 전체 통과, git diff --check 통과. 기능 코드가 동일해 불필요한 재빌드/키 없는 재배포는 하지 않음. 이 문서와 설정 안내만 후속 GitHub 커밋에 반영.
+
 ## 완료한 작업
 
 - Next.js 14 정적 export와 기존 Sites 전용 D1/R2 Worker 구조 확인.
@@ -85,7 +94,7 @@
 
 - 원인 확정: Vercel 정적 사이트에 기존 Worker API가 없어서 404 HTML을 JSON으로 읽었음. 새 프론트엔드 API 교체로 해당 원인 제거.
 - Kakao JavaScript 키 실제 값과 Supabase 프로젝트 URL/공개 키 미제공. 빈 환경변수만 준비. 연결 완료로 보고하면 안 됨.
-- Kakao Developers 계정 설정 접근 없음. 허용 도메인을 실제로 추가하지 않음.
+- Kakao SDK 허용 도메인 3개는 사용자가 직접 등록 완료했다고 확인함. 개발자 계정 직접 검증과 실제 키 연결은 아직 미수행.
 - 이천치유의숲은 실제 공식 운영 장소 특정 못함. 미확인 명시 및 자동 추천 제외.
 - 모가의 숲 산지 지번, 도드람산 정상, 단지 대표 주소 등은 자동차 입구와 다를 수 있음. Kakao Places 대조/운전자 최종 확인 필요.
 - Next 14.2.15 기존 보안 경고는 별도 업그레이드 검토 필요. 강제 업그레이드 미실행.
@@ -95,7 +104,6 @@
 
 - 사용자 Supabase 프로젝트 생성 및 SQL 실행, Auth 메일/리디렉션 URL 설정.
 - .env.local과 Vercel에 실제 공개 환경변수 3개 입력 및 재배포.
-- Kakao SDK 허용 도메인 실제 등록/확인.
 - 실제 Supabase 계정 A/B의 업로드/조회/삭제/RLS HTTP 격리 테스트.
 - 실제 EXIF GPS·방향 테스트 파일로 업로드/다운로드 검수.
 - 실제 Kakao 검색, 전체 30곳 핀, 현재 기기 GPS부터 자동차 경유 경로 검증.
@@ -103,7 +111,7 @@
 
 ## 다음 작업
 
-1. docs/SUPABASE_KAKAO_SETUP.md의 1~4단계에 따라 프로젝트/SQL/Auth/키/도메인 설정.
+1. 도메인은 사용자 등록 완료. docs/SUPABASE_KAKAO_SETUP.md의 1~3단계에 따라 Supabase 프로젝트/SQL/Auth/실제 키 설정을 마무리.
 2. 로컬 .env.local에 NEXT_PUBLIC_KAKAO_MAP_KEY, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY를 입력한 뒤 npm run dev -- --port 3000.
 3. 설정 문서의 실연결 7단계 검수. 실패 시 브라우저 응답과 Supabase RLS/Storage 로그를 확인하되 토큰/키는 출력하지 말 것.
 4. npm run build 및 node scripts/verify.mjs 후 Vercel 환경변수 반영·재배포. Sites는 설정 후 별도 재배포.

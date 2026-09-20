@@ -18,7 +18,8 @@
 직접 fetch가 남은 날씨/지도 코드도 상태와 Content-Type을 확인합니다. 한국어 오류 안내와 개발용 로그를 분리했습니다.
 
 현재 실제 Kakao 키와 Supabase 프로젝트 URL/키는 제공되지 않았습니다.
-.env.local에는 빈 입력란만 준비했고, 외부 계정/도메인 설정·SQL 적용·실서비스 업로드는 아직 실행하지 않았습니다.
+.env.local에는 빈 입력란만 준비되어 있고 재개 점검에서도 세 값이 모두 비어 있었습니다. SQL 적용·실서비스 업로드는 아직 실행하지 않았습니다.
+사용자는 아래 Kakao SDK 도메인 3개 등록을 완료했다고 확인했습니다. 도메인 등록만으로 API 키나 Supabase 값이 프로젝트에 자동 입력되지는 않습니다.
 코드와 SQL이 준비된 상태이지, 클라우드 연결까지 끝난 상태는 아닙니다.
 
 ## 1. Supabase 프로젝트 만들기
@@ -81,14 +82,14 @@ NEXT_PUBLIC_ 값은 브라우저 번들에 공개됩니다. 사용자 사진 보
 
 ## 4. Kakao SDK 허용 도메인
 
-Kakao Developers → 이천베베로드 앱 → JavaScript SDK 도메인에 아래 주소를 등록/확인합니다.
+아래 주소는 사용자가 Kakao Developers → 이천베베로드 앱 → JavaScript SDK 도메인에 등록 완료했다고 확인했습니다. 동일 주소를 다시 등록할 필요는 없습니다.
 
 - https://icheon-1.vercel.app
 - https://icheon-bebe-road.grayngell.chatgpt.site
 - http://localhost:3000
 
 이번 로컬 검증 서버는 실제 **3000 포트**입니다. 3001은 기존 Wrangler preview 명령의 별도 포트이며 그 preview를 사용할 때만 추가하세요.
-개발자 계정 접근과 실제 키가 없어 이번 작업에서 도메인을 직접 추가하지 않았습니다.
+등록 완료는 사용자 확인에 근거합니다. 실제 JavaScript 키가 아직 로컬/연결 가능한 Sites 환경에 없어 SDK 요청 성공 검증은 남아 있습니다.
 
 ## 5. Vercel 및 Sites 적용
 
