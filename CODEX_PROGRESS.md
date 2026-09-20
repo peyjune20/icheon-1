@@ -38,6 +38,7 @@
 - AI 추천 장소는 실제 사진처럼 오인되지 않도록 `AI 생성 분위기 이미지`로 표기하고, 운영·편의 정보는 공식 안내 재확인을 요구한다.
 - 5세 선택·더운 날씨에서는 3곳, 5세 선택·보통 날씨에서는 4곳이 추천되는 것을 브라우저에서 확인했다.
 - 장소 상세, 코스 준비, 추천 결과, 내 여행 화면에서 공통 헤더가 렌더링된다.
+- 운영 웹에는 Sites 버전 9가 배포되었고, 기능 변경 커밋 `aad6293`은 GitHub `main`에 반영되었다.
 
 ## 확인 완료
 
@@ -45,6 +46,8 @@
 - `npm run build` 통과: 38개 정적 페이지 생성 확인
 - 브라우저에서 연령별 준비 문구, 날씨별 장소 수, 준비 확인 팝업, 30개 카드, AI 이미지 갤러리, AI 상세 미니 지도를 확인했다.
 - 브라우저 콘솔 오류 없음
+- 운영 배포 성공: `https://icheon-bebe-road.grayngell.chatgpt.site`
+- GitHub 푸시 성공: `aad6293 feat: personalize family recommendations and places`
 
 ## 발견된 문제
 
@@ -52,18 +55,16 @@
 
 ## 미완료 작업
 
-- 현재 변경사항을 커밋한다.
-- 운영 웹에 새 정적 빌드를 배포하고 GitHub `main`에 푸시한다.
+- 없음. 사용자 요청 범위의 구현·검증·운영 배포·GitHub 푸시를 완료했다.
 
 ## 다음 작업
 
-1. 코드·AI 이미지 자산만 선택해 커밋한다.
-2. 새 정적 빌드로 Sites 버전을 만들고 운영 주소에 배포한다.
-3. GitHub 푸시 완료 후 이 문서를 최종 상태로 갱신한다.
+1. 후속 요청이 있으면 이 문서와 현재 `main` 상태를 먼저 비교한다.
+2. AI 추천 후보의 실제 방문/운영 정보가 추가되면 현장 확인 여부를 개별적으로 갱신한다.
 
 ## 다음 세션 시작 위치
 
-배포가 중단되면 이 문서와 `git status --short`를 확인한 뒤, `out/` 정적 결과물과 `.openai/hosting.json`으로 Sites 버전을 생성하는 단계부터 이어간다.
+후속 개선은 `src/app/trip/page.tsx`의 조건 입력, `src/application/generate-itinerary.usecase.ts`의 장소 수 산정, `src/infrastructure/data/seed-places.data.ts`의 장소 데이터에서 시작한다. 새 작업 전 `git status --short`로 사용자 제공 원본 폴더가 남아 있는지 확인한다.
 
 ## 주의사항
 
