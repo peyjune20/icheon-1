@@ -30,9 +30,13 @@
 
 ## 현재 구현 상태
 
-- 코드 구현 및 로컬 빌드/검증 완료. 최종 push 및 배포 진행 예정.
+- 코드 구현 및 로컬 빌드/검증 완료. GitHub main과 Sites 소스 저장소에 동일 커밋 push 완료.
+- 배포 성공: https://icheon-bebe-road.grayngell.chatgpt.site (버전 10).
+- 배포 소스: 3c6c862ecb570fead2bcba45c059c371d4b086f7.
+- Sites 배포 ID: appgdep_6ab0291c12348191984cb81323044786. succeeded, 2026-09-20T18:42:58Z.
+- 저장 버전 ID: appgprj_6aa9fce8b9288191b87e53bf36e0521c~appgver_c1ac0a8b04148191bcca76b9a4d1ea20.
 - localhost:3001은 Wrangler 세션 5866. dist/client + dist/server/index.js.
-- 로컬 D1 마이그레이션 0000, 0001 적용 완료. 생산 DB에는 배포 시 적용.
+- 로컬 D1 마이그레이션 0000, 0001 적용 완료. 생산 배포도 성공(마이그레이션 포함).
 - hosting.json 논리 바인딩은 문자열 d1=DB, r2=BUCKET (Sites 계약 테스트로 확인).
 - 인증은 Sites 신뢰 헤더 oai-authenticated-user-id. 익명 기본 탐색/추천 가능, 새 장소/사진/영구 코스 저장은 로그인 필요.
 - 기존 찜/스탬프는 기존 브라우저 저장 방식 보존 및 화면 고지. 새 장소/사진/코스는 계정 저장.
@@ -46,6 +50,8 @@
 - 브라우저: 컬러 배경/30개 그림자, 모바일 테마별 스탬프 펼침과 날짜 입력.
 - 브라우저: 에덴파라다이스 주소 지도, 설봉공원 실제 위치, 농업공원→라이스카페→성호호수 실제 도로 경로 렌더링.
 - 브라우저 오류 로그 없음. git diff --check 통과.
+- 최신 빌드 재탐색 후 상세에서 장소 추가 시 age=60 등 모든 조건과 기존 3곳이 유지되어 4곳으로 연결됨.
+- 배포 패키지의 Worker/정적 출력/바인딩/마이그레이션 검증 완료. 플랫폼 배포 성공 응답 확인.
 
 ## 발견된 문제
 
@@ -60,16 +66,15 @@
 
 ## 미완료 작업
 
-- 최종 소스 GitHub/Sites 저장소 push, 정확한 커밋으로 패키징/save/deploy 및 성공 상태 확인.
 - 카카오 키 설정/등록 도메인 확인 후 SDK 지도 검증 (사용자 설정 필요).
+- 실서비스 로그인 계정의 실제 사진/장소 업로드는 사용자 자료를 임의 생성하지 않아 미실행. 로컬 계정 격리 API 테스트는 통과.
 
 ## 다음 작업
 
-1. 최신 변경에 대해 타입 검사 및 git diff --check.
-2. 명시한 파일만 stage/commit. .site-deploy/와 resources/pic/new/는 stage 금지.
-3. GitHub origin main 및 Sites credential remote main에 동일 소스 push (force 금지).
-4. git rev-parse --verify HEAD 정확한 전체 SHA 확보. 공식 package-site.sh로 패키징/검증.
-5. Sites save/deploy 성공 확인. 기존 사이트 화면 열기. 이 문서 최종 상태 갱신.
+1. 카카오 키가 제공되면 사이트 런타임 KAKAO_MAP_KEY / KAKAO_REST_API_KEY 설정. JS 키에 사이트 도메인 등록 확인.
+2. 모든 장소의 Kakao 주소 검색 및 전체 코스 SDK 렌더링 검증. 현재는 실제 주소/OSM 대체 지도 사용.
+3. 필요 시 로그인 사용자 본인의 장소/사진 저장 실서비스 테스트. 기존 기록을 삭제하거나 테스트 사진을 임의 업로드하지 말 것.
+4. 농업공원 내 라이스카페 정확한 입구 좌표 확보 시 공원 대표 좌표를 교정.
 
 ## 다음 세션 시작 위치
 
