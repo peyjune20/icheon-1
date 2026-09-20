@@ -63,7 +63,7 @@
 
 - 프레임워크: Next.js 14.2.15, output: export. 40개 정적 페이지 빌드 성공.
 - 기본 30곳 ID/사진/방문 상태 유지. 새 개인 기록은 Supabase, 기존 찜/스탬프는 브라우저 저장 유지.
-- GitHub origin: https://github.com/peyjune20/icheon-1.git, main. 최종 기능 커밋/push 직전.
+- GitHub origin: https://github.com/peyjune20/icheon-1.git, main. 기능 커밋 3b759ea push 성공 확인(2026-09-21). 이후 진행 기록만 별도 문서 커밋으로 갱신.
 - 기존 Sites 프로덕션은 v10(이전 커밋 3c6c862)이며 이번 후속 버전은 아직 Sites에 재배포하지 않음.
 - Sites D1/R2 기록과 Worker는 삭제하지 않음. 새 Supabase 계정과 자동 병합/이관하지 않음.
 - 로컬 검증 포트는 3000. 최종 빌드 충돌 방지를 위해 개발 서버 종료.
