@@ -19,20 +19,23 @@
 
 사용자 Vercel 재배포 후 운영 사이트에서 Kakao 장소 검색, 선택 시 주소/좌표 자동 입력, 미솥지음 상세의 실제 지도 핀을 확인했습니다. Kakao 키 값은 읽거나 출력하지 않았습니다.
 도메인 3개 등록 완료도 사용자 확인 사항입니다. Vercel 설정은 로컬 .env.local이나 Sites에 자동으로 동기화되지 않습니다.
-반면 운영 /account 및 방문 사진 영역은 **Supabase 설정 미완료** 안내가 나옵니다. NEXT_PUBLIC_SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY가 배포본에 반영되지 않은 상태입니다. SQL 적용·실서비스 업로드/RLS 검증은 아직 실행하지 않았습니다.
+그 당시 운영 /account 및 방문 사진 영역에는 **Supabase 설정 미완료** 안내가 나왔습니다. 이후 사용자가 Vercel에 NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY 등록 완료를 알려주었습니다. 기존 코드는 PUBLISHABLE_KEY라는 이름만 읽고 있어서, 이번 변경에서 **ANON_KEY를 우선 사용하고 PUBLISHABLE_KEY도 대체 이름으로 지원**하도록 맞췄습니다.
+방문 기록도 Supabase visit_records로 전환했습니다. SQL 적용·실서비스 업로드/RLS 검증은 아직 실행하지 않았습니다. 환경변수 등록만으로 테이블/버킷/RLS가 자동 생성되지는 않습니다.
 
 ## 1. Supabase 프로젝트 만들기
 
 1. 본인 Supabase 계정에서 새 프로젝트를 만듭니다. 프로젝트 이름 예: icheon-bebe-road. 서비스 사용자와 가까운 지역을 선택합니다.
 2. 프로젝트 DB 비밀번호는 안전하게 따로 보관합니다. 프론트엔드 환경변수에는 사용하지 않습니다.
-3. SQL Editor에서 **supabase/migrations/202609210001_private_family_records.sql 전체를 한 번 실행**합니다.
-4. 아래 세 테이블과 비공개 버킷이 생성되었는지 확인합니다. 버킷을 수동으로 먼저 만들 필요는 없습니다.
+3. 최초 설정이면 SQL Editor에서 **supabase/migrations/202609210001_private_family_records.sql 전체를 한 번 실행**합니다. 이미 이 파일을 적용했다면 다시 실행하지 않습니다.
+4. 이어서 **supabase/migrations/202609210002_account_visit_records.sql 전체를 한 번 실행**합니다. 기존 설정을 완료한 경우에는 이 두 번째 파일만 추가 적용합니다. 방문 기록 테이블/RLS를 추가하며 기존 장소·사진을 지우지 않습니다.
+5. 아래 네 테이블과 비공개 버킷이 생성되었는지 확인합니다. 버킷을 수동으로 먼저 만들 필요는 없습니다.
 
 | 항목 | 이름 | 역할 |
 | --- | --- | --- |
 | Database | custom_places | 사용자가 추가한 장소 JSON + 소유자 |
 | Database | saved_plans | 사용자별 저장 코스 |
 | Database | visit_photos | id, user_id, title, image_url, created_at, place_id, object_path, original_filename |
+| Database | visit_records | user_id + place_id 복합 키, visited_at 방문 날짜, created_at 생성 시각 |
 | Storage | visit-photos | 비공개 · 10MB · image/jpeg |
 
 SQL은 신규 프로젝트용 1회 마이그레이션입니다. 같은 이름의 테이블/버킷이 이미 있다면 삭제해서 맞추지 말고 현재 스키마와 비교해야 합니다.
@@ -66,14 +69,16 @@ Sites 접근 제한이 있는 경우 Sites 접근 로그인과 앱 안의 Supaba
 ```dotenv
 NEXT_PUBLIC_KAKAO_MAP_KEY=
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 | 변수 | 넣을 값 |
 | --- | --- |
 | NEXT_PUBLIC_KAKAO_MAP_KEY | Kakao Developers 앱의 JavaScript 키 |
 | NEXT_PUBLIC_SUPABASE_URL | Supabase 프로젝트 URL, https://프로젝트참조.supabase.co |
-| NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY | Supabase publishable key. 기존 프로젝트의 legacy anon key도 이 변수에 사용 가능 |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Supabase 프로젝트의 anon 공개 키. 공개 publishable key도 지원 |
+
+이전 설정명 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY도 계속 지원합니다. 두 키가 모두 있으면 ANON_KEY를 우선합니다. 사용자가 등록한 ANON_KEY를 다른 이름으로 바꿀 필요는 없습니다.
 
 Supabase secret key / service_role key / DB 비밀번호 / Kakao REST 키는 위 변수에 넣지 않습니다.
 NEXT_PUBLIC_ 값은 브라우저 번들에 공개됩니다. 사용자 사진 보호는 키를 숨기는 방식이 아니라 Auth JWT + RLS로 보장합니다.
@@ -122,7 +127,7 @@ JPEG(품질 .92, 긴 변 최대 2560px) → 비공개 visit-photos/사용자UUID
 
 - 원본의 GPS/EXIF 메타데이터는 새 canvas 출력에 복사하지 않습니다. EXIF 방향을 적용한 픽셀을 그립니다. 투명 이미지는 흰 배경 JPEG가 됩니다.
 - 원본 파일과 base64 데이터는 DB에 저장하지 않습니다. DB에는 인증 다운로드 경로와 메타데이터만 저장합니다.
-- DB user_id는 auth.uid() 기본값이며 사용자 입력란에서 받지 않습니다.
+- user_id는 검증한 현재 Auth 사용자에서 가져옵니다. DB 기본값도 auth.uid()이며 사용자 입력란에서 받지 않습니다. 요청 도중 계정이 바뀌면 RLS가 이전 사용자 명의 저장을 거부합니다.
 - 테이블 RLS는 auth.uid() 본인만 조회/삽입/삭제하도록 제한합니다.
 - Storage RLS는 사용자 폴더와 owner_id를 검사합니다. public URL이나 공유 가능한 signed URL을 만들지 않습니다.
 - 사진은 로그인 토큰으로 다운로드하고 화면에서는 임시 blob URL로 보여 줍니다. 계정 전환/화면 종료 때 URL과 목록을 정리합니다.
@@ -130,9 +135,22 @@ JPEG(품질 .92, 긴 변 최대 2560px) → 비공개 visit-photos/사용자UUID
 - DB 삽입 실패 시 업로드한 파일 삭제를 시도합니다. 네트워크 단절로 정리가 실패하면 로그와 Storage에서 고아 파일을 점검해야 합니다.
 - 삭제는 파일 삭제 후 본인 DB 레코드를 삭제합니다. DB 삭제만 실패했을 때 재시도할 수 있도록 메타데이터/삭제 버튼을 유지합니다.
 - 로그인 사용자에게도 타인 파일 조회·삭제를 허용하지 않습니다. 스토리지 관리자 권한으로 직접 공개 버킷으로 전환하지 마세요.
-- 기존 찜/스탬프는 브라우저 보관 방식을 유지하며 Supabase로 자동 이관하지 않습니다.
+- 찜 목록은 기존 브라우저 보관을 유지합니다. 방문 스탬프는 아래 계정 저장 흐름을 사용합니다.
 
 공식 참고: [비공개 버킷](https://supabase.com/docs/guides/storage/buckets/fundamentals), [Storage RLS](https://supabase.com/docs/guides/storage/security/access-control), [owner_id](https://supabase.com/docs/guides/storage/security/ownership).
+
+## 방문 기록과 기존 기록 가져오기
+
+- 나의 투어 → 로그인 → 방문 날짜 선택 / 다녀왔어요 → visit_records에 저장합니다. 같은 장소의 날짜 수정은 복합 키(user_id, place_id)로 갱신하고, 스탬프 해제는 본인 행만 삭제합니다.
+- user_id는 입력값이 아니라 Supabase Auth의 현재 사용자에서 가져오며, DB RLS가 소유자를 다시 검사합니다. 다른 사용자의 개인 장소에는 방문 기록을 만들 수 없습니다.
+- 방문 기록은 최신 방문 날짜순으로 읽습니다. 날짜는 한국 기준 YYYY-MM-DD로 저장하여 다른 시간대에서도 날짜가 바뀌지 않습니다. 미래 날짜와 2월 30일 등 잘못된 날짜를 거부합니다.
+- 개인 장소를 삭제하면 그 장소의 방문 기록도 DB 외래 키로 함께 삭제됩니다. 사진은 기존 흐름대로 스토리지 파일과 메타데이터를 삭제합니다.
+- 로그인 전에는 기존 브라우저 기록을 읽기 전용으로 보여 줍니다. 새 기록·날짜 변경·해제는 로그인이 필요합니다. 클라우드 실패를 로컬 저장 성공으로 표시하지 않습니다.
+- 로그인 후에는 계정 기록만 마을/스탬프에 반영합니다. 계정 전환 시 이전 목록과 진행도를 비우고 새 계정 기록을 읽습니다.
+- **브라우저 기록 N개를 내 계정에 복사** 버튼은 기존 기록이 있을 때만 나타납니다. 공용 기기의 다른 사람 기록일 수 있으므로 자동 업로드하지 않습니다. 본인 기록인지 확인하고 눌러 주세요.
+- 가져오기는 현재 접근할 수 있는 기본/개인 장소의 유효한 기록만 복사합니다. 이미 계정에 있는 날짜는 덮어쓰지 않고 브라우저 원본도 삭제하지 않습니다. 기존 Sites D1/R2의 데이터 이관과는 별개입니다.
+
+공식 참고: [공개 API 키와 비밀 키 구분](https://supabase.com/docs/guides/getting-started/api-keys), [사용자별 RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [중복 방문 처리 upsert](https://supabase.com/docs/reference/javascript/upsert).
 
 ## 지도 및 자동차 코스
 
@@ -167,14 +185,16 @@ Next build가 타입을 검사합니다. 별도 lint 설정이 없는 프로젝�
 설정 후 반드시 할 실연결 테스트:
 
 1. 검색창에서 이천 미솥지음, 베이커리 을를, 서울의 특정 장소 검색. 결과 선택 후 y/x와 테마 유지 확인.
-2. 계정 A 이메일 로그인 → 내 장소 저장 → JPG/PNG/WEBP 사진과 제목 저장 → 목록 최신순, 제목/파일 초기화 확인.
+2. 계정 A 이메일 로그인 → 내 장소 저장 → 나의 투어에서 기본 장소와 내 장소의 방문 날짜 저장/수정/해제 → 새로고침과 다른 기기에서도 기록 유지 확인. 이후 JPG/PNG/WEBP 사진과 제목 저장 → 목록 최신순, 제목/파일 초기화 확인.
 3. EXIF 방향·GPS가 있는 **테스트 사진**을 업로드하고 다운로드한 JPEG에 GPS가 없는지, 세로/가로 방향이 정상인지 확인. 10MB 초과/GIF는 거부되어야 합니다.
-4. 다른 브라우저 프로필에서 계정 B 로그인. A의 레코드 ID/object_path를 알고 있더라도 DB 조회는 0건, Storage 다운로드/삭제는 거부되어야 합니다. B의 토큰으로 A의 user_id를 지정해 INSERT해도 거부되어야 합니다. 단순히 화면 목록이 비어 있는 것만으로 권한 검증을 끝내지 마세요.
+4. 다른 브라우저 프로필에서 계정 B 로그인. A의 장소/방문/사진 레코드 ID/object_path를 알고 있더라도 DB 조회는 0건, Storage 다운로드/삭제는 거부되어야 합니다. B의 토큰으로 A의 user_id를 지정해 INSERT/UPDATE하거나, B 소유 방문 기록에 A의 개인 장소를 지정해도 거부되어야 합니다. 단순히 화면 목록이 비어 있는 것만으로 권한 검증을 끝내지 마세요.
 5. A로 테스트 사진 삭제 → DB와 Storage 모두 제거 확인. 로그아웃 후 /account와 사진 UI에 이전 이미지가 남지 않는지 확인.
 6. 실제 기기 GPS 허용 후 미솥지음 첫 목적지, 3곳 전체 코스, 8곳 이상의 분할 경유 코스 각각 Kakao에서 출발지·방문 순서 확인.
 7. Vercel 새 배포와 Sites 재배포 후 같은 계정으로 각각 로그인하여 동일한 기록을 확인.
+8. 브라우저 기존 스탬프가 있는 경우 로그인만으로 업로드되지 않는지 확인 → 복사 버튼 클릭 → 원본 유지 및 중복 날짜 보존 확인. 로그인 전/다른 계정에는 클라우드 기록이 노출되지 않아야 합니다.
 
 현재 자동 검증은 SDK 모의 응답, HTML/JSON 방어, 파일 제한, 좌표/30슬롯 무결성, 경유 링크 순서를 포함합니다.
+추가 자동 검증: ANON_KEY 단독 설정/대체 키/우선순위, 방문 날짜 검증·한국 날짜 변환, 기록 가져오기 원본/중복 보존, 로그인 계정 변경 시 쓰기 차단, 장소/방문/사진의 본인 필터, 사진 파일 업로드·메타데이터 실패 시 파일 정리·삭제 흐름. 모두 모의 SDK 테스트이며 실제 서버 RLS 테스트를 대체하지 않습니다.
 Vercel 실제 확인: 미솥지음/을를/모가의숲/환경학습관 검색, 도로명/지번, 미솥지음 좌표 자동 입력과 테마 유지, 서울 지역 검색, 결과 없음 안내, 미솥지음 상세 지도 핀.
 **실제 Supabase SQL 실행/RLS HTTP 검증, 실파일 EXIF 검수, 나머지 장소 핀 전수 확인·현재 기기 GPS 길찾기는 아직 미실행**입니다.
 
@@ -193,6 +213,9 @@ VillageCollection, 장소 모델/자료, 날씨 응답 검사, legacy Worker 응
 - src/features/tour-stamps/village-layout.ts
 - public/assets/village-connected.png
 - supabase/migrations/202609210001_private_family_records.sql
+- supabase/migrations/202609210002_account_visit_records.sql
+- src/features/tour-stamps/{visit-dates,visit-repository,use-visit-records}.ts
+- scripts/verify-account-records.ts
 - scripts/verify-integrations.ts
 - 본 문서, docs/ADDRESS_AUDIT.md, design/VILLAGE_COLLECTION.md
 - .env.local: 로컬 전용 빈 설정 파일, Git 미포함

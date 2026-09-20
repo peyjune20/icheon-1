@@ -2,6 +2,22 @@
 
 ## 현재 목표
 
+2026-09-21 최신 후속 작업: 사용자가 Vercel에 등록한 NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 읽도록 연결. 기존 장소/사진 저장은 Supabase 구현을 재사용하고, 방문 스탬프도 계정별 DB 저장으로 전환했습니다. 기존 브라우저 기록은 자동 귀속하지 않고 명시적인 계정 복사만 허용합니다. 아래 과거 운영 확인 기록과 구분하세요.
+
+### 최신 Supabase 후속 작업
+
+- 환경변수 이름 불일치 해결: ANON_KEY 우선, 기존 PUBLISHABLE_KEY 대체 지원. .env.example와 로컬 .env.local의 빈 항목 및 설정 문서 동기화. 실제 키/사용자 사진은 읽거나 출력하지 않음.
+- 방문 기록 visit_records 테이블, 소유자별 조회/삽입/날짜 수정/해제 RLS를 추가 SQL 002로 구현. 기존 SQL 001은 변경하지 않음.
+- 나의 투어와 마을 진행도는 로그인 계정의 방문 기록을 사용. 로그인 전에는 예전 브라우저 기록만 읽기 전용 표시. 새 저장은 로그인 필요.
+- 브라우저 기록 복사는 명시적 버튼 선택만 가능. 원본 삭제 없음, 계정 기존 날짜 덮어쓰기 없음, 현재 접근 가능한 장소만 복사.
+- 개인 장소 삭제 시 해당 방문 기록은 외래 키 cascade로 삭제. 사진 파일/메타데이터 삭제는 기존 Supabase 흐름 유지.
+- 장소/사진 user_id는 인증 사용자에서 설정하고 RLS가 재검증. 계정 전환 중 늦게 도착한 장소 저장 응답도 이전 계정 화면에 표시하지 않도록 방어.
+- 자동 검증 3개 스위트 통과: 기본 30개/추천 회귀, 지도·사진 처리 검증, 계정 장소·방문·사진 저장/삭제/실패 모의 테스트.
+- 최종 npm run build 성공: 타입 검사, 40개 정적 페이지, Worker 번들. git diff --check 통과. 개발 서버는 빌드 전에 종료.
+- 로컬 브라우저 확인: 나의 투어 30개 조형물과 접기/펼치기, 비로그인 저장 안내 및 진행도 유지, /account의 새 안내 문구. 로컬 실제 Supabase 값은 여전히 비어 있어 실서버 저장 검증은 하지 않음.
+- 외부 설정 남음: Supabase SQL 001(최초만) → SQL 002, Auth 이메일/Redirect URL, 이 코드가 포함된 Vercel 새 배포. 계정 A/B RLS·실제 업로드 검증은 설정 후 필요.
+- 추가/수정 파일: src/lib/supabase.ts, .env.example, src/app/{account,my-trip}/page.tsx, src/features/custom-places/{CustomPlaceManager.tsx,account-repository.ts}, src/features/place-detail/photo-repository.ts, src/features/tour-stamps/{StampBook.tsx,TourStamp.tsx,visit-dates.ts,visit-repository.ts,use-visit-records.ts}, scripts/{verify.mjs,verify-account-records.ts}, supabase/migrations/202609210002_account_visit_records.sql, docs/SUPABASE_KAKAO_SETUP.md, 본 문서. .env.local은 Git 제외.
+
 2026-09-21 후속 요청: Kakao JS Places 검색, Supabase Auth/Storage/Database 개인 기록, 주소 30곳 대조, 연결된 마을 30개 슬롯, 카카오 자동차 경유 길찾기 구현 및 GitHub push.
 코드 구현과 로컬 검증 완료. 사용자 Vercel 재배포 후 Kakao 검색/자동 입력/실제 지도 핀은 운영 사이트에서 확인했습니다. Supabase 로그인/사진 연결 검증은 남아 있습니다.
 
@@ -82,7 +98,7 @@
 ## 현재 구현 상태
 
 - 프레임워크: Next.js 14.2.15, output: export. 40개 정적 페이지 빌드 성공.
-- 기본 30곳 ID/사진/방문 상태 유지. 새 개인 기록은 Supabase, 기존 찜/스탬프는 브라우저 저장 유지.
+- 기본 30곳 ID/사진 유지. 로그인한 사용자의 장소/방문/사진/코스는 Supabase. 찜은 브라우저, 예전 스탬프는 원본 보존 후 선택적 계정 복사.
 - GitHub origin: https://github.com/peyjune20/icheon-1.git, main. 기능 커밋 3b759ea push 성공 확인(2026-09-21). 이후 진행 기록만 별도 문서 커밋으로 갱신.
 - 기존 Sites 프로덕션은 v10(이전 커밋 3c6c862)이며 이번 후속 버전은 아직 Sites에 재배포하지 않음.
 - Sites D1/R2 기록과 Worker는 삭제하지 않음. 새 Supabase 계정과 자동 병합/이관하지 않음.
@@ -104,7 +120,7 @@
 ## 발견된 문제
 
 - 원인 확정: Vercel 정적 사이트에 기존 Worker API가 없어서 404 HTML을 JSON으로 읽었음. 새 프론트엔드 API 교체로 해당 원인 제거.
-- 로컬 .env.local과 Sites는 이전 점검에서 빈 설정이었음. Vercel 재배포본의 Kakao 연결은 이후 실제 확인 완료. Supabase 설정은 운영 화면에서 미완료 안내가 나옴.
+- 로컬 .env.local과 Sites는 이전 점검에서 빈 설정이었음. Vercel 재배포본 Kakao는 확인 완료. 이후 사용자가 Vercel Supabase URL/ANON_KEY 등록 완료를 알려주어 이번 코드에서 이름을 맞춤. 새 코드 배포 및 DB 설정까지는 별도 확인 필요.
 - Kakao SDK 허용 도메인 3개는 사용자가 직접 등록 완료했다고 확인함. 개발자 계정 직접 검증과 실제 키 연결은 아직 미수행.
 - 이천치유의숲은 실제 공식 운영 장소 특정 못함. 미확인 명시 및 자동 추천 제외.
 - 모가의 숲 산지 지번, 도드람산 정상, 단지 대표 주소 등은 자동차 입구와 다를 수 있음. Kakao Places 대조/운전자 최종 확인 필요.
@@ -113,8 +129,8 @@
 
 ## 미완료 작업
 
-- 사용자 Supabase 프로젝트 생성 및 SQL 실행, Auth 메일/리디렉션 URL 설정.
-- Vercel의 Supabase 공개 환경변수 2개 입력/확인 및 재배포. Kakao는 Vercel 반영 확인 완료. 로컬/Sites에는 각 환경의 값이 별도로 필요함.
+- 사용자 Supabase SQL 001 적용 여부 확인, 새 SQL 002 실행, Auth 메일/리디렉션 URL 설정.
+- 사용자 Vercel 공개 환경변수 2개 등록 완료. 이번 코드가 반영된 배포 확인 필요. 로컬/Sites에는 각 환경의 값이 별도로 필요함.
 - 실제 Supabase 계정 A/B의 업로드/조회/삭제/RLS HTTP 격리 테스트.
 - 실제 EXIF GPS·방향 테스트 파일로 업로드/다운로드 검수.
 - 나머지 장소 핀 전수 검증, 현재 기기 GPS부터 자동차 경유 경로 검증. Vercel Kakao 검색과 대표 상세 핀은 확인 완료.
@@ -122,9 +138,9 @@
 
 ## 다음 작업
 
-1. 도메인은 사용자 등록 완료. docs/SUPABASE_KAKAO_SETUP.md의 1~3단계에 따라 Supabase 프로젝트/SQL/Auth/실제 키 설정을 마무리.
-2. 로컬 .env.local에 NEXT_PUBLIC_KAKAO_MAP_KEY, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY를 입력한 뒤 npm run dev -- --port 3000.
-3. 설정 문서의 실연결 7단계 검수. 실패 시 브라우저 응답과 Supabase RLS/Storage 로그를 확인하되 토큰/키는 출력하지 말 것.
+1. docs/SUPABASE_KAKAO_SETUP.md의 1~3단계에 따라 SQL 001(이미 적용했다면 건너뜀) → SQL 002와 Auth 설정을 마무리. ANON_KEY로 등록한 Vercel 값은 이름 변경 불필요.
+2. 로컬 검증 시 .env.local에 NEXT_PUBLIC_KAKAO_MAP_KEY, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY를 입력한 뒤 npm run dev -- --port 3000.
+3. 설정 문서의 실연결 8단계 검수. 실패 시 브라우저 응답과 Supabase RLS/Storage 로그를 확인하되 토큰/키는 출력하지 말 것.
 4. npm run build 및 node scripts/verify.mjs 후 Vercel 환경변수 반영·재배포. Sites는 설정 후 별도 재배포.
 5. 기존 데이터 이관이 필요하면 기존 Sites 소유자와 Supabase UUID 매핑 방법을 확인하고 승인된 데이터만 이관.
 
@@ -133,6 +149,7 @@
 - 이 파일을 읽고 git status / git log -3 비교.
 - 외부 설정 시작점: docs/SUPABASE_KAKAO_SETUP.md.
 - Supabase: src/lib/supabase.ts → supabase/migrations/202609210001_private_family_records.sql.
+- 방문 기록: supabase/migrations/202609210002_account_visit_records.sql → src/features/tour-stamps/visit-repository.ts / use-visit-records.ts → src/app/my-trip/page.tsx. 날짜·가져오기: visit-dates.ts. 모의 테스트: scripts/verify-account-records.ts.
 - 업로드: src/features/place-detail/photo-repository.ts의 preparePhoto / uploadVisitPhoto / listVisitPhotos / deleteVisitPhoto.
 - 검색: src/lib/kakao-maps.ts의 loadKakaoMaps / searchKakaoPlaces.
 - 주소/자동차: src/infrastructure/data/place-addresses.data.ts, src/lib/map-points.ts의 resolveMapPoint / kakaoCarUrl.

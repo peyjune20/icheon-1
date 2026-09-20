@@ -6,12 +6,14 @@ interface TourStampProps {
   visitedAt: string;
   compact?: boolean;
   onRemove?: () => void;
+  disabled?: boolean;
 }
 
-export function TourStamp({ place, visitedAt, compact = false, onRemove }: TourStampProps) {
+export function TourStamp({ place, visitedAt, compact = false, onRemove, disabled }: TourStampProps) {
   const visitDate = new Intl.DateTimeFormat("ko-KR", {
     month: "short",
     day: "numeric",
+    timeZone: "Asia/Seoul",
   }).format(new Date(visitedAt));
   const theme = getTourMascotTheme(place.category);
   const stampTone = {
@@ -42,6 +44,7 @@ export function TourStamp({ place, visitedAt, compact = false, onRemove }: TourS
         <button
           type="button"
           onClick={onRemove}
+          disabled={disabled}
           className="absolute right-1.5 top-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-on-surface-variant shadow-xs transition-colors hover:bg-primary hover:text-white"
           aria-label={`${place.name} 스탬프 해제`}
         >

@@ -48,7 +48,7 @@ export async function uploadVisitPhoto(placeId: string, file: File, title: strin
   const id = crypto.randomUUID(), path = `${user.id}/${id}.jpg`;
   const upload = await db.storage.from(PHOTO_BUCKET).upload(path, blob, { contentType: "image/jpeg", upsert: false, cacheControl: "0" });
   if (upload.error) throw upload.error;
-  const result = await db.from("visit_photos").insert({ id, place_id: placeId, title: title.trim().slice(0, 200), object_path: path, original_filename: file.name.slice(0, 250) });
+  const result = await db.from("visit_photos").insert({ id, user_id: user.id, place_id: placeId, title: title.trim().slice(0, 200), object_path: path, original_filename: file.name.slice(0, 250) });
   if (result.error) {
     const cleanup = await db.storage.from(PHOTO_BUCKET).remove([path]);
     if (cleanup.error) console.error("Photo rollback needs storage cleanup", cleanup.error);

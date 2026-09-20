@@ -18,7 +18,8 @@ export function CustomPlaceManager({ places }: { places: Place[] }) {
   const [draft, setDraft] = useState({ name: "", address: "", lat: "", lng: "", category: "NATURE" });
   const [message, setMessage] = useState(""); const [signIn, setSignIn] = useState(false); const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState<Place | null>(null);
-  useEffect(() => { const clearAccount = () => { setSaved(null); setMessage(""); }; window.addEventListener(ACCOUNT_CHANGED, clearAccount); return () => window.removeEventListener(ACCOUNT_CHANGED, clearAccount); }, []);
+  const generation = useRef(0);
+  useEffect(() => { const clearAccount = () => { generation.current++; setSaved(null); setMessage(""); setSignIn(false); }; window.addEventListener(ACCOUNT_CHANGED, clearAccount); return () => { generation.current++; window.removeEventListener(ACCOUNT_CHANGED, clearAccount); }; }, []);
   const search = async () => {
     setBusy(true); setMessage(""); setSignIn(false);
     setResults([]);
@@ -27,16 +28,19 @@ export function CustomPlaceManager({ places }: { places: Place[] }) {
   };
   const save = async (event: React.FormEvent) => {
     event.preventDefault(); setBusy(true); setMessage(""); setSignIn(false);
+    const current = generation.current;
     try {
       const body = await saveCustomPlace({ ...draft, lat: Number(draft.lat), lng: Number(draft.lng) });
+      if (current !== generation.current) return;
       setSaved(body); setMessage("내 장소에 저장했어요. 상세 페이지에서 사진과 코스를 추가해 보세요."); window.dispatchEvent(new Event(PLACES_CHANGED));
-    } catch (e) { setSignIn(e instanceof UserFacingError && e.code === "AUTH"); setMessage(friendlyError(e, "저장하지 못했어요. 입력은 그대로 유지됩니다.")); } finally { setBusy(false); }
+    } catch (e) { if (current === generation.current) { setSignIn(e instanceof UserFacingError && e.code === "AUTH"); setMessage(friendlyError(e, "저장하지 못했어요. 입력은 그대로 유지됩니다.")); } } finally { setBusy(false); }
   };
   const remove = async (place: Place) => {
-    if (!window.confirm(`${place.name}과 이 장소에 올린 내 사진을 삭제할까요? 삭제 후 복구할 수 없어요.`)) return;
+    if (!window.confirm(`${place.name}과 이 장소의 방문 기록·내 사진을 삭제할까요? 삭제 후 복구할 수 없어요.`)) return;
     setBusy(true);
-    try { await deleteCustomPlace(place.id); window.dispatchEvent(new Event(PLACES_CHANGED)); if (saved?.id === place.id) setSaved(null); setMessage("장소와 내 사진을 삭제했어요."); }
-    catch (e) { setMessage(friendlyError(e, "삭제하지 못했어요. 다시 시도해 주세요.")); } finally { setBusy(false); }
+    const current = generation.current;
+    try { await deleteCustomPlace(place.id); if (current !== generation.current) return; window.dispatchEvent(new Event(PLACES_CHANGED)); if (saved?.id === place.id) setSaved(null); setMessage("장소와 방문 기록·내 사진을 삭제했어요."); }
+    catch (e) { if (current === generation.current) setMessage(friendlyError(e, "삭제하지 못했어요. 다시 시도해 주세요.")); } finally { setBusy(false); }
   };
   return <details ref={panel} id="add-place" className="my-6 rounded-3xl border border-outline-variant/40 bg-white p-5 sm:p-6">
     <summary className="cursor-pointer text-lg font-bold">＋ 목록에 없는 장소도 내 여행에 추가하기 <span className="ml-2 text-xs font-normal text-on-surface-variant">검색 · 직접 입력 · 관리</span></summary>

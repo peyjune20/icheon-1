@@ -5,8 +5,9 @@ import { TourStampRecord } from "./tour-stamps.storage";
 import { TourStamp } from "./TourStamp";
 import { TourMascot } from "./TourMascot";
 import { COLLECTIONS } from "./VillageCollection";
-export const todayInKorea = () => new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
-export function StampBook({ places, stamps, onCreate, onRemove }: { places: Place[]; stamps: TourStampRecord[]; onCreate: (id: string, date: string) => void; onRemove: (id: string) => void }) {
+import { todayInKorea } from "./visit-dates";
+export { todayInKorea } from "./visit-dates";
+export function StampBook({ places, stamps, onCreate, onRemove, disabled = false }: { places: Place[]; stamps: TourStampRecord[]; onCreate: (id: string, date: string) => void; onRemove: (id: string) => void; disabled?: boolean }) {
   const [dates, setDates] = useState<Record<string, string>>({});
   const stampMap = new Map(stamps.map(s => [s.placeId, s]));
   const groups = [...COLLECTIONS, { category: "OTHER", title: "우리 가족 탐험가" }];
@@ -19,10 +20,10 @@ export function StampBook({ places, stamps, onCreate, onRemove }: { places: Plac
         <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-3 lg:grid-cols-5">{members.map(place => {
           const stamp = stampMap.get(place.id);
           return <div key={place.id} className="flex min-w-0 flex-col items-center gap-2">
-            {stamp ? <TourStamp place={place} visitedAt={stamp.visitedAt} onRemove={() => onRemove(place.id)} /> : <div className="flex h-36 w-36 flex-col items-center justify-center rounded-full border-2 border-dashed border-outline-variant bg-surface-container-low grayscale opacity-60"><TourMascot category={place.category} /><span className="mt-2 text-xs">방문 전</span></div>}
+            {stamp ? <TourStamp place={place} visitedAt={stamp.visitedAt} disabled={disabled} onRemove={() => onRemove(place.id)} /> : <div className="flex h-36 w-36 flex-col items-center justify-center rounded-full border-2 border-dashed border-outline-variant bg-surface-container-low grayscale opacity-60"><TourMascot category={place.category} /><span className="mt-2 text-xs">방문 전</span></div>}
             <strong className="text-center text-xs">{place.name}</strong>
-            <input type="date" aria-label={`${place.name} 방문 날짜`} max={todayInKorea()} value={dates[place.id] || stamp?.visitedAt.slice(0, 10) || todayInKorea()} onChange={e => setDates(d => ({ ...d, [place.id]: e.target.value }))} className="w-full max-w-36 rounded-lg border border-outline-variant/40 p-1.5 text-xs" />
-            <button onClick={() => onCreate(place.id, dates[place.id] || stamp?.visitedAt.slice(0, 10) || todayInKorea())} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">{stamp ? "방문 날짜 수정" : "다녀왔어요"}</button>
+            <input type="date" disabled={disabled} aria-label={`${place.name} 방문 날짜`} max={todayInKorea()} value={dates[place.id] || stamp?.visitedAt.slice(0, 10) || todayInKorea()} onChange={e => setDates(d => ({ ...d, [place.id]: e.target.value }))} className="w-full max-w-36 rounded-lg border border-outline-variant/40 p-1.5 text-xs" />
+            <button disabled={disabled} onClick={() => onCreate(place.id, dates[place.id] || stamp?.visitedAt.slice(0, 10) || todayInKorea())} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary disabled:opacity-50">{stamp ? "방문 날짜 수정" : "다녀왔어요"}</button>
           </div>;
         })}</div>
       </details>;
