@@ -77,6 +77,7 @@ export interface Place {
     sources: { label: string; url: string }[];
   };
   coordinateSource?: string;
+  addressEvidence?: { url: string; note?: string; status?: "WEB_CHECKED" | "NEEDS_CHECK"; checkedAt: string };
   unavailableReason?: string;
 
   verificationStatus: VerificationStatus;

@@ -1,4 +1,6 @@
 "use client";
+import { savePlan } from "@/features/custom-places/account-repository";
+import { friendlyError } from "@/lib/client-errors";
 
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -112,7 +114,7 @@ function ItineraryContent() {
     const ids = itinerary.blocks.flatMap(b => b.place ? [b.place.id] : []);
     writeActiveCourse({ ids, query: searchParams.toString() });
     const controller = new AbortController();
-    fetch("/api/plan", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids, query: searchParams.toString() }), signal: controller.signal }).then(r => { if (!controller.signal.aborted) setPlanStatus(r.ok ? "내 계정에 코스를 저장했어요." : r.status === 401 ? "로그인하면 코스를 계정에 저장할 수 있어요. 비로그인은 코스 링크를 복사해 보관하세요." : "코스를 서버에 저장하지 못했어요. 링크를 복사해 보관해 주세요."); }).catch(() => { if (!controller.signal.aborted) setPlanStatus("저장 연결을 확인해 주세요. 코스 링크로도 보관할 수 있어요."); });
+    savePlan({ ids, query: searchParams.toString() }, controller.signal).then(() => { if (!controller.signal.aborted) setPlanStatus("내 계정에 코스를 저장했어요."); }).catch(e => { if (!controller.signal.aborted) setPlanStatus(friendlyError(e, "코스를 저장하지 못했어요.") + " 코스 링크로도 보관할 수 있어요."); });
     return () => controller.abort();
   }, [itinerary, searchParams]);
 

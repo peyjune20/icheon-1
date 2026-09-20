@@ -1,4 +1,4 @@
-// Temporary editing draft only. Durable saved plans live in D1 via /api/plan.
+// Temporary editing draft only. Durable saved plans live in Supabase (saved_plans).
 export type ActiveCourse = { ids: string[]; query: string };
 const key = "bebe-active-course-draft";
 export function readActiveCourse(): ActiveCourse | null {

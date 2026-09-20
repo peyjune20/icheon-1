@@ -34,9 +34,7 @@ export default function PlacesListPage() {
       if (activeFilter === "EXPERIENCE" && place.category !== "EXPERIENCE") {
         return false;
       }
-      // 미솥지음은 식사 장소이면서 부모가 편히 쉬기 좋은 공간으로 검증되어
-      // 부모 휴식 카페 필터에서도 함께 탐색할 수 있게 한다.
-      if (activeFilter === "CAFE" && place.category !== "CAFE" && place.id !== "1") {
+      if (activeFilter === "CAFE" && place.category !== "CAFE") {
         return false;
       }
       if (activeFilter === "INDOOR" && place.category !== "INDOOR") {

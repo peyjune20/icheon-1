@@ -8,12 +8,14 @@ import { usePlaces } from "@/features/custom-places/use-places";
 import { placeDetailHref } from "@/features/custom-places/place-links";
 import { VillageCollection } from "@/features/tour-stamps/VillageCollection";
 import { StampBook, todayInKorea } from "@/features/tour-stamps/StampBook";
+import { readSavedPlan } from "@/features/custom-places/account-repository";
+import { ACCOUNT_CHANGED } from "@/lib/supabase";
 
 export default function MyTripPage() {
   const { places, error } = usePlaces(); const [savedIds, setSavedIds] = useState<string[]>([]); const [stamps, setStamps] = useState<TourStampRecord[]>([]);
   const [message, setMessage] = useState("");
   const [planLink, setPlanLink] = useState("");
-  useEffect(() => { fetch("/api/plan").then(r => r.ok ? r.json() : null).then(plan => { if (!plan?.ids?.length) return; const query = new URLSearchParams(plan.query); query.set("stops", plan.ids.join(",")); setPlanLink(`/itinerary?${query}`); }).catch(() => {}); }, []);
+  useEffect(() => { let version = 0; const sync = () => { const current = ++version; setPlanLink(""); readSavedPlan().then(plan => { if (current !== version || !plan?.ids?.length) return; const query = new URLSearchParams(plan.query); query.set("stops", plan.ids.join(",")); setPlanLink(`/itinerary?${query}`); }).catch(() => {}); }; sync(); window.addEventListener(ACCOUNT_CHANGED, sync); return () => { version++; window.removeEventListener(ACCOUNT_CHANGED, sync); }; }, []);
   useEffect(() => {
     const sync = () => { setSavedIds(getSavedPlaceIds()); setStamps(getTourStamps()); };
     sync(); window.addEventListener(SAVED_PLACES_CHANGED_EVENT, sync); window.addEventListener(TOUR_STAMPS_CHANGED_EVENT, sync); window.addEventListener("storage", sync);
@@ -27,6 +29,7 @@ export default function MyTripPage() {
   const saved = places.filter(p => savedIds.includes(p.id)); const count = places.filter(p => stamps.some(s => s.placeId === p.id)).length;
   return <div className="min-h-screen bg-surface text-on-surface"><main className="mx-auto max-w-6xl px-4 pb-28 pt-24 sm:px-6 lg:pt-32">
     <section className="rounded-[28px] bg-secondary p-6 text-white sm:p-8"><p className="text-xs font-bold text-white/80">MY ICHEON TOUR</p><h1 className="mt-3 text-3xl font-bold">나의 이천 베베 투어</h1><p className="mt-3 text-sm text-white/85">찜한 장소 {saved.length}곳 · 다녀온 장소 {count}곳. 작은 방문이 모여 컬러풀한 마을이 돼요.</p></section>
+    <Link href="/account" className="mt-4 inline-block text-sm font-bold text-primary underline">내 기록 로그인 · 계정 관리</Link>
     {(message || error) && <p role="status" className="mt-4 text-sm text-primary">{message || error}</p>}
     {planLink && <Link href={planLink} className="mt-5 block rounded-2xl border bg-white p-5 font-bold text-secondary">저장한 우리 가족 코스 이어보기 →</Link>}
     <VillageCollection places={places.filter(p => p.recommendationSource !== "USER_ADDED")} stamps={stamps} />

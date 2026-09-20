@@ -4,7 +4,7 @@ import { ModifyItineraryUseCase } from "../src/application/modify-itinerary.usec
 import { SeedPlaceRepository } from "../src/infrastructure/repositories/seed-place-repository";
 import { SeedTravelTimeAdapter } from "../src/adapters/travel-time/seed-travel-time.adapter";
 import { SEED_PLACES } from "../src/infrastructure/data/seed-places.data";
-import { googleCourseUrl } from "../src/features/itinerary/components/NavigationModal";
+import { kakaoCarUrl } from "../src/lib/map-points";
 import { ageLabel } from "../src/domain/recommendation/itinerary-summary";
 import { TripInput } from "../src/domain/models/trip-input";
 import { createTourStamp, getTourStamps, removeTourStamp } from "../src/features/tour-stamps/tour-stamps.storage";
@@ -40,10 +40,10 @@ async function main() {
   await assert.rejects(() => modify.replacePlace(route, stops(route)[0].id, "16", normal));
   assert(!(await modify.getReplacementCandidates(route)).some(p => p.unavailableReason));
   const p = [SEED_PLACES[2], SEED_PLACES[5], SEED_PLACES[6]];
-  const url = new URL(googleCourseUrl(p));
-  assert.equal(url.searchParams.get("origin"), `${p[0].lat},${p[0].lng}`);
-  assert.equal(url.searchParams.get("destination"), `${p[2].lat},${p[2].lng}`);
-  assert.equal(url.searchParams.get("waypoints"), `${p[1].lat},${p[1].lng}`);
+  const url = decodeURI(kakaoCarUrl(p)!);
+  assert(url.startsWith("https://map.kakao.com/link/by/car/"));
+  assert(url.indexOf(p[0].name) < url.indexOf(p[1].name));
+  assert(url.indexOf(p[1].name) < url.indexOf(p[2].name));
   // Isolated in-memory storage: never touches real browser visit records.
   const memory = new Map<string, string>();
   Object.defineProperty(globalThis, "window", { configurable: true, value: { localStorage: { getItem: (key: string) => memory.get(key) || null, setItem: (key: string, value: string) => memory.set(key, value) }, dispatchEvent: () => true } });

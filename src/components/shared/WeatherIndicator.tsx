@@ -40,7 +40,7 @@ export function WeatherIndicator() {
     const loadWeather = async () => {
       try {
         const response = await fetch(ICHEON_WEATHER_URL, { signal: controller.signal });
-        if (!response.ok) throw new Error("Weather request failed");
+        if (!response.ok || !response.headers.get("Content-Type")?.includes("application/json")) throw new Error("Weather request failed");
 
         const data = (await response.json()) as CurrentWeatherResponse;
         const current = data.current;

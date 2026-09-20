@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Place } from "@/domain/models/place";
 import { isPlaceSaved, savePlace, toggleSavedPlace } from "@/features/saved-places/saved-places.storage";
 import { readActiveCourse } from "@/features/itinerary/active-course";
+import { readSavedPlan } from "@/features/custom-places/account-repository";
 
 interface BottomActionBarProps {
   place: Place;
@@ -30,9 +31,7 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
     setIsAdded(true);
     setError("");
     try {
-      const response = await fetch("/api/plan", { cache: "no-store" });
-      if (!response.ok && response.status !== 401) throw new Error("저장된 코스를 불러오지 못했어요.");
-      const plan = readActiveCourse() || (response.ok ? await response.json() : null);
+      const plan = readActiveCourse() || await readSavedPlan();
       const params = new URLSearchParams(plan?.query || "");
       params.set("stops", [...new Set<string>([...(plan?.ids || []), place.id])].join(","));
       router.push(`/itinerary?${params}`);

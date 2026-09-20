@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { makeCustomPlace } from "../features/custom-places/custom-place";
 
-// Runtime bindings stay server-side. Sites supplies the authenticated identity headers.
+// Legacy Sites-only API, retained to avoid deleting existing D1/R2 user records.
+// The current frontend uses Supabase directly on BOTH Vercel and Sites.
+// This Worker is not a Vercel Function and must never be proxied using a client-supplied identity.
 interface Statement { bind(...values: unknown[]): Statement; first<T = Record<string, unknown>>(): Promise<T | null>; all<T = Record<string, unknown>>(): Promise<{ results: T[] }>; run(): Promise<unknown>; }
 interface Env {
   DB: { prepare(sql: string): Statement; batch(queries: Statement[]): Promise<unknown> };
@@ -70,14 +72,14 @@ export default {
           const lock = await db.prepare("INSERT INTO search_lock (id, last_at) VALUES ('nominatim', ?) ON CONFLICT(id) DO UPDATE SET last_at = excluded.last_at WHERE last_at < ? RETURNING id").bind(now, cutoff).first();
           if (!lock) return json({ error: "검색 요청이 많아요. 2초 뒤 다시 검색해 주세요." }, 429);
           const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=kr&limit=8&accept-language=ko&q=${encodeURIComponent(q)}`, { headers: { "User-Agent": "IcheonBebeRoad/1.0 (https://icheon-bebe-road.grayngell.chatgpt.site)" }, signal: AbortSignal.timeout(8000) });
-          if (!response.ok) return json({ error: "지도 검색이 잠시 어려워요. 카카오맵 검색 후 직접 입력도 가능해요." }, 502);
+          if (!response.ok || !response.headers.get("Content-Type")?.includes("application/json")) return json({ error: "지도 검색이 잠시 어려워요. 카카오맵 검색 후 직접 입력도 가능해요." }, 502);
           const data = await response.json() as { place_id: number; name: string; display_name: string; lat: string; lon: string }[];
           const result = data.map(p => ({ id: String(p.place_id), name: p.name || q, address: p.display_name, lat: Number(p.lat), lng: Number(p.lon) }));
           await db.prepare("INSERT INTO search_cache (query, data, updated_at) VALUES (?, ?, ?) ON CONFLICT(query) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at").bind(q, JSON.stringify(result), now).run();
           return json(result);
         }
         const upstream = await fetch(`https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(q)}&size=10`, { headers: { Authorization: `KakaoAK ${env.KAKAO_REST_API_KEY}` }, signal: AbortSignal.timeout(8000) });
-        if (!upstream.ok) return json({ error: "장소 검색이 일시적으로 어려워요. 잠시 후 다시 시도해 주세요." }, 502);
+        if (!upstream.ok || !upstream.headers.get("Content-Type")?.includes("application/json")) return json({ error: "장소 검색이 일시적으로 어려워요. 잠시 후 다시 시도해 주세요." }, 502);
         const data = await upstream.json() as { documents: { id: string; place_name: string; road_address_name: string; address_name: string; y: string; x: string }[] };
         return json(data.documents.map(p => ({ id: p.id, name: p.place_name, address: p.road_address_name || p.address_name, lat: Number(p.y), lng: Number(p.x) })));
       }

@@ -21,7 +21,7 @@ export async function createRecommendationContext(input: Partial<TripInput>): Pr
   if (requestedWeather === "AUTO") {
     try {
       const response = await fetch("https://api.open-meteo.com/v1/forecast?latitude=37.2799&longitude=127.4428&current=temperature_2m,weather_code&timezone=Asia%2FSeoul", { signal: AbortSignal.timeout(5000) });
-      if (!response.ok) throw new Error("Weather unavailable");
+      if (!response.ok || !response.headers.get("Content-Type")?.includes("application/json")) throw new Error("Weather unavailable");
       const data = await response.json();
       if (typeof data.current?.temperature_2m !== "number") throw new Error("Missing weather");
       temperatureC = data.current.temperature_2m;

@@ -1,0 +1,36 @@
+/** Artboard 1586×992. x/y are percentages; y anchors the object's feet.
+ * Change a single place's coordinates here without changing its category or stamp.
+ * Slots follow gardens, banks and paths, NOT theme rows or category islands.
+ */
+export const VILLAGE_SLOTS = [
+  { placeId: "1", x: 42, y: 65, width: 7, height: 10, column: 0 },
+  { placeId: "2", x: 9, y: 44, width: 5.5, height: 11, column: 0 },
+  { placeId: "3", x: 64, y: 77, width: 6, height: 9, column: 3 },
+  { placeId: "4", x: 19, y: 77, width: 6, height: 10, column: 1 },
+  { placeId: "5", x: 83, y: 83, width: 6, height: 10, column: 3 },
+  { placeId: "6", x: 28, y: 65, width: 5.5, height: 8, column: 4 },
+  { placeId: "7", x: 34, y: 55, width: 5, height: 7, column: 2 },
+  { placeId: "8", x: 61, y: 89, width: 5, height: 9, column: 1 },
+  { placeId: "9", x: 42, y: 44, width: 4.5, height: 7, column: 4 },
+  { placeId: "10", x: 26, y: 24, width: 4.5, height: 8, column: 0 },
+  { placeId: "11", x: 52, y: 25, width: 4, height: 7, column: 2 },
+  { placeId: "12", x: 72, y: 40, width: 4.5, height: 8, column: 0 },
+  { placeId: "13", x: 91, y: 55, width: 5.5, height: 8, column: 2 },
+  { placeId: "14", x: 12, y: 54, width: 5, height: 8, column: 4 },
+  { placeId: "15", x: 33, y: 39, width: 4.5, height: 8, column: 3 },
+  { placeId: "16", x: 71, y: 94, width: 5.5, height: 8, column: 3 },
+  { placeId: "17", x: 4, y: 37, width: 4, height: 8, column: 1 },
+  { placeId: "18", x: 95, y: 66, width: 5, height: 10, column: 3 },
+  { placeId: "19", x: 14, y: 28, width: 4.5, height: 7, column: 0 },
+  { placeId: "20", x: 46, y: 91, width: 4, height: 9, column: 1 },
+  { placeId: "21", x: 56, y: 47, width: 4.5, height: 9, column: 0 },
+  { placeId: "22", x: 79, y: 50, width: 5, height: 8, column: 2 },
+  { placeId: "23", x: 6, y: 84, width: 5, height: 10, column: 1 },
+  { placeId: "24", x: 59, y: 64, width: 4.5, height: 7, column: 0 },
+  { placeId: "25", x: 34, y: 94, width: 5, height: 8, column: 2 },
+  { placeId: "26", x: 37, y: 23, width: 4, height: 7, column: 4 },
+  { placeId: "27", x: 79, y: 30, width: 4, height: 7, column: 1 },
+  { placeId: "28", x: 28, y: 85, width: 5, height: 8, column: 4 },
+  { placeId: "29", x: 75, y: 69, width: 5, height: 7.5, column: 2 },
+  { placeId: "30", x: 93, y: 23, width: 4, height: 6.5, column: 0 },
+] as const;

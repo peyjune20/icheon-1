@@ -1,6 +1,7 @@
 import { Place } from "@/domain/models/place";
 import { EvidenceValue } from "@/domain/models/evidence";
 import { TriState } from "@/domain/models/tri-state";
+import { applyAddressAudit } from "./place-addresses.data";
 
 const city = (mid: string) => `https://www.icheon.go.kr/tour/contents.do?mid=${mid}`;
 const kto = (id: string) => `https://data.visitkorea.or.kr/linkedview/${id}`;
@@ -39,7 +40,7 @@ const research: Record<string, Research> = {
 
 export function applyPlaceResearch(place: Place): Place {
   const entry = research[place.id];
-  if (!entry) return place;
+  if (!entry) return applyAddressAudit(place);
   const { url, hours, closed, cost, phone, access: accessText, ...changes } = entry;
   const result = { ...place, ...changes, sourceUrl: url };
   if (changes.address) result.roadAddress = changes.address;
@@ -48,5 +49,5 @@ export function applyPlaceResearch(place: Place): Place {
     checkedAt: "2026-09-21", hours: hours || "공식 운영시간 미확인", closed: closed || "임시 휴무·통제는 방문 전 확인", cost: cost || "공식 요금 미확인", phone, access: accessText,
     sources: [{ label: url.includes("visitkorea") ? "한국관광공사 안내" : url.includes("icheon.go.kr") ? "이천시 공식 안내" : "운영 기관 안내", url }],
   };
-  return result;
+  return applyAddressAudit(result);
 }
