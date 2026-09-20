@@ -36,6 +36,7 @@ export interface RecommendationContext {
   weather: {
     condition: "NORMAL" | "HOT" | "RAIN" | "COLD";
     temperatureC: number;
+    source?: "CURRENT" | "SELECTED" | "FALLBACK";
   };
   maxBlocks: number;
 }

@@ -1,4 +1,5 @@
 import { Place } from "@/domain/models/place";
+import { applyPlaceResearch } from "./place-research.data";
 
 const AI_PLACE_VISUALS = {
   NATURE: ["/assets/ai-nature-forest.png", "/assets/ai-nature-lake.png", "/assets/ai-nature-garden.png"],
@@ -181,7 +182,7 @@ const AI_RECOMMENDED_PLACES: Place[] = [
   }),
 ];
 
-export const SEED_PLACES: Place[] = [
+export const SEED_PLACES: Place[] = ([
   {
     id: "1",
     name: "미솥지음",
@@ -484,4 +485,4 @@ export const SEED_PLACES: Place[] = [
     recommendationReason: "수변 풍경을 좋아하는 가족에게 제안하지만, 유모차·편의시설 정보는 방문 전 공식 안내를 확인해 주세요."
   },
   ...AI_RECOMMENDED_PLACES,
-];
+] satisfies Place[]).map(applyPlaceResearch);

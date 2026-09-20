@@ -1,6 +1,8 @@
 # Environment variables
 .env
 .env*.local
+.dev.vars
+.dev.vars.*
 
 # Node / Dependencies
 node_modules/
@@ -13,6 +15,7 @@ yarn-error.log*
 out/
 build/
 dist/
+.wrangler/
 *.tsbuildinfo
 
 # Operating System

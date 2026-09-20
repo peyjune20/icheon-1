@@ -8,6 +8,7 @@ import { calculatePlaceScore } from "./place-scorer";
 import { buildTimelineBlocks, timeToMinutes } from "../scheduling/timeline-scheduler";
 import { calculateBuffers } from "../scheduling/buffer-calculator";
 import { evaluateDensity } from "../scheduling/density-evaluator";
+import { itineraryReasons } from "./itinerary-summary";
 
 export class RuleBasedRecommendationEngine {
   constructor(
@@ -27,10 +28,6 @@ export class RuleBasedRecommendationEngine {
       if (!constraintResult.eligible) {
         let tag = "조건 제외";
         let reasonText = constraintResult.reason || "조건 불일치";
-        if (place.id === "2") {
-          tag = "폭염 주의";
-          reasonText = "야외 위주 공간으로 오늘 같은 폭염에는 아이가 쉽게 지칠 수 있어 제외했어요.";
-        }
         excludedPlaces.push({
           place,
           tag,
@@ -41,17 +38,6 @@ export class RuleBasedRecommendationEngine {
       }
     }
 
-    // 성호호수 (id: "7")는 동선 초과인 경우에만 제외 (단, 날씨가 무더울 때 기본 배제 처리)
-    if (context.weather.condition === "HOT") {
-      const sungho = allPlaces.find((p) => p.id === "7");
-      if (sungho && !excludedPlaces.some((e) => e.place.id === "7")) {
-        excludedPlaces.push({
-          place: sungho,
-          tag: "동선 초과",
-          reason: "동선상 40분이 더 소요되어 저녁 귀가 정체 시간을 넘기게 됩니다.",
-        });
-      }
-    }
 
     // 2. Soft Scoring
     const scoredPlaces = eligiblePlaces
@@ -120,7 +106,7 @@ export class RuleBasedRecommendationEngine {
     for (const place of allPlaces) {
       if (!selectedPlaces.some((sp) => sp.id === place.id) && !excludedPlaces.some((ep) => ep.place.id === place.id)) {
         let tag = "동선 조율";
-        let reason = "아이의 체력과 저녁 정체 전 복귀를 고려해 다음 일정으로 남겨두었어요.";
+        let reason = "추천 장소 수와 선택한 취향을 고려해 추가 후보로 남겼어요. 직접 코스에 넣을 수 있어요.";
         if (place.category === "RESTAURANT" && !context.trip.includeLunch) {
           tag = "점심 제외";
           reason = "점심 식사 제외 설정으로 자연·카페 중심 코스에 집중했어요.";
@@ -146,8 +132,8 @@ export class RuleBasedRecommendationEngine {
       this.travelAdapter
     );
 
-    // 5. Safe Departure Block
-    const depTime = context.trip.desiredDepartureFromIcheon || "17:30";
+    // The end is calculated from the last stop, never from a fixed home city.
+    const depTime = blocks.at(-1)?.endTime ?? context.trip.arrivalInIcheon;
     blocks.push({
       id: "block-departure",
       type: "DEPARTURE",
@@ -155,7 +141,7 @@ export class RuleBasedRecommendationEngine {
       startTime: depTime,
       endTime: depTime,
       durationMin: 0,
-      title: `${depTime} 이천 출발 → 서울 저녁 정체 전 안전 귀가`,
+      title: `${depTime} 이천 코스 종료 예상 · 귀가는 우리 가족 일정에 맞게`,
     });
 
     // 6. Buffers & Density
@@ -168,34 +154,17 @@ export class RuleBasedRecommendationEngine {
     );
 
     // 7. Contextual Dynamic Reasons
-    const reasons = [
-      `👶 ${context.trip.displayAge} 아이 발걸음`,
-      context.trip.strollerRequired ? "🦽 유모차 완경사로 보장" : "👟 자유로운 자연 산책로",
-      context.trip.includeLunch ? "🍚 이천 쌀밥 영양 점심" : "🌿 자연 쉼표 & 카페 집중 코스",
-      context.trip.parentRestPriority === "HIGH"
-        ? "☕ 부모 휴식 60분 집중 보장"
-        : context.trip.parentRestPriority === "MEDIUM"
-        ? "☕ 부모 휴식 40분 보장"
-        : "☕ 가벼운 티타임 휴식",
-    ];
-
-    if (context.trip.styles.includes("INDOOR")) {
-      reasons[1] = "❄️ 쾌적한 실내 냉방 60% 안배";
-    }
-
-    // Travel & Slack Min
-    const effectiveTravelMin = Math.max(totalTravelMin, selectedPlaces.length > 2 ? 70 : 40);
-    const effectiveSlackMin = Math.max(densityResult.slackMin, 40);
+    const reasons = itineraryReasons(selectedPlaces, context);
 
     return {
       id: `itinerary-${Date.now()}`,
       blocks,
-      totalDurationMin: context.tripWindowMin,
-      totalTravelMin: effectiveTravelMin,
+      totalDurationMin: totalStayMin + totalTravelMin,
+      totalTravelMin,
       totalStayMin,
       bufferMin: totalBufferMin,
-      slackMin: effectiveSlackMin,
-      status: "RELAXED",
+      slackMin: densityResult.slackMin,
+      status: densityResult.status,
       reasons,
       excludedPlaces,
     };

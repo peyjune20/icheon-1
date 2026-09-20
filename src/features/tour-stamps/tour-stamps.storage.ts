@@ -20,7 +20,7 @@ function readTourStamps(): TourStampRecord[] {
         typeof stamp === "object" &&
         stamp !== null &&
         typeof (stamp as TourStampRecord).placeId === "string" &&
-        typeof (stamp as TourStampRecord).visitedAt === "string",
+        typeof (stamp as TourStampRecord).visitedAt === "string" && Number.isFinite(Date.parse((stamp as TourStampRecord).visitedAt)),
     );
 
     return [...new Map(stamps.map((stamp) => [stamp.placeId, stamp])).values()];
@@ -40,9 +40,7 @@ export function getTourStamps(): TourStampRecord[] {
 
 export function createTourStamp(placeId: string, visitedAt = new Date().toISOString()): TourStampRecord[] {
   const stamps = readTourStamps();
-  if (stamps.some((stamp) => stamp.placeId === placeId)) return stamps;
-
-  const nextStamps = [...stamps, { placeId, visitedAt }];
+  const nextStamps = [...stamps.filter(stamp => stamp.placeId !== placeId), { placeId, visitedAt }];
   writeTourStamps(nextStamps);
   return nextStamps;
 }

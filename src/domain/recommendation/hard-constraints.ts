@@ -10,6 +10,8 @@ export function evaluateHardConstraints(
   place: Place,
   context: RecommendationContext
 ): ConstraintResult {
+  if (place.unavailableReason) return { eligible: false, reason: place.unavailableReason };
+  if (place.ageMinMonths && context.trip.childAgeMonths < place.ageMinMonths) return { eligible: false, reason: "아이 연령에 맞지 않는 활동이에요." };
   // 1. 휴무일 검사 (Closed Day check)
   const dateObj = new Date(context.trip.tripDate);
   const dayOfWeek = isNaN(dateObj.getTime()) ? 6 : dateObj.getDay(); // fallback Saturday

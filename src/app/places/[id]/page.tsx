@@ -9,6 +9,7 @@ import { ParentReviewBox } from "@/features/place-detail/components/ParentReview
 import { PracticalInfoGrid } from "@/features/place-detail/components/PracticalInfoGrid";
 import { LocationPreview } from "@/features/place-detail/components/LocationPreview";
 import { BottomActionBar } from "@/features/place-detail/components/BottomActionBar";
+import { VisitorPhotos } from "@/features/place-detail/components/VisitorPhotos";
 
 interface PlaceDetailPageProps {
   params: {
@@ -58,6 +59,7 @@ export default async function PlaceDetailPage({ params }: PlaceDetailPageProps) 
         {/* STORY-305: Practical Info 4-Grid & Location Accessibility */}
         <PracticalInfoGrid place={place} />
         <LocationPreview place={place} />
+        <VisitorPhotos placeId={place.id} />
       </main>
 
       {/* STORY-306: Sticky Bottom Action Bar */}

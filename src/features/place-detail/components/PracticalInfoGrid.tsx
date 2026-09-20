@@ -1,109 +1,15 @@
-import React from "react";
 import { Place } from "@/domain/models/place";
-
-interface PracticalInfoGridProps {
-  place: Place;
+export function PracticalInfoGrid({ place }: { place: Place }) {
+  const info = place.researchedInfo, ai = place.recommendationSource === "AI_RECOMMENDED";
+  const days = ["일","월","화","수","목","금","토"];
+  const items = [
+    ["체류 계획", `약 ${place.recommendedDurationMin}분`, "가족의 속도에 맞춰 조절하는 추천 시간이에요."],
+    ["운영시간", info?.hours || (ai ? "공식 운영시간 미확인" : `${place.openingHours.open}–${place.openingHours.close}`), info?.closed || (place.openingHours.closedDays.length ? `정기 휴무: ${place.openingHours.closedDays.map(d=>days[d]).join(", ")}요일 · 임시 휴무 확인` : "임시 휴무·행사 일정은 방문 전 확인하세요.")],
+    ["비용 안내", info?.cost || "최신 요금은 운영처에 확인해 주세요.", "연령·체험·예약 조건에 따라 달라질 수 있어요."],
+    ["날씨와 이용", place.indoorOutdoor === "INDOOR" ? "실내 중심" : place.indoorOutdoor === "MIXED" ? "실내·실외 공간" : "야외 중심", place.indoorOutdoor === "OUTDOOR" ? "강수·기온·현장 통제를 확인하세요." : "냉난방·실내 이용 가능 구역은 운영처에 확인하세요."]
+  ];
+  return <section className="mb-8" data-testid="practical-info-grid"><h2 className="mb-3 text-lg font-bold">방문 전 필수 정보</h2>{place.unavailableReason && <p role="alert" className="mb-4 rounded-xl bg-amber-50 p-4 text-sm font-bold text-amber-900">{place.unavailableReason}</p>}
+    <div className="grid gap-3 sm:grid-cols-2">{items.map(([title,value,note])=><div key={title} className="rounded-2xl border border-outline-variant/30 bg-white p-5"><h3 className="text-xs text-secondary">{title}</h3><p className="mt-2 text-sm font-bold">{value}</p><p className="mt-2 text-xs leading-5 text-on-surface-variant">{note}</p></div>)}</div>
+    {info && <div className="mt-4 rounded-xl bg-surface-container-low p-4 text-xs leading-6"><p>AI가 공개 안내를 조사해 정리했어요 · 자료 확인 {info.checkedAt}. 현장 실측 인증과는 다르며, 최신 운영 여부와 유아 시설은 방문 전 다시 확인해 주세요.</p>{info.phone && <a href={`tel:${info.phone}`} className="mr-4 font-bold">전화 문의 {info.phone}</a>}{info.sources.map(s=><a key={s.url} href={s.url} target="_blank" rel="noreferrer" className="mr-3 font-bold text-secondary underline">{s.label} ↗</a>)}</div>}
+  </section>;
 }
-
-export const PracticalInfoGrid: React.FC<PracticalInfoGridProps> = ({ place }) => {
-  const isAiRecommended = place.recommendationSource === "AI_RECOMMENDED";
-  // 1. Duration
-  const durationText = `${place.recommendedDurationMin}분 내외`;
-  const durationDesc =
-    place.category === "PARK"
-      ? "무리 없는 산책 + 카페 휴식"
-      : place.category === "RESTAURANT"
-      ? "아이와 여유 있는 식사 시간"
-      : place.category === "CAFE"
-      ? "부모 충전 커피 타임"
-      : "여유로운 관람 및 쉼터";
-
-  // 2. Opening Hours
-  const hoursText = isAiRecommended ? "공식 채널 확인" : `${place.openingHours.open} ~ ${place.openingHours.close}`;
-  const daysMap = ["일", "월", "화", "수", "목", "금", "토"];
-  const closedDaysText =
-    isAiRecommended
-      ? "운영시간·휴무일 변동 가능"
-      : place.openingHours.closedDays.length === 0
-      ? "연중무휴"
-      : `매주 ${place.openingHours.closedDays.map((d) => daysMap[d]).join(", ")}요일 정기 휴무`;
-
-  // 3. Cost
-  const costText = isAiRecommended
-    ? "현장 요금 확인"
-    :
-    place.category === "PARK" || place.category === "INDOOR"
-      ? "입장료 무료"
-      : place.category === "RESTAURANT"
-      ? "1인 15,000~20,000원"
-      : "1인 6,000~8,000원";
-  const costDesc = isAiRecommended
-    ? "AI 추천 후보 · 방문 전 확인"
-    :
-    place.category === "PARK"
-      ? "카페 음료 및 체험 별도"
-      : place.category === "RESTAURANT"
-      ? "유아 식기 및 아기의자 무료"
-      : "주차 및 정원 이용 무료";
-
-  // 4. Weather
-  const weatherText =
-    place.indoorOutdoor === "INDOOR"
-      ? "모든 날씨 적합"
-      : place.indoorOutdoor === "MIXED"
-      ? "맑음 / 다소 더움"
-      : "맑음 / 선선함";
-  const weatherDesc =
-    place.indoorOutdoor === "INDOOR"
-      ? "전 구역 시원한 실내 냉방"
-      : place.indoorOutdoor === "MIXED"
-      ? "대형 실내 카페 대피 가능"
-      : "야외 그늘막 휴식 공간 완비";
-
-  return (
-    <div className="w-full mb-6" data-testid="practical-info-grid">
-      <h2 className="text-lg font-bold text-on-surface mb-3">방문 전 필수 정보</h2>
-      <div className="grid grid-cols-2 gap-3">
-        {/* Item 1: Duration */}
-        <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-on-surface-variant mb-1">
-            <span className="material-symbols-outlined text-[18px]">schedule</span>
-            <span className="text-xs font-medium">적정 체류시간</span>
-          </div>
-          <p className="text-sm text-on-surface font-bold mt-1">{durationText}</p>
-          <span className="text-xs text-on-surface-variant mt-0.5 leading-snug">{durationDesc}</span>
-        </div>
-
-        {/* Item 2: Hours */}
-        <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-on-surface-variant mb-1">
-            <span className="material-symbols-outlined text-[18px]">access_time</span>
-            <span className="text-xs font-medium">운영시간</span>
-          </div>
-          <p className="text-sm text-on-surface font-bold mt-1">{hoursText}</p>
-          <span className="text-xs text-tertiary font-semibold mt-0.5 leading-snug">{closedDaysText}</span>
-        </div>
-
-        {/* Item 3: Cost */}
-        <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-on-surface-variant mb-1">
-            <span className="material-symbols-outlined text-[18px]">payments</span>
-            <span className="text-xs font-medium">비용 안내</span>
-          </div>
-          <p className="text-sm text-primary font-bold mt-1">{costText}</p>
-          <span className="text-xs text-on-surface-variant mt-0.5 leading-snug">{costDesc}</span>
-        </div>
-
-        {/* Item 4: Weather */}
-        <div className="bg-surface-container-lowest p-3.5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-outline-variant/20 flex flex-col justify-between">
-          <div className="flex items-center gap-1.5 text-on-surface-variant mb-1">
-            <span className="material-symbols-outlined text-[18px]">wb_sunny</span>
-            <span className="text-xs font-medium">추천 날씨</span>
-          </div>
-          <p className="text-sm text-on-surface font-bold mt-1">{weatherText}</p>
-          <span className="text-xs text-on-surface-variant mt-0.5 leading-snug">{weatherDesc}</span>
-        </div>
-      </div>
-    </div>
-  );
-};

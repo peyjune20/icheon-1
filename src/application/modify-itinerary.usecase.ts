@@ -1,11 +1,13 @@
 import { Place } from "@/domain/models/place";
-import { Itinerary, ItineraryBlock } from "@/domain/models/itinerary";
+import { Itinerary, ExcludedPlace } from "@/domain/models/itinerary";
 import { RecommendationContext } from "@/domain/models/trip-input";
 import { PlaceRepository } from "@/infrastructure/repositories/place-repository.interface";
 import { TravelTimeAdapter } from "@/adapters/travel-time/travel-time-adapter.interface";
 import { buildTimelineBlocks } from "@/domain/scheduling/timeline-scheduler";
 import { calculateBuffers } from "@/domain/scheduling/buffer-calculator";
 import { evaluateDensity } from "@/domain/scheduling/density-evaluator";
+import { itineraryReasons } from "@/domain/recommendation/itinerary-summary";
+import { evaluateHardConstraints } from "@/domain/recommendation/hard-constraints";
 
 export class ModifyItineraryUseCase {
   constructor(
@@ -20,7 +22,7 @@ export class ModifyItineraryUseCase {
     places: Place[],
     context: RecommendationContext,
     reasons: string[] = ["아이 컨디션과 부모 휴식을 배려하여 최적화된 맞춤 일정입니다."],
-    excluded = []
+    excluded: ExcludedPlace[] = []
   ): Promise<Itinerary> {
     const { blocks, totalStayMin, totalTravelMin } = await buildTimelineBlocks(
       places,
@@ -28,15 +30,15 @@ export class ModifyItineraryUseCase {
       this.travelAdapter
     );
 
-    // Departure block
+    const endTime = blocks.at(-1)?.endTime ?? context.trip.arrivalInIcheon;
     blocks.push({
       id: "block-departure",
       type: "DEPARTURE",
       order: places.length + 1,
-      startTime: context.trip.desiredDepartureFromIcheon || "17:30",
-      endTime: context.trip.desiredDepartureFromIcheon || "17:30",
+      startTime: endTime,
+      endTime,
       durationMin: 0,
-      title: `${context.trip.desiredDepartureFromIcheon || "17:30"} 이천 출발 → 저녁 정체 전 안전 귀가`,
+      title: `${endTime} 이천 코스 종료 예상 · 귀가는 우리 가족 일정에 맞게`,
     });
 
     const { totalBufferMin } = calculateBuffers(blocks, context);
@@ -56,8 +58,8 @@ export class ModifyItineraryUseCase {
       bufferMin: totalBufferMin,
       slackMin: densityResult.slackMin,
       status: densityResult.status,
-      reasons,
-      excludedPlaces: excluded,
+      reasons: [...itineraryReasons(places, context), ...places.map(p => evaluateHardConstraints(p, context)).filter(r => !r.eligible).map(r => `직접 추가한 장소 주의: ${r.reason}`)],
+      excludedPlaces: (await this.placeRepo.listCandidates()).filter(p => !places.some(selected => selected.id === p.id)).map(place => excluded.find(item => item.place.id === place.id) ?? { place, tag: "추가 가능", reason: "우리 가족 코스에 직접 추가할 수 있어요." }),
     };
   }
 
@@ -79,6 +81,7 @@ export class ModifyItineraryUseCase {
     context: RecommendationContext
   ): Promise<Itinerary> {
     const currentPlaces = this.getPlacesFromItinerary(currentItinerary);
+    if (currentPlaces.length <= 1) return currentItinerary;
     const updatedPlaces = currentPlaces.filter((p) => p.id !== placeIdToRemove);
 
     return this.rebuildItinerary(
@@ -87,6 +90,14 @@ export class ModifyItineraryUseCase {
       currentItinerary.reasons,
       currentItinerary.excludedPlaces as any
     );
+  }
+
+  async addPlace(current: Itinerary, place: Place, context: RecommendationContext): Promise<Itinerary> {
+    const places = this.getPlacesFromItinerary(current);
+    if (places.some(p => p.id === place.id)) return current;
+    if (place.unavailableReason) throw new Error(place.unavailableReason);
+    if (places.length >= 30) throw new Error("코스에는 최대 30곳까지 담을 수 있어요.");
+    return this.rebuildItinerary([...places, place], context, current.reasons, current.excludedPlaces);
   }
 
   /**
@@ -126,8 +137,10 @@ export class ModifyItineraryUseCase {
     if (!newPlace) {
       throw new Error(`Place with id ${newPlaceId} not found`);
     }
+    if (newPlace.unavailableReason) throw new Error(newPlace.unavailableReason);
 
     const currentPlaces = this.getPlacesFromItinerary(currentItinerary);
+    if (currentPlaces.some(p => p.id === newPlaceId && p.id !== oldPlaceId)) return currentItinerary;
     const updatedPlaces = currentPlaces.map((p) => (p.id === oldPlaceId ? newPlace : p));
 
     return this.rebuildItinerary(
@@ -171,6 +184,6 @@ export class ModifyItineraryUseCase {
   async getReplacementCandidates(currentItinerary: Itinerary): Promise<Place[]> {
     const allPlaces = await this.placeRepo.listCandidates();
     const currentPlaceIds = new Set(this.getPlacesFromItinerary(currentItinerary).map((p) => p.id));
-    return allPlaces.filter((p) => !currentPlaceIds.has(p.id));
+    return allPlaces.filter((p) => !p.unavailableReason && !currentPlaceIds.has(p.id));
   }
 }

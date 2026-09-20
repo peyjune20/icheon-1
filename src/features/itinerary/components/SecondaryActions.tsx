@@ -25,7 +25,7 @@ export const SecondaryActions = ({
         data-testid="btn-reduce-stop"
       >
         <span className="material-symbols-outlined text-[18px]">remove_circle_outline</span>
-        <span>한 곳 줄이기 (-45분)</span>
+        <span>한 곳 줄이기</span>
       </button>
     </section>
   );

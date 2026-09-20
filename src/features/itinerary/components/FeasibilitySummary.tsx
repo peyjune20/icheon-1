@@ -66,14 +66,14 @@ export const FeasibilitySummary = ({
         {/* 3-Column Metrics Grid */}
         <div className="grid grid-cols-3 gap-2 py-2 mb-2 text-center">
           <div className="flex flex-col items-center bg-surface-container-low rounded-lg py-2.5 px-1">
-            <span className="text-label-sm text-secondary">총 일정</span>
+            <span className="text-label-sm text-secondary">이천 내 일정</span>
             <span className="font-numeric text-numeric-callout text-on-surface mt-0.5">
               {totalHours > 0 ? `${totalHours}시간 ` : ""}
               {totalMins > 0 ? `${totalMins}분` : ""}
             </span>
           </div>
           <div className="flex flex-col items-center bg-surface-container-low rounded-lg py-2.5 px-1">
-            <span className="text-label-sm text-secondary">순수 이동</span>
+            <span className="text-label-sm text-secondary">장소 간 예상 이동</span>
             <span className="font-numeric text-numeric-callout text-on-surface mt-0.5">
               {travelHours > 0 ? `${travelHours}시간 ` : ""}
               {travelMins}분
@@ -82,7 +82,7 @@ export const FeasibilitySummary = ({
           <div className="flex flex-col items-center bg-surface-container-low rounded-lg py-2.5 px-1">
             <span className="text-label-sm text-primary font-medium">여유·버퍼</span>
             <span className="font-numeric text-numeric-callout text-primary mt-0.5">
-              {slackMin}분 확보
+              {slackMin >= 0 ? `${slackMin}분` : `${Math.abs(slackMin)}분 초과`}
             </span>
           </div>
         </div>
@@ -90,7 +90,7 @@ export const FeasibilitySummary = ({
         {/* Explanatory note */}
         <p className="text-body-sm text-on-surface-variant flex items-center gap-1.5 px-1 mt-1">
           <span className="material-symbols-outlined text-[16px] text-primary">shield</span>
-          <span>장소 간 이동시간 15~20분 내외로 아이가 차 안에서 보채지 않는 거리입니다.</span>
+          <span>체류와 이천 내 예상 이동시간을 합산했어요. 집에서 오가는 시간은 제외하며, 귀가 시각은 직접 정해 주세요.</span>
         </p>
       </section>
     </div>

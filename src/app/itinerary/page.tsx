@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Itinerary } from "@/domain/models/itinerary";
 import { Place } from "@/domain/models/place";
 import { RecommendationContext } from "@/domain/models/trip-input";
-import { generateItineraryUseCase } from "@/application/generate-itinerary.usecase";
+import { createRecommendationContext, generateItineraryUseCase } from "@/application/generate-itinerary.usecase";
 import { ModifyItineraryUseCase } from "@/application/modify-itinerary.usecase";
 import { SeedPlaceRepository } from "@/infrastructure/repositories/seed-place-repository";
 import { SeedTravelTimeAdapter } from "@/adapters/travel-time/seed-travel-time.adapter";
@@ -21,12 +21,15 @@ import { ReplacePlaceModal } from "@/features/itinerary/components/ReplacePlaceM
 import { ReorderModal } from "@/features/itinerary/components/ReorderModal";
 import { NavigationModal } from "@/features/itinerary/components/NavigationModal";
 import { RECOMMENDATION_CONFIG } from "@/domain/config/recommendation.config";
+import { writeActiveCourse } from "@/features/itinerary/active-course";
 
 function ItineraryContent() {
   const searchParams = useSearchParams();
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [context, setContext] = useState<RecommendationContext | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saveMessage, setSaveMessage] = useState("");
+  const [planStatus, setPlanStatus] = useState("");
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -45,7 +48,9 @@ function ItineraryContent() {
   );
 
   useEffect(() => {
+    let cancelled = false;
     setError(null);
+    setItinerary(null);
     const childAge = searchParams.get("age") ? Number(searchParams.get("age")) : 17;
     const stroller = searchParams.get("stroller") !== "false";
     // 여행 일정과 이동수단은 별도 입력 없이 안전한 당일 코스 기본값으로 생성한다.
@@ -62,55 +67,9 @@ function ItineraryContent() {
     const napEnd = searchParams.get("napEnd") ?? "15:00";
     const parentRestPriority = (searchParams.get("parentRestPriority") as "LOW" | "MEDIUM" | "HIGH") || "HIGH";
     const requestedWeather = searchParams.get("weather") as "AUTO" | "NORMAL" | "HOT" | "RAIN" | "COLD" | null;
-    const weatherCondition = requestedWeather && requestedWeather !== "AUTO"
-      ? requestedWeather
-      : styles.includes("INDOOR")
-      ? "HOT"
-      : "NORMAL";
-    const weatherLabel = weatherCondition === "HOT" ? "더운 날" : weatherCondition === "RAIN" ? "비 오는 날" : weatherCondition === "COLD" ? "추운 날" : "맑은 날";
+    const arrivalInIcheon = "12:00";
 
-    const [depH, depM] = departureTime.split(":").map(Number);
-    const arrH = (depH + 2) % 24;
-    const arrivalInIcheon = `${String(arrH).padStart(2, "0")}:${String(depM || 0).padStart(2, "0")}`;
-
-    const [retH, retM] = returnTime.split(":").map(Number);
-    const totalWindowMin = (retH * 60 + (retM || 0)) - (arrH * 60 + (depM || 0));
-    const tripWindowMin = Math.max(120, totalWindowMin);
-    const stopRange = childAge <= 24
-      ? RECOMMENDATION_CONFIG.stopLimits.age0to2
-      : childAge <= 60
-      ? RECOMMENDATION_CONFIG.stopLimits.age3to5
-      : RECOMMENDATION_CONFIG.stopLimits.age6plus;
-    const maxBlocks = Math.max(stopRange.min, stopRange.max - (weatherCondition === "HOT" || weatherCondition === "RAIN" ? 1 : 0));
-
-    const defaultContext: RecommendationContext = {
-      trip: {
-        originText: origin,
-        tripDate,
-        departureTime,
-        arrivalInIcheon,
-        desiredDepartureFromIcheon: returnTime,
-        childAgeMonths: childAge,
-        displayAge: childAge <= 12 ? "12개월 미만" : childAge <= 24 ? "2세" : childAge <= 48 ? "3~4세" : "5세 이상",
-        strollerRequired: stroller,
-        transport,
-        styles,
-        includeLunch,
-        parentRestPriority,
-        napTimeStart: napStart,
-        napTimeEnd: napEnd,
-      },
-      weather: {
-        temperatureC: weatherCondition === "HOT" ? 31 : weatherCondition === "COLD" ? 4 : weatherCondition === "RAIN" ? 18 : 23,
-        condition: weatherCondition,
-      },
-      tripWindowMin,
-      maxBlocks,
-    };
-
-    setContext(defaultContext);
-
-    generateItineraryUseCase({
+    const input = {
       childAgeMonths: childAge,
       strollerRequired: stroller,
       originText: origin,
@@ -124,16 +83,38 @@ function ItineraryContent() {
       napTimeStart: napStart,
       napTimeEnd: napEnd,
       parentRestPriority,
-      weatherCondition: requestedWeather || "AUTO",
-    })
-      .then((data) => {
+      weatherCondition: requestedWeather || "AUTO" as const,
+    };
+    createRecommendationContext(input).then(async (resolvedContext) => {
+      if (cancelled) return;
+      setContext(resolvedContext);
+      let data = await generateItineraryUseCase(input, resolvedContext);
+      const ids = searchParams.get("stops")?.split(",").filter(Boolean);
+      if (ids?.length) {
+        const candidates = await placeRepo.listCandidates();
+        const selected = [...new Set(ids)].slice(0, 30).flatMap(id => candidates.find(p => p.id === id && !p.unavailableReason) ?? []);
+        if (selected.length) data = await modifyUseCase.rebuildItinerary(selected, resolvedContext);
+      }
+      if (!cancelled) {
         setItinerary(data);
-      })
+      }
+    })
       .catch((err) => {
+        if (cancelled) return;
         console.error("Itinerary generation error:", err);
         setError("일정을 불러오는 중 문제가 발생했습니다. 네트워크 또는 여행 조건을 다시 확인해 주세요.");
       });
+    return () => { cancelled = true; };
   }, [searchParams, reloadKey]);
+
+  useEffect(() => {
+    if (!itinerary) return;
+    const ids = itinerary.blocks.flatMap(b => b.place ? [b.place.id] : []);
+    writeActiveCourse({ ids, query: searchParams.toString() });
+    const controller = new AbortController();
+    fetch("/api/plan", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids, query: searchParams.toString() }), signal: controller.signal }).then(r => { if (!controller.signal.aborted) setPlanStatus(r.ok ? "내 계정에 코스를 저장했어요." : r.status === 401 ? "로그인하면 코스를 계정에 저장할 수 있어요. 비로그인은 코스 링크를 복사해 보관하세요." : "코스를 서버에 저장하지 못했어요. 링크를 복사해 보관해 주세요."); }).catch(() => { if (!controller.signal.aborted) setPlanStatus("저장 연결을 확인해 주세요. 코스 링크로도 보관할 수 있어요."); });
+    return () => controller.abort();
+  }, [itinerary, searchParams]);
 
   if (error) {
     return (
@@ -201,6 +182,11 @@ function ItineraryContent() {
     setItinerary(updated);
   };
 
+  const handleAddPlace = async (place: Place) => {
+    const updated = await modifyUseCase.addPlace(itinerary, place, context);
+    setItinerary(updated);
+  };
+
   // STORY-308: Reduce One Stop (-45min)
   const handleReduceOneStop = async () => {
     const updated = await modifyUseCase.reduceOneStop(itinerary, context);
@@ -256,10 +242,22 @@ function ItineraryContent() {
               weatherLabel,
               context.trip.strollerRequired ? "유모차 동행" : "유모차 없이",
               context.trip.includeLunch ? "점심 포함" : "점심 제외",
-              ...context.trip.styles.slice(0, 2).map((style) => ({ NATURE: "자연 산책", PARENT_REST: "부모 휴식", LOCAL_FOOD: "쌀밥 식사", EXPERIENCE: "체험", INDOOR: "실내", PHOTO: "사진" }[style] || style)),
+              ...context.trip.styles.map((style) => ({ NATURE: "자연 산책", PARENT_REST: "부모 휴식", LOCAL_FOOD: "쌀밥 식사", EXPERIENCE: "체험", INDOOR: "실내", PHOTO: "사진" }[style] || style)),
+              context.trip.napTimeStart && context.trip.napTimeEnd ? `낮잠 ${context.trip.napTimeStart}~${context.trip.napTimeEnd}` : "낮잠 없음",
+              `부모 휴식 ${{ LOW: "가벼움", MEDIUM: "보통", HIGH: "높음" }[context.trip.parentRestPriority]}`,
+              context.weather.source === "CURRENT" ? "현재 이천 날씨 반영" : context.weather.source === "FALLBACK" ? "날씨 조회 불가 · 보통 기준" : "직접 선택한 날씨",
             ]}
           />
 
+          <div className="mb-5 rounded-xl bg-white p-4 text-sm">
+            <p>이천 첫 장소 기준 12:00 시작 예시예요. 집에서 이천까지와 귀가 이동은 합계에 포함하지 않아요.</p>
+            <button className="mt-2 font-bold text-primary underline" onClick={async () => {
+              const params = new URLSearchParams(searchParams.toString()); params.set("stops", currentPlaces.map(p => p.id).join(","));
+              try { await navigator.clipboard.writeText(window.location.origin + "/itinerary?" + params); setSaveMessage("현재 조건과 방문 순서가 담긴 코스 링크를 복사했어요. 직접 추가한 장소는 본인 로그인 후 표시돼요."); }
+              catch { setSaveMessage("링크 복사를 지원하지 않는 브라우저예요. 주소창의 코스 링크를 보관해 주세요."); }
+            }}>맞춤 코스 링크 복사</button>
+            <p role="status" className="mt-2 text-xs text-on-surface-variant">{saveMessage || planStatus}</p>
+          </div>
           {/* Timeline Section (STORY-208, 209, 212) */}
           <section className="flex flex-col gap-0 mb-space-xl">
             <TimelineToggle
@@ -320,7 +318,7 @@ function ItineraryContent() {
           />
 
           {/* Excluded Places Section (STORY-211) */}
-          <ExcludedPlacesCard excludedPlaces={itinerary.excludedPlaces} />
+          <ExcludedPlacesCard excludedPlaces={itinerary.excludedPlaces} onAdd={handleAddPlace} />
 
           {/* Secondary Actions Row (STORY-308, STORY-310) */}
           <SecondaryActions

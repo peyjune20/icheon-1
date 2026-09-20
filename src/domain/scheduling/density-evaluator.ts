@@ -17,7 +17,7 @@ export function evaluateDensity(
   // 실제 활동 및 주행 소요시간
   const actualTripTime = totalStayMin + totalTravelMin;
   // 전체 여행 가능 시간(330분) 대비 잔여 여유/버퍼 시간 (330 - 290~300 = 30~40분)
-  const slackMin = Math.max(0, tripWindowMin - actualTripTime);
+  const slackMin = tripWindowMin - actualTripTime - bufferMin;
 
   let status: "RELAXED" | "FEASIBLE" | "TIGHT" = "FEASIBLE";
   let statusMessage = "적절한 여유가 있는 일정입니다.";

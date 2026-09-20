@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ItineraryBlock } from "@/domain/models/itinerary";
 import { Place } from "@/domain/models/place";
+import { placeDetailHref } from "@/features/custom-places/place-links";
 
 interface DestinationCardProps {
   block: ItineraryBlock;
@@ -37,7 +38,7 @@ export const DestinationCard = ({
         {!isCollapsed && place.thumbnailImage && (
           <div className="flex flex-col bg-surface-container">
             <Link
-              href={`/places/${place.id}`}
+              href={placeDetailHref(place)}
               className="block relative aspect-[16/9] min-h-[210px] w-full overflow-hidden group"
             >
               <Image
@@ -62,9 +63,9 @@ export const DestinationCard = ({
                 </span>
                 <span className="inline-flex items-center justify-center rounded-full bg-surface-container-lowest/90 px-2 py-0.5 text-center text-label-sm text-on-surface-variant backdrop-blur-sm">
                   {place.indoorOutdoor === "INDOOR"
-                    ? "실내 에어컨"
+                    ? "실내"
                     : place.indoorOutdoor === "MIXED"
-                    ? "실내 + 그늘"
+                    ? "실내 + 실외"
                     : "야외 자연"}
                 </span>
               </div>
@@ -88,7 +89,7 @@ export const DestinationCard = ({
                 {place.imageFiles.map((img, idx) => (
                   <Link
                     key={img + idx}
-                    href={`/places/${place.id}`}
+                    href={placeDetailHref(place)}
                     className="relative aspect-[4/3] w-full rounded-lg overflow-hidden opacity-85 hover:opacity-100 transition-opacity border border-outline-variant/30"
                   >
                     <Image
@@ -101,7 +102,7 @@ export const DestinationCard = ({
                   </Link>
                 ))}
                 <Link
-                  href={`/places/${place.id}`}
+                  href={placeDetailHref(place)}
                   className="col-span-full justify-self-end text-xs text-primary font-bold hover:underline flex items-center pt-0.5"
                 >
                   갤러리 전체보기 &rarr;
@@ -115,7 +116,7 @@ export const DestinationCard = ({
         <div className="p-5 flex flex-col gap-4">
           <div className="flex items-baseline justify-between">
             <Link
-              href={`/places/${place.id}`}
+              href={placeDetailHref(place)}
               className="font-headline text-headline-md text-on-surface font-bold hover:text-primary transition-colors flex items-center gap-1"
             >
               {place.name}
@@ -124,13 +125,7 @@ export const DestinationCard = ({
               </span>
             </Link>
             <span className="text-label-sm text-primary font-medium">
-              {place.category === "RESTAURANT"
-                ? "유아 동반 94% 만족"
-                : place.category === "PARK"
-                ? "유모차 친화 1등급"
-                : place.category === "INDOOR"
-                ? "쾌적지수 98점"
-                : "잔디마당 완비"}
+              {place.recommendationSource === "AI_RECOMMENDED" ? "AI 추천 · 방문 전 확인" : place.recommendationSource === "USER_ADDED" ? "직접 추가한 장소" : "현장 방문 기록"}
             </span>
           </div>
 
@@ -138,17 +133,17 @@ export const DestinationCard = ({
           <div className="flex flex-wrap gap-2">
             {place.parking.value === "YES" && (
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary text-label-sm font-medium">
-                <span className="material-symbols-outlined text-[14px]">check</span>주차 편리
+                <span className="material-symbols-outlined text-[14px]">check</span>주차 가능
               </span>
             )}
             {place.strollerAccessible.value === "YES" && (
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary text-label-sm font-medium">
-                <span className="material-symbols-outlined text-[14px]">check</span>유모차 완경사
+                <span className="material-symbols-outlined text-[14px]">check</span>유모차 가능
               </span>
             )}
             {place.nursingRoom.value === "YES" && (
               <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container text-primary text-label-sm font-medium">
-                <span className="material-symbols-outlined text-[14px]">check</span>독립 수유실
+                <span className="material-symbols-outlined text-[14px]">check</span>수유실 이용 가능
               </span>
             )}
             {place.babyChair.value === "YES" && (

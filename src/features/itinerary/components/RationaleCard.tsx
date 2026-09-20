@@ -29,8 +29,8 @@ export const RationaleCard = ({ reasons, displayAge, weatherLabel, napTimeLabel 
 
       {/* Rationale Text */}
       <p className="text-body-sm text-on-surface-variant leading-relaxed bg-surface-container-low p-3 rounded-lg">
-        {weatherLabel} 컨디션과 {displayAge} 아이의 이동 리듬을 함께 고려했습니다. {napTimeLabel}에는
-        이동 거리나 조용한 휴식 공간을 우선 배치하고, 선택한 취향에 맞는 장소를 앞쪽으로 추천했어요.
+        {weatherLabel} 컨디션과 {displayAge} 아이의 이동 리듬, 선택한 취향을 고려한 계획이에요. 낮잠 설정은 {napTimeLabel}이며,
+        해당 시간과 겹치는 이동 구간을 표시했어요. 실제 아이 컨디션에 따라 방문 순서를 바꿔 주세요.
       </p>
     </section>
   );

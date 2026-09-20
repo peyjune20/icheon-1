@@ -31,14 +31,14 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ place }) => {
 
   const ageLabel =
     place.ageMinMonths !== undefined && place.ageMaxMonths !== undefined
-      ? `${Math.floor(place.ageMinMonths / 12)}~${Math.floor(place.ageMaxMonths / 12)}세 최적`
+      ? `${Math.floor(place.ageMinMonths / 12)}~${Math.floor(place.ageMaxMonths / 12)}세 참고`
       : "영유아 추천";
 
   return (
     <div className="flex flex-col gap-3 mb-5" data-testid="hero-banner">
       {/* Place Header Info */}
       <div className="flex flex-col gap-1.5">
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="place-badges flex flex-wrap items-center gap-1.5">
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-bold text-xs">
             {categoryLabel}
           </span>
@@ -49,8 +49,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ place }) => {
             {indoorOutdoorLabel}
           </span>
           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-xs ${place.recommendationSource === "AI_RECOMMENDED" ? "bg-secondary-container text-on-secondary-container" : "bg-primary/10 text-primary"}`}>
-            <span className="material-symbols-outlined text-[13px]">{place.recommendationSource === "AI_RECOMMENDED" ? "auto_awesome" : "verified"}</span>
-            {place.recommendationSource === "AI_RECOMMENDED" ? "AI 추천" : "현장 실측"}
+            {place.recommendationSource === "USER_ADDED" ? "내가 추가" : place.recommendationSource === "AI_RECOMMENDED" ? "AI 추천" : "현장 실측"}
           </span>
         </div>
 
@@ -65,7 +64,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ place }) => {
       </div>
 
       {/* Full Photo Gallery Component with all uploaded pictures */}
-      <PhotoGallery place={place} />
+      {place.imageFiles.length > 0 && <PhotoGallery place={place} />}
     </div>
   );
 };

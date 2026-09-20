@@ -6,5 +6,5 @@ export interface TravelTimeResult {
 }
 
 export interface TravelTimeAdapter {
-  getTravelTime(fromId: string, toId: string): Promise<TravelTimeResult>;
+  getTravelTime(fromId: string, toId: string, from?: import("@/domain/models/place").Place, to?: import("@/domain/models/place").Place): Promise<TravelTimeResult>;
 }

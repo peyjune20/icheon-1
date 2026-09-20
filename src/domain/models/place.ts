@@ -19,7 +19,7 @@ export type VerificationStatus =
   | "USER_REPORTED"
   | "UNVERIFIED";
 
-export type RecommendationSource = "FIELD_VISIT" | "AI_RECOMMENDED";
+export type RecommendationSource = "FIELD_VISIT" | "AI_RECOMMENDED" | "USER_ADDED";
 
 export interface PlaceMedia {
   src: string;
@@ -67,6 +67,17 @@ export interface Place {
   recommendationSource?: RecommendationSource;
   /** AI 추천 장소의 공식 안내를 다시 확인할 수 있는 링크입니다. */
   sourceUrl?: string;
+  researchedInfo?: {
+    checkedAt: string;
+    hours: string;
+    closed: string;
+    cost: string;
+    phone?: string;
+    access?: string;
+    sources: { label: string; url: string }[];
+  };
+  coordinateSource?: string;
+  unavailableReason?: string;
 
   verificationStatus: VerificationStatus;
   verifiedDate: string;

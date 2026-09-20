@@ -27,7 +27,7 @@ export const ParentReviewBox: React.FC<ParentReviewBoxProps> = ({ place }) => {
             favorite
           </span>
         </div>
-        <span className="text-sm text-[#943F2B] font-bold">부모를 위한 솔직한 현장 평</span>
+        <span className="text-sm text-[#943F2B] font-bold">{place.recommendationSource === "AI_RECOMMENDED" ? "AI가 정리한 장소 소개" : "부모를 위한 방문 기록"}</span>
       </div>
       <p className="text-sm text-on-surface leading-relaxed whitespace-pre-line font-normal">
         {getReviewContent()}

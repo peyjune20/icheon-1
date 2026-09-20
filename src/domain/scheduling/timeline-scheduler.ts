@@ -35,7 +35,7 @@ export async function buildTimelineBlocks(
       } else if (context.trip.parentRestPriority === "MEDIUM") {
         durationMin = 40;
       } else if (context.trip.parentRestPriority === "LOW") {
-        durationMin = 25;
+        durationMin = 20;
       }
     }
     const startTime = minutesToTime(currentMin);
@@ -65,7 +65,7 @@ export async function buildTimelineBlocks(
           ? "생태 공원 & 덱 산책"
           : "실내 관람 & 쉼",
       badges: [
-        place.indoorOutdoor === "INDOOR" ? "실내 에어컨" : place.indoorOutdoor === "MIXED" ? "실내 + 그늘" : "야외 자연",
+        place.indoorOutdoor === "INDOOR" ? "실내" : place.indoorOutdoor === "MIXED" ? "실내 + 실외" : "야외",
       ],
       recommendationReason: place.recommendationReason,
     });
@@ -76,7 +76,7 @@ export async function buildTimelineBlocks(
     // 다음 장소가 있으면 이동 블록(TRAVEL) 생성
     if (i < places.length - 1) {
       const nextPlace = places[i + 1];
-      const travelInfo = await travelAdapter.getTravelTime(place.id, nextPlace.id);
+      const travelInfo = await travelAdapter.getTravelTime(place.id, nextPlace.id, place, nextPlace);
       const travelDurationMin = travelInfo.durationMin;
       const travelStartTime = minutesToTime(currentMin);
       const travelEndTime = minutesToTime(currentMin + travelDurationMin);
@@ -93,7 +93,7 @@ export async function buildTimelineBlocks(
         ? "도보 2분 · 공원 내 라이스카페로 이동"
         : isNapTiming
         ? `🚗 이동 ${travelDurationMin}분 (아기 낮잠 타이밍으로 추천 😴)`
-        : `이동 ${travelDurationMin}분 · 주차 및 승하차 버퍼 10분 포함`;
+        : `이천 내 이동 약 ${travelDurationMin}분 · ${travelInfo.source === "ESTIMATE" ? "거리 기반 추정" : "계획용 예상값"} · 실제 길찾기와 다를 수 있어요`;
 
       blocks.push({
         id: `block-travel-${place.id}-${nextPlace.id}`,

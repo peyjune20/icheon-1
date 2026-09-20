@@ -6,6 +6,9 @@ import Image from "next/image";
 import { BottomNavBar } from "@/components/shared/BottomNavBar";
 import { SEED_PLACES } from "@/infrastructure/data/seed-places.data";
 import { Place, PlaceCategory } from "@/domain/models/place";
+import { usePlaces } from "@/features/custom-places/use-places";
+import { CustomPlaceManager } from "@/features/custom-places/CustomPlaceManager";
+import { placeDetailHref } from "@/features/custom-places/place-links";
 
 const FILTER_CATEGORIES = [
   { id: "ALL", label: "전체 명소" },
@@ -20,7 +23,7 @@ export default function PlacesListPage() {
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const standalonePlaces = useMemo(() => SEED_PLACES, []);
+  const { places: standalonePlaces, error } = usePlaces();
 
   const filteredPlaces = useMemo(() => {
     return standalonePlaces.filter((place) => {
@@ -63,7 +66,7 @@ export default function PlacesListPage() {
         <section className="pt-2 mb-4">
           <div className="flex flex-wrap items-center gap-1.5 text-xs text-primary font-bold mb-1">
             <span className="material-symbols-outlined text-[16px]">verified</span>
-            <span>현장 실측 {standalonePlaces.filter((place) => place.recommendationSource !== "AI_RECOMMENDED").length}곳</span>
+            <span>현장 실측 {standalonePlaces.filter((place) => place.verificationStatus === "FIELD_VERIFIED").length}곳</span>
             <span className="text-on-surface-variant">·</span>
             <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
             <span>AI 추천 {standalonePlaces.filter((place) => place.recommendationSource === "AI_RECOMMENDED").length}곳</span>
@@ -113,6 +116,8 @@ export default function PlacesListPage() {
           })}
         </div>
 
+        <CustomPlaceManager places={standalonePlaces} />
+        {error && <p role="alert" className="mb-4 text-sm text-primary">{error}</p>}
         {/* Places List Cards */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-7 xl:grid-cols-3">
           {filteredPlaces.length === 0 ? (
@@ -142,7 +147,7 @@ function PlaceCardItem({ place }: { place: Place }) {
       : place.category === "PARK"
       ? "생태 공원"
       : place.category === "INDOOR"
-      ? "실내 아열대 온실"
+      ? "실내 관람"
       : place.category === "NATURE"
       ? "자연 힐링"
       : place.category === "EXPERIENCE"
@@ -155,14 +160,14 @@ function PlaceCardItem({ place }: { place: Place }) {
       data-testid={`place-item-${place.id}`}
     >
       {/* Visual Header Image */}
-      <Link href={`/places/${place.id}`} className="relative aspect-[16/9] w-full bg-surface-container overflow-hidden group block">
-        <Image
+      <Link href={placeDetailHref(place)} className="relative aspect-[16/9] w-full bg-surface-container overflow-hidden group block">
+        {place.imageFiles.length > 0 ? <Image
           src={place.thumbnailImage || place.imageFiles[0]}
           alt={isAiRecommended ? `${place.name} AI 추천 분위기 이미지` : place.name}
           fill
           sizes="(max-width: 480px) 100vw, 480px"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
-        />
+        /> : <div className="flex h-full items-center justify-center bg-[#e8eef8] text-secondary"><span className="material-symbols-outlined text-6xl">add_location_alt</span></div>}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
 
         {/* Top Badges */}
@@ -171,10 +176,10 @@ function PlaceCardItem({ place }: { place: Place }) {
             {categoryBadge}
           </span>
           <span className="inline-flex items-center justify-center rounded-full bg-white/90 px-2 py-0.5 text-center text-[11px] font-medium text-on-surface backdrop-blur-md">
-            {place.indoorOutdoor === "INDOOR" ? "실내 냉방" : place.indoorOutdoor === "MIXED" ? "실내+실외" : "야외 숲/호수"}
+            {place.indoorOutdoor === "INDOOR" ? "실내" : place.indoorOutdoor === "MIXED" ? "실내+실외" : "야외"}
           </span>
           <span className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-center text-[11px] font-bold shadow-xs ${isAiRecommended ? "bg-secondary text-white" : "bg-white/90 text-primary"}`}>
-            {isAiRecommended ? "AI 추천" : "현장 실측"}
+            {isAiRecommended ? "AI 추천" : place.recommendationSource === "USER_ADDED" ? "내가 추가" : "현장 실측"}
           </span>
         </div>
 
@@ -236,7 +241,7 @@ function PlaceCardItem({ place }: { place: Place }) {
             }`}
           >
             <span className="material-symbols-outlined text-[13px]">stroller</span>
-            유모차 {place.strollerAccessible.value === "YES" ? "가능" : "일부 제한"}
+            유모차 {place.strollerAccessible.value === "YES" ? "가능" : place.strollerAccessible.value === "UNKNOWN" ? "확인 필요" : "제한"}
           </span>
 
           <span
@@ -247,7 +252,7 @@ function PlaceCardItem({ place }: { place: Place }) {
             }`}
           >
             <span className="material-symbols-outlined text-[13px]">child_care</span>
-            수유실 {place.nursingRoom.value === "YES" ? "완비" : "없음"}
+            수유실 {place.nursingRoom.value === "YES" ? "완비" : place.nursingRoom.value === "UNKNOWN" ? "확인 필요" : "없음"}
           </span>
 
           <span
@@ -258,7 +263,7 @@ function PlaceCardItem({ place }: { place: Place }) {
             }`}
           >
             <span className="material-symbols-outlined text-[13px]">baby_changing_station</span>
-            기저귀대 {place.diaperChangingStation.value === "YES" ? "완비" : "없음"}
+            기저귀대 {place.diaperChangingStation.value === "YES" ? "완비" : place.diaperChangingStation.value === "UNKNOWN" ? "확인 필요" : "없음"}
           </span>
 
           <span
@@ -269,7 +274,7 @@ function PlaceCardItem({ place }: { place: Place }) {
             }`}
           >
             <span className="material-symbols-outlined text-[13px]">chair_alt</span>
-            아기의자 {place.babyChair.value === "YES" ? "보유" : "없음"}
+            아기의자 {place.babyChair.value === "YES" ? "보유" : place.babyChair.value === "UNKNOWN" ? "확인 필요" : "없음"}
           </span>
         </div>
 

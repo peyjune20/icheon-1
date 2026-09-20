@@ -9,23 +9,7 @@ export const TrustCard: React.FC<TrustCardProps> = ({ place }) => {
   const isFieldVerified = place.verificationStatus === "FIELD_VERIFIED";
   const isAiRecommended = place.recommendationSource === "AI_RECOMMENDED";
 
-  // Detailed editorial measurement comment based on verified facility inspection
-  const getVerificationComment = () => {
-    switch (place.id) {
-      case "3":
-        return "주차장 휠체어·유모차 램프 직접 실측, 기저귀 갈이대 온수 수압 및 수유실 정수기·소파 청결 상태를 확인했습니다.";
-      case "1":
-        return "매장 입구 단차 없는 진입로와 넓은 테이블 간격 직접 실측, 아기의자 8개 보유 및 유아 식기 비치 상태를 확인했습니다.";
-      case "2":
-        return "숲 산책로 완경사 노면 실측(계곡 구간 유모차 불가 확인), 숲 그늘 쉼터 및 기저귀 갈이대 구비 상태를 확인했습니다.";
-      case "4":
-        return "관람로 엘리베이터 및 휠체어·유모차 경사로 직접 실측, 가족 화장실 내 기저귀 갈이대 온수 상태를 확인했습니다.";
-      case "5":
-        return "잔디마당 평지 진입로 실측, 실내 협소 통로에 따른 유모차 반입 제한 및 아기의자 다수 구비 상태를 확인했습니다.";
-      default:
-        return "영유아 동반 필수 기준(유모차, 기저귀 갈이대, 수유 공간, 주차 편의) 현장 실측을 완료했습니다.";
-    }
-  };
+  const getVerificationComment = () => "사용자가 방문한 장소의 기록이에요. 시설별 확인 내용은 아래에서 볼 수 있으며, 이후 운영 상황은 달라질 수 있어요.";
 
   if (!isFieldVerified) {
     return (

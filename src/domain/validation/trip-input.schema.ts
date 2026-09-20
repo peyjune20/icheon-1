@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { TripInput } from "@/domain/models/trip-input";
+import { ageLabel } from "@/domain/recommendation/itinerary-summary";
 
 export const TripInputSchema = z.object({
   originText: z
@@ -7,7 +8,7 @@ export const TripInputSchema = z.object({
     .trim()
     .min(1, "출발 지역을 입력해 주세요.")
     .max(100, "출발 지역명이 너무 깁니다.")
-    .default("서울 구로구 신도림"),
+    .default("현재 위치"),
   childAgeMonths: z.coerce.number().int().min(0, "개월수는 0 이상이어야 합니다.").max(120, "개월수는 120 이하이어야 합니다.").default(17),
   displayAge: z.string().max(30).default("2세"),
   strollerRequired: z.boolean().default(true),
@@ -53,5 +54,5 @@ export function validateAndNormalizeTripInput(input: Partial<TripInput>): TripIn
     const errorDetails = result.error.errors.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ");
     throw new Error(`유효하지 않은 여행 입력값입니다: ${errorDetails}`);
   }
-  return result.data as TripInput;
+  return { ...result.data, displayAge: ageLabel(result.data.childAgeMonths) } as TripInput;
 }

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.place-badges > span { display: inline-flex; align-items: center; justify-content: center; min-height: 28px; padding: 4px 10px; font-size: 12px; line-height: 20px; font-weight: 600; }
+.map-number { display:flex; align-items:center; justify-content:center; width:30px; height:30px; border:3px solid white; border-radius:50%; color:white; background:#d85079; font-size:14px; font-weight:700; box-shadow:0 2px 8px #5555; }
+.map-number-label { padding:5px 10px; background:white; border-radius:12px; font-size:12px; color:#423748; box-shadow:0 2px 6px #5553; }
+
 :root {
   --background: #fffdf9;
   --foreground: #423748;

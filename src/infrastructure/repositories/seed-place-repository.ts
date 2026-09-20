@@ -4,11 +4,13 @@ import { SEED_PLACES } from "../data/seed-places.data";
 
 export class SeedPlaceRepository implements PlaceRepository {
   async listCandidates(): Promise<Place[]> {
-    return [...SEED_PLACES];
+    if (typeof window === "undefined") return [...SEED_PLACES];
+    const { fetchCustomPlaces } = await import("@/features/custom-places/use-places");
+    return [...SEED_PLACES, ...await fetchCustomPlaces()];
   }
 
   async getById(id: string): Promise<Place | null> {
-    const found = SEED_PLACES.find((p) => p.id === id);
+    const found = (await this.listCandidates()).find((p) => p.id === id);
     return found ? { ...found } : null;
   }
 

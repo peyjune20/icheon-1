@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Place } from "@/domain/models/place";
 import { isPlaceSaved, savePlace, toggleSavedPlace } from "@/features/saved-places/saved-places.storage";
+import { readActiveCourse } from "@/features/itinerary/active-course";
 
 interface BottomActionBarProps {
   place: Place;
@@ -11,6 +13,8 @@ interface BottomActionBarProps {
 export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     setIsBookmarked(isPlaceSaved(place.id));
@@ -20,13 +24,19 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
     setIsBookmarked(toggleSavedPlace(place.id));
   };
 
-  const handleAddToCourse = () => {
+  const handleAddToCourse = async () => {
     savePlace(place.id);
     setIsBookmarked(true);
     setIsAdded(true);
-    setTimeout(() => {
-      setIsAdded(false);
-    }, 2500);
+    setError("");
+    try {
+      const response = await fetch("/api/plan", { cache: "no-store" });
+      if (!response.ok && response.status !== 401) throw new Error("저장된 코스를 불러오지 못했어요.");
+      const plan = readActiveCourse() || (response.ok ? await response.json() : null);
+      const params = new URLSearchParams(plan?.query || "");
+      params.set("stops", [...new Set<string>([...(plan?.ids || []), place.id])].join(","));
+      router.push(`/itinerary?${params}`);
+    } catch { setError("코스에 연결하지 못했어요. 다시 시도해 주세요."); setIsAdded(false); }
   };
 
   return (
@@ -35,6 +45,7 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
       data-testid="bottom-action-bar"
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-2.5">
+        {error && <p role="alert" className="text-xs text-primary">{error}</p>}
         {/* Bookmark Button with Toggle Animation */}
         <button
           type="button"
@@ -63,7 +74,7 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
         <button
           type="button"
           onClick={handleAddToCourse}
-          disabled={isAdded}
+          disabled={isAdded || !!place.unavailableReason}
           className={`flex-1 h-12 rounded-full flex items-center justify-center gap-2 text-sm font-bold shadow-md transition-all active:scale-[0.98] ${
             isAdded
               ? "bg-primary-container text-white"
@@ -75,7 +86,7 @@ export const BottomActionBar: React.FC<BottomActionBarProps> = ({ place }) => {
             {isAdded ? "check" : "add_circle"}
           </span>
           <span data-testid="add-feedback-text">
-            {isAdded ? "코스에 추가되었습니다" : "이 장소를 내 코스에 담기"}
+            {place.unavailableReason ? "운영 정보 확인 후 추가 가능" : isAdded ? "코스에 추가되었습니다" : "이 장소를 내 코스에 담기"}
           </span>
         </button>
       </div>

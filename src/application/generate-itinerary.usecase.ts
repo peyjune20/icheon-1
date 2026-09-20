@@ -7,30 +7,29 @@ import { timeToMinutes } from "@/domain/scheduling/timeline-scheduler";
 import { validateAndNormalizeTripInput } from "@/domain/validation/trip-input.schema";
 import { RECOMMENDATION_CONFIG } from "@/domain/config/recommendation.config";
 
-export async function generateItineraryUseCase(input: Partial<TripInput>): Promise<Itinerary> {
-  const repo = new SeedPlaceRepository();
-  const travelAdapter = new SeedMatrixTravelTimeAdapter();
-  const engine = new RuleBasedRecommendationEngine(repo, travelAdapter);
-
+export async function createRecommendationContext(input: Partial<TripInput>): Promise<RecommendationContext> {
   // Zod-based server/application layer validation & normalization
   const fullTripInput = validateAndNormalizeTripInput(input);
 
-  // Calculate arrival in Icheon dynamically based on departure time (approx 2h travel from capital area)
-  if (!input.arrivalInIcheon && fullTripInput.departureTime) {
-    const [depH, depM] = fullTripInput.departureTime.split(":").map(Number);
-    const arrH = (depH + 2) % 24;
-    fullTripInput.arrivalInIcheon = `${String(arrH).padStart(2, "0")}:${String(depM || 0).padStart(2, "0")}`;
-  }
-
-  const startMin = timeToMinutes(fullTripInput.arrivalInIcheon);
-  const endMin = timeToMinutes(fullTripInput.desiredDepartureFromIcheon);
-  const tripWindowMin = Math.max(120, endMin - startMin);
+  // Only the time spent in Icheon is planned; travel from home is not assumed.
+  const tripWindowMin = fullTripInput.childAgeMonths <= 24 ? 270 : fullTripInput.childAgeMonths <= 60 ? 360 : 420;
 
   const requestedWeather = fullTripInput.weatherCondition ?? "AUTO";
-  const weatherCondition = requestedWeather === "AUTO"
-    ? (fullTripInput.styles.includes("INDOOR") ? "HOT" : "NORMAL")
-    : requestedWeather;
-  const temperatureC = weatherCondition === "HOT" ? 31 : weatherCondition === "COLD" ? 4 : weatherCondition === "RAIN" ? 18 : 23;
+  let weatherCondition: RecommendationContext["weather"]["condition"] = requestedWeather === "AUTO" ? "NORMAL" : requestedWeather;
+  let temperatureC = weatherCondition === "HOT" ? 31 : weatherCondition === "COLD" ? 4 : weatherCondition === "RAIN" ? 18 : 23;
+  let source: RecommendationContext["weather"]["source"] = requestedWeather === "AUTO" ? "FALLBACK" : "SELECTED";
+  if (requestedWeather === "AUTO") {
+    try {
+      const response = await fetch("https://api.open-meteo.com/v1/forecast?latitude=37.2799&longitude=127.4428&current=temperature_2m,weather_code&timezone=Asia%2FSeoul", { signal: AbortSignal.timeout(5000) });
+      if (!response.ok) throw new Error("Weather unavailable");
+      const data = await response.json();
+      if (typeof data.current?.temperature_2m !== "number") throw new Error("Missing weather");
+      temperatureC = data.current.temperature_2m;
+      const code = data.current.weather_code;
+      weatherCondition = code >= 51 && code <= 99 ? "RAIN" : temperatureC >= 28 ? "HOT" : temperatureC <= 5 ? "COLD" : "NORMAL";
+      source = "CURRENT";
+    } catch { /* Conservative ordinary-weather plan if the feed is unavailable. */ }
+  }
 
   const stopRange = fullTripInput.childAgeMonths <= 24
     ? RECOMMENDATION_CONFIG.stopLimits.age0to2
@@ -46,9 +45,16 @@ export async function generateItineraryUseCase(input: Partial<TripInput>): Promi
     weather: {
       condition: weatherCondition,
       temperatureC,
+      source,
     },
     maxBlocks,
   };
 
-  return await engine.generate(context);
+  return context;
+}
+
+export async function generateItineraryUseCase(input: Partial<TripInput>, resolvedContext?: RecommendationContext): Promise<Itinerary> {
+  const repo = new SeedPlaceRepository();
+  const engine = new RuleBasedRecommendationEngine(repo, new SeedMatrixTravelTimeAdapter());
+  return engine.generate(resolvedContext ?? await createRecommendationContext(input));
 }
