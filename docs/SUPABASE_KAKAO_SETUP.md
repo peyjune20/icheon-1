@@ -60,6 +60,21 @@ Authentication → URL Configuration:
 Sites와 Vercel은 같은 Supabase 프로젝트를 가리키면 같은 계정 기록을 조회합니다. 도메인 간 로그인 세션 자체는 별도이므로 각각 로그인해야 합니다.
 Sites 접근 제한이 있는 경우 Sites 접근 로그인과 앱 안의 Supabase 로그인이 모두 필요할 수 있습니다.
 
+### 이메일 링크가 localhost로 가거나 만료되는 경우
+
+로그인 버튼을 누른 **현재 사이트 주소**를 `emailRedirectTo`로 전달합니다. 따라서 Vercel에서 보낸 메일은 Vercel의 `/account`로, 로컬 개발 서버에서 보낸 메일은 같은 PC의 `http://localhost:3000/account`로 돌아옵니다.
+
+`localhost:3000/?error=access_denied&error_code=otp_expired`는 앱 오류가 아니라 Supabase가 **이미 사용됐거나 만료된 일회용 링크**를 기본 Site URL로 돌려보낸 상태입니다. 해당 PC에서 로컬 서버가 실행 중이지 않으면 브라우저에 연결 거부가 보입니다.
+
+해결 순서:
+
+1. Supabase Dashboard → Authentication → URL Configuration에서 **Site URL을 `https://icheon-1.vercel.app`로 저장**합니다. `http://localhost:3000`을 Site URL로 두지 않습니다.
+2. 위의 Redirect URLs 세 개가 정확히 등록되어 있는지 저장 후 확인합니다.
+3. Authentication → Email Templates → Confirm signup / Magic Link에서 기본 `href="{{ .ConfirmationURL }}"`을 유지합니다. 직접 만든 템플릿이 `{{ .SiteURL }}`로 링크를 조립한다면 `{{ .RedirectTo }}`를 사용하도록 바꿉니다. 그렇지 않으면 코드가 전달한 `/account` 리디렉션이 무시됩니다.
+4. 배포된 `https://icheon-1.vercel.app/account`에서 새 메일을 한 번만 요청합니다. 이전 메일은 열지 말고, 가장 최근 링크를 한 번만 클릭합니다. Magic Link는 한 번만 사용할 수 있고 기본 만료 시간은 약 1시간입니다.
+
+링크가 정상적으로 앱에 도착했지만 만료된 경우에는 `/account`가 원시 Supabase 오류 대신 “새 링크를 요청해 주세요”라는 한국어 안내를 표시합니다.
+
 공식 참고: [이메일 로그인](https://supabase.com/docs/guides/auth/auth-email-passwordless), [리디렉션 URL](https://supabase.com/docs/guides/auth/redirect-urls).
 
 ## 3. 공개 환경변수 입력

@@ -28,7 +28,7 @@ export function VillageCollection({ places, stamps }: { places: Place[]; stamps:
     <p className="mt-3 text-sm leading-6 text-on-surface-variant">장소 하나 = 조형물 하나. 방문한 장소의 나무·집·동물만 색이 채워져요. 조형물을 누르면 해당 장소로 이동합니다.</p>
     <p className="mt-2 text-xs text-primary sm:hidden">마을을 좌우로 밀어 숨어 있는 조형물을 찾아보세요.</p>
     <div className="mt-5 overflow-x-auto rounded-3xl border border-outline-variant/25" tabIndex={0} aria-label="가로로 살펴볼 수 있는 마을 지도">
-      <div className="relative aspect-[16/10] min-w-[900px]">
+      <div className="relative isolate z-0 aspect-[16/10] min-w-[900px]">
         <Image src="/assets/village-connected.png" alt="냇가와 두 다리, 논과 집, 오솔길이 이어진 한 장의 이천 상상 마을" fill sizes="1100px" className="object-cover" />
         {VILLAGE_SLOTS.map(slot => {
           const place = places.find(p => p.id === slot.placeId); if (!place) return null;

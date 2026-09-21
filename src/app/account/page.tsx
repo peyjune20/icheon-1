@@ -4,23 +4,32 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ACCOUNT_CHANGED, getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import { friendlyError } from "@/lib/client-errors";
+
+function authLinkErrorMessage(errorCode: string | null, error: string | null) {
+  if (errorCode === "otp_expired") return "이 로그인 링크는 이미 사용됐거나 만료됐어요. 새 링크를 요청한 뒤 가장 최근 메일의 링크를 한 번만 열어 주세요.";
+  if (error === "access_denied") return "로그인을 완료하지 못했어요. 새 로그인 링크를 요청해 다시 시도해 주세요.";
+  return "";
+}
+
 function Account() {
   const params = useSearchParams(); const [email, setEmail] = useState(""); const [signedIn, setSignedIn] = useState(false);
   const [busy, setBusy] = useState(false), [message, setMessage] = useState("");
   const requested = params.get("returnTo") || "/my-trip";
   const returnTo = requested.startsWith("/") && !requested.startsWith("//") && !requested.includes("\\") ? requested : "/my-trip";
+  const linkError = authLinkErrorMessage(params.get("error_code"), params.get("error"));
   useEffect(() => {
-    if (!isSupabaseConfigured()) { setMessage("계정 저장소 연결을 준비 중이에요. 관리자가 Supabase 설정을 완료하면 로그인할 수 있어요."); return; }
+    if (!isSupabaseConfigured()) { setMessage(linkError || "계정 저장소 연결을 준비 중이에요. 관리자가 Supabase 설정을 완료하면 로그인할 수 있어요."); return; }
+    if (linkError) setMessage(linkError);
     let active = true;
     const sync = () => getSupabase().auth.getUser().then(({ data }) => { if (active) setSignedIn(!!data.user); });
     sync(); window.addEventListener(ACCOUNT_CHANGED, sync); return () => { active = false; window.removeEventListener(ACCOUNT_CHANGED, sync); };
-  }, []);
+  }, [linkError]);
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault(); setBusy(true); setMessage("");
     try {
       const { error } = await getSupabase().auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: window.location.origin + "/account?returnTo=" + encodeURIComponent(returnTo) } });
       if (error) throw error;
-      setMessage("로그인 메일을 보냈어요. 이 브라우저에서 메일의 링크를 열어 주세요. 스팸함도 확인해 주세요.");
+      setMessage("로그인 메일을 보냈어요. 이 브라우저에서 가장 최근 메일의 링크를 한 번만 열어 주세요. 링크는 약 1시간 뒤 만료됩니다.");
     } catch (e) { setMessage(friendlyError(e, "로그인 메일을 보내지 못했어요. 이메일 주소를 확인하고 잠시 후 다시 시도해 주세요.")); } finally { setBusy(false); }
   };
   const signOut = async () => {

@@ -113,6 +113,11 @@ async function main() {
 
   const sql = readFileSync("supabase/migrations/202609210002_account_visit_records.sql", "utf8");
   for (const part of ["enable row level security", "from anon, authenticated", "for select", "for insert", "for update", "for delete", "primary key (user_id, place_id)", "references public.custom_places(id) on delete cascade", "p.user_id = (select auth.uid())"]) assert(sql.includes(part));
+  const accountPage = readFileSync("src/app/account/page.tsx", "utf8");
+  assert(accountPage.includes('errorCode === "otp_expired"'));
+  assert(accountPage.includes("emailRedirectTo: window.location.origin + \"/account?returnTo=\""));
+  const village = readFileSync("src/features/tour-stamps/VillageCollection.tsx", "utf8");
+  assert(village.includes('relative isolate z-0 aspect-[16/10]'), "map slots must stay below the fixed header stacking layer");
   console.log("PASS: ANON/PUBLISHABLE config, visit dates/import preservation, owner-scoped place/visit/photo repositories, private uploads and rollback (mock SDK; live RLS still requires Supabase setup)");
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });
