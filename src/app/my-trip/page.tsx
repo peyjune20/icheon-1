@@ -44,7 +44,7 @@ export default function MyTripPage() {
     </section>
     <details className="mt-4 rounded-3xl border border-outline-variant/40 bg-white p-5 sm:p-6" onToggle={event => setShowPhotos(event.currentTarget.open)}><summary className="cursor-pointer text-lg font-bold">내가 업로드한 사진 관리 <span className="text-xs font-normal text-on-surface-variant">펼치기 / 접기</span></summary>{showPhotos && <VisitorPhotos places={places} />}</details>
     <VillageCollection places={places.filter(p => p.recommendationSource !== "USER_ADDED")} stamps={stamps} />
-    <StampBook key={visits.owner || "guest"} places={places} stamps={stamps} onCreate={saveStamp} onRemove={removeStamp} disabled={visitsDisabled} />
+    <StampBook key={visits.owner || "guest"} places={places} stamps={stamps} onCreate={saveStamp} onRemove={removeStamp} disabled={visitsDisabled} feedbackPlaceId={visits.feedbackPlaceId} message={message} signInRequired={visits.signInRequired} loading={visits.loading} error={visits.error} onRetry={visits.refresh} />
     <p className="mt-3 text-xs text-on-surface-variant">내 장소·방문 기록·사진은 로그인 계정에 저장됩니다. 찜 목록과 복사 전의 예전 방문 기록은 이 브라우저에만 남아 있어요.</p>
     <section className="mt-10"><div className="flex items-center justify-between gap-3"><h2 className="text-2xl font-bold">다음 투어에 담아둔 장소</h2><Link href="/places" className="text-sm font-bold text-primary">장소 더 찾아보기 →</Link></div>
       {!saved.length && <p className="mt-5 rounded-2xl bg-white p-8 text-center text-sm">아직 찜한 장소가 없어요. 장소 탐색에서 마음에 드는 곳을 담아보세요.</p>}

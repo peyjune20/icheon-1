@@ -1,7 +1,9 @@
 import { build } from "esbuild";
 import { spawnSync } from "node:child_process";
-for (const name of ["verify-itinerary", "verify-integrations", "verify-account-records"]) {
-  await build({ entryPoints: ["scripts/" + name + ".ts"], bundle: true, platform: "node", format: "cjs", jsx: "automatic", outfile: ".site-deploy/" + name + ".cjs" });
+for (const name of ["verify-itinerary", "verify-integrations", "verify-account-records", "verify-stamp-interactions"]) {
+  // Keep React's native Node module loader so async act() uses setImmediate,
+  // rather than browser MessageChannels that keep the test process alive.
+  await build({ entryPoints: ["scripts/" + name + ".ts"], bundle: true, platform: "node", format: "cjs", jsx: "automatic", external: ["react", "react-test-renderer"], outfile: ".site-deploy/" + name + ".cjs" });
   const result = spawnSync(process.execPath, [".site-deploy/" + name + ".cjs"], { stdio: "inherit" });
   if (result.status) { process.exitCode = result.status; break; }
 }

@@ -3,7 +3,7 @@ export interface TourStampRecord {
   visitedAt: string;
 }
 
-const TOUR_STAMPS_KEY = "icheon-bebe-road:tour-stamps";
+export const TOUR_STAMPS_KEY = "icheon-bebe-road:tour-stamps";
 export const TOUR_STAMPS_CHANGED_EVENT = "icheon-bebe-road:tour-stamps-changed";
 
 function readTourStamps(): TourStampRecord[] {

@@ -18,7 +18,11 @@ export function getSupabase() {
     client.auth.onAuthStateChange((_event, session) => {
       const account = session?.user.id || null;
       if (account === lastAccount) return;
+      const initialSession = lastAccount === undefined && _event === "INITIAL_SESSION";
       lastAccount = account;
+      // Consumers already load the initial user. A delayed initial notification
+      // must not erase a click's feedback or remount the stamp book.
+      if (initialSession) return;
       if (typeof window !== "undefined") window.setTimeout(() => window.dispatchEvent(new Event(ACCOUNT_CHANGED)), 0);
     });
   }
