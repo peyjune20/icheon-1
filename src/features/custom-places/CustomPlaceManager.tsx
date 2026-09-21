@@ -6,7 +6,8 @@ import { PLACES_CHANGED } from "./use-places";
 import { placeDetailHref } from "./place-links";
 import { searchKakaoPlaces, SearchPlace } from "@/lib/kakao-maps";
 import { friendlyError, UserFacingError } from "@/lib/client-errors";
-import { saveCustomPlace, deleteCustomPlace } from "./account-repository";
+import { saveCustomPlace } from "./account-repository";
+import { DeletePlaceButton } from "./DeletePlaceButton";
 import { ACCOUNT_CHANGED } from "@/lib/supabase";
 
 const categories: [PlaceCategory, string][] = [["NATURE", "자연·숲"], ["PARK", "공원"], ["CAFE", "카페"], ["RESTAURANT", "식당"], ["EXPERIENCE", "체험"], ["INDOOR", "실내 관람"], ["OTHER", "기타"]];
@@ -35,13 +36,6 @@ export function CustomPlaceManager({ places }: { places: Place[] }) {
       setSaved(body); setMessage("내 장소에 저장했어요. 상세 페이지에서 사진과 코스를 추가해 보세요."); window.dispatchEvent(new Event(PLACES_CHANGED));
     } catch (e) { if (current === generation.current) { setSignIn(e instanceof UserFacingError && e.code === "AUTH"); setMessage(friendlyError(e, "저장하지 못했어요. 입력은 그대로 유지됩니다.")); } } finally { setBusy(false); }
   };
-  const remove = async (place: Place) => {
-    if (!window.confirm(`${place.name}과 이 장소의 방문 기록·내 사진을 삭제할까요? 삭제 후 복구할 수 없어요.`)) return;
-    setBusy(true);
-    const current = generation.current;
-    try { await deleteCustomPlace(place.id); if (current !== generation.current) return; window.dispatchEvent(new Event(PLACES_CHANGED)); if (saved?.id === place.id) setSaved(null); setMessage("장소와 방문 기록·내 사진을 삭제했어요."); }
-    catch (e) { if (current === generation.current) setMessage(friendlyError(e, "삭제하지 못했어요. 다시 시도해 주세요.")); } finally { setBusy(false); }
-  };
   return <details ref={panel} id="add-place" className="my-6 rounded-3xl border border-outline-variant/40 bg-white p-5 sm:p-6">
     <summary className="cursor-pointer text-lg font-bold">＋ 목록에 없는 장소도 내 여행에 추가하기 <span className="ml-2 text-xs font-normal text-on-surface-variant">검색 · 직접 입력 · 관리</span></summary>
     <p className="mt-3 text-sm leading-6 text-on-surface-variant">추가한 장소와 사진은 로그인한 본인에게만 보여요. 기본 30곳은 유지되고, 내 장소만 삭제할 수 있어요.</p>
@@ -55,6 +49,6 @@ export function CustomPlaceManager({ places }: { places: Place[] }) {
     </form>
     <p role="status" className="mt-3 text-sm">{message} {signIn && <SignInHint />}</p>
     {saved && <Link className="mt-3 inline-block font-bold text-primary underline" href={placeDetailHref(saved)}>저장한 {saved.name} 상세 보기 →</Link>}
-    {places.filter(p => p.recommendationSource === "USER_ADDED").map(place => <div key={place.id} className="mt-3 flex items-center justify-between gap-3 border-t pt-3"><Link href={placeDetailHref(place)} className="text-sm font-bold">{place.name} →</Link><button disabled={busy} onClick={() => remove(place)} className="text-xs text-primary underline">내 장소 삭제</button></div>)}
+    {places.filter(p => p.recommendationSource === "USER_ADDED").map(place => <div key={place.id} className="mt-3 flex items-center justify-between gap-3 border-t pt-3"><Link href={placeDetailHref(place)} className="text-sm font-bold">{place.name} →</Link><DeletePlaceButton place={place} onDeleted={() => { if (saved?.id === place.id) setSaved(null); setMessage("장소와 방문 기록·내 사진을 삭제했어요."); }} /></div>)}
   </details>;
 }

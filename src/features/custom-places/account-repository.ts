@@ -27,12 +27,17 @@ export async function saveCustomPlace(input: unknown): Promise<Place> {
 export async function deleteCustomPlace(id: string) {
   if (!id.startsWith("user-")) throw new UserFacingError("기본 장소는 삭제할 수 없어요.");
   const { db, user } = await requireUser();
+  const owned = await db.from("custom_places").select("id").eq("id", id).eq("user_id", user.id).maybeSingle();
+  if (owned.error) throw owned.error;
+  if (!owned.data) throw new UserFacingError("내 장소를 찾지 못했어요. 목록을 새로고침해 주세요.");
   const { data, error } = await db.from("visit_photos").select("id").eq("user_id", user.id).eq("place_id", id);
   if (error) throw error;
   const { deleteVisitPhoto } = await import("@/features/place-detail/photo-repository");
-  for (const photo of data || []) await deleteVisitPhoto(photo.id);
-  const result = await db.from("custom_places").delete().eq("id", id).eq("user_id", user.id);
+  for (const photo of data || []) await deleteVisitPhoto(photo.id, user.id);
+  await requireUser(user.id);
+  const result = await db.from("custom_places").delete().eq("id", id).eq("user_id", user.id).select("id").maybeSingle();
   if (result.error) throw result.error;
+  if (!result.data) throw new UserFacingError("장소 삭제를 확인하지 못했어요. 목록을 새로고침해 주세요.");
 }
 export async function readSavedPlan(): Promise<ActiveCourse | null> {
   if (!isSupabaseConfigured()) return null;

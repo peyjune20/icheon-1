@@ -24,9 +24,11 @@ export async function preparePhoto(file: File): Promise<Blob> {
     return blob;
   } finally { bitmap.close(); }
 }
-export async function listVisitPhotos(placeId: string): Promise<VisitPhoto[]> {
+export async function listVisitPhotos(placeId?: string): Promise<VisitPhoto[]> {
   const { db, user } = await requireUser();
-  const { data, error } = await db.from("visit_photos").select("*").eq("user_id", user.id).eq("place_id", placeId).order("created_at", { ascending: false });
+  let query = db.from("visit_photos").select("*").eq("user_id", user.id);
+  if (placeId) query = query.eq("place_id", placeId);
+  const { data, error } = await query.order("created_at", { ascending: false });
   if (error) throw error;
   const photos: VisitPhoto[] = [];
   try {
@@ -55,11 +57,14 @@ export async function uploadVisitPhoto(placeId: string, file: File, title: strin
     throw result.error;
   }
 }
-export async function deleteVisitPhoto(id: string) {
-  const { db, user } = await requireUser();
+export async function deleteVisitPhoto(id: string, expectedUserId?: string) {
+  const { db, user } = await requireUser(expectedUserId);
   const { data, error } = await db.from("visit_photos").select("object_path").eq("id", id).eq("user_id", user.id).maybeSingle();
   if (error) throw error; if (!data) throw new UserFacingError("사진을 찾지 못했어요. 목록을 새로고침해 주세요.");
+  await requireUser(user.id);
   // File first; on a DB failure, retaining the row makes a second deletion retry possible.
   const removed = await db.storage.from(PHOTO_BUCKET).remove([data.object_path]); if (removed.error) throw removed.error;
-  const deleted = await db.from("visit_photos").delete().eq("id", id).eq("user_id", user.id); if (deleted.error) throw deleted.error;
+  await requireUser(user.id);
+  const deleted = await db.from("visit_photos").delete().eq("id", id).eq("user_id", user.id).select("id").maybeSingle(); if (deleted.error) throw deleted.error;
+  if (!deleted.data) throw new UserFacingError("사진 삭제를 확인하지 못했어요. 목록을 새로고침해 주세요.");
 }

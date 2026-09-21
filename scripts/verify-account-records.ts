@@ -4,7 +4,7 @@ import { getSupabase, getSupabasePublicConfig, isSupabaseConfigured } from "../s
 import { UserFacingError } from "../src/lib/client-errors";
 import { isVisitDate, legacyVisitsToImport } from "../src/features/tour-stamps/visit-dates";
 import { deleteVisitRecord, importVisitRecords, listVisitRecords, saveVisitRecord } from "../src/features/tour-stamps/visit-repository";
-import { listCustomPlaces, saveCustomPlace } from "../src/features/custom-places/account-repository";
+import { deleteCustomPlace, listCustomPlaces, saveCustomPlace } from "../src/features/custom-places/account-repository";
 import { deleteVisitPhoto, listVisitPhotos, releasePhotoPreviews, uploadVisitPhoto } from "../src/features/place-detail/photo-repository";
 
 async function main() {
@@ -81,11 +81,12 @@ async function main() {
   calls.length = 0; reply([{ data: place }]); assert.equal((await listCustomPlaces())[0].id, place.id); hasOwnerFilter();
 
   const storageCalls: { method: string; args: any[] }[] = [];
+  let storageError: Error | null = null;
   const jpeg = new Blob(["pixel-only JPEG mock"], { type: "image/jpeg" });
   db.storage.from = ((bucket: string) => {
     assert.equal(bucket, "visit-photos");
     return Object.fromEntries(["upload", "remove", "download"].map(method => [method, async (...args: any[]) => {
-      storageCalls.push({ method, args }); return { data: method === "download" ? jpeg : {}, error: null };
+      storageCalls.push({ method, args }); return { data: method === "download" ? jpeg : {}, error: storageError };
     }]));
   }) as unknown as typeof db.storage.from;
   Object.defineProperty(globalThis, "createImageBitmap", { configurable: true, value: async () => ({ width: 20, height: 20, close() {} }) });
@@ -99,10 +100,42 @@ async function main() {
   const photos = await listVisitPhotos("1"); hasOwnerFilter(); assert(photos[0].previewUrl?.startsWith("blob:")); releasePhotoPreviews(photos);
   reply(null, failure); await assert.rejects(() => uploadVisitPhoto("1", file, "rollback"), failure);
   assert.equal(storageCalls.at(-1)?.method, "remove", "failed metadata save cleans uploaded file");
-  calls.length = 0; reply({ object_path: metadata.object_path }); reply();
+  calls.length = 0; reply({ object_path: metadata.object_path }); reply({ id: metadata.id });
   await deleteVisitPhoto(metadata.id); hasOwnerFilter();
   assert.deepEqual(storageCalls.at(-1)?.args, [[metadata.object_path]]);
   assert.equal(last("from")[0], "visit_photos"); assert(calls.some(call => call.method === "delete"));
+  // All-place gallery still filters by authenticated owner, not by a client-supplied identity.
+  calls.length = 0; reply([]); await listVisitPhotos(); hasOwnerFilter();
+  assert(!calls.some(call => call.method === "eq" && call.args[0] === "place_id"));
+  assert.deepEqual(last("order"), ["created_at", { ascending: false }]);
+  // Never erase photo metadata when the Storage delete fails; allow a retry.
+  calls.length = 0; storageError = failure; reply({ object_path: metadata.object_path });
+  await assert.rejects(() => deleteVisitPhoto(metadata.id, owner), failure);
+  assert(!calls.some(call => call.method === "delete")); storageError = null;
+  // A zero-row delete must not be reported as success (RLS/account races).
+  reply({ object_path: metadata.object_path }); reply(null);
+  await assert.rejects(() => deleteVisitPhoto(metadata.id, owner), UserFacingError);
+  // A missing or other user's place must not start cascading file deletion.
+  calls.length = 0; const beforeMissing = storageCalls.length; reply(null);
+  await assert.rejects(() => deleteCustomPlace(place.id), UserFacingError);
+  assert.equal(storageCalls.length, beforeMissing);
+  assert(!calls.some(call => call.method === "delete"));
+  await assert.rejects(() => deleteCustomPlace("1"), UserFacingError);
+  calls.length = 0; storageError = failure;
+  reply({ id: place.id }); reply([{ id: metadata.id }]); reply({ object_path: metadata.object_path });
+  await assert.rejects(() => deleteCustomPlace(place.id), failure);
+  assert(!calls.some(call => call.method === "delete"), "file failure must preserve the place and photo metadata for retry");
+  storageError = null;
+  // Delete linked files and metadata first, then the owned place (visits use ON DELETE CASCADE).
+  calls.length = 0;
+  reply({ id: place.id }); reply([{ id: metadata.id }]);
+  reply({ object_path: metadata.object_path }); reply({ id: metadata.id }); reply({ id: place.id });
+  await deleteCustomPlace(place.id); hasOwnerFilter();
+  assert.deepEqual(calls.filter(call => call.method === "from").map(call => call.args[0]), ["custom_places", "visit_photos", "visit_photos", "visit_photos", "custom_places"]);
+  // Stop a cascade before it can use a different account.
+  account = { id: "22222222-2222-4222-8222-222222222222" }; calls.length = 0;
+  await assert.rejects(() => deleteVisitPhoto(metadata.id, owner), (e: UserFacingError) => e.code === "AUTH_CHANGED");
+  assert.equal(calls.length, 0);
   account = null;
   const before = storageCalls.length;
   await assert.rejects(() => uploadVisitPhoto("1", file, "blocked"), (e: UserFacingError) => e.code === "AUTH");
