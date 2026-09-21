@@ -19,6 +19,7 @@
 - 이메일 링크 오류 후속: 사용자 화면에서 `localhost:3000/?error=access_denied&error_code=otp_expired` 확인. 설정상 Site URL이 localhost이거나 로컬에서 발송한 링크이고, 링크도 이미 사용/만료된 상태로 판단. 계정 화면은 오류 코드를 한국어 재발급 안내로 처리하도록 보완. Supabase Dashboard에서 Site URL을 Vercel 주소로 저장하고 기본/맞춤 이메일 템플릿이 ConfirmationURL/RedirectTo를 사용하도록 수동 확인 필요.
 - 마을 조형물은 자식 z-index가 헤더보다 높아 고정 메뉴 위에 보였음. VillageCollection의 지도 내부에 독립 stacking context(z-0/isolate)를 만들어 모든 스프라이트·그림자가 헤더 아래에서만 보이도록 수정.
 - 검증: npm run build 성공(40개 정적 페이지/타입 검사/Worker 번들), node scripts/verify.mjs 3개 스위트 통과. 로컬 /account?error=access_denied&error_code=otp_expired에서 한국어 재발급 안내를 시각 확인했고, 스크롤된 마을 화면에서 헤더 위 아이콘 겹침이 없는 것을 시각 확인.
+- GitHub main 반영: 366f722 (`Handle expired login links and contain village map layers`). 기존 사용자 미추적 .site-deploy/, resources/pic/new/은 계속 제외.
 - 추가/수정 파일: src/lib/supabase.ts, .env.example, src/app/{account,my-trip}/page.tsx, src/features/custom-places/{CustomPlaceManager.tsx,account-repository.ts}, src/features/place-detail/photo-repository.ts, src/features/tour-stamps/{StampBook.tsx,TourStamp.tsx,visit-dates.ts,visit-repository.ts,use-visit-records.ts}, scripts/{verify.mjs,verify-account-records.ts}, supabase/migrations/202609210002_account_visit_records.sql, docs/SUPABASE_KAKAO_SETUP.md, 본 문서. .env.local은 Git 제외.
 
 2026-09-21 후속 요청: Kakao JS Places 검색, Supabase Auth/Storage/Database 개인 기록, 주소 30곳 대조, 연결된 마을 30개 슬롯, 카카오 자동차 경유 길찾기 구현 및 GitHub push.
