@@ -2,6 +2,17 @@
 
 ## 현재 목표
 
+2026-10-21 후속 작업: 찜을 로그인 계정의 Supabase `saved_places`와 비로그인 임시 브라우저 목록으로 분리.
+
+- 기존 guest key/원본 유지. 로그인·로그아웃이나 계정 찜 변경으로 guest 원본을 변경하지 않음.
+- 공유 Provider로 상세 찜/코스 담기/나의 투어 연결. 계정 확인 실패 시 guest로 fallback하지 않고 오류 표시.
+- 임시 찜은 장소별 체크 후 명시적으로만 복사. 기본 선택 없음, 가져오기에도 guest 원본/계정 기존 찜 보존.
+- 사용자 전환 중 이전 응답 차단, 다른 탭/화면 복귀 시 갱신, 동시 저장 중 갱신 지연.
+- 추가 SQL `supabase/migrations/202610210003_account_saved_places.sql`: 본인 select/insert/delete RLS, 개인 장소 삭제 FK cascade, 기본 장소 데이터 유지.
+- 새 환경변수 없음. 사용자가 Supabase SQL 003의 Run 실행을 완료했다고 알림. 실제 서버 스키마/RLS·실계정 다기기 테스트는 아직 직접 검증하지 않음.
+- 자동 테스트 `scripts/verify-saved-places.ts` 추가. `node scripts/verify.mjs` 5개 스위트 통과, `npm run build` 성공(타입 검사/40개 정적 페이지/Worker 번들), `git diff --check` 통과. 빌드 중 외부 Google Fonts 다운로드 제한 경고만 발생.
+- SQL 실행 알림 후 테스트 5개 스위트를 다시 통과했고 GitHub push/Vercel 반영을 진행. 기존 미추적 `.site-deploy/`, `resources/pic/new/` 보존. 아래 과거 작업/배포 기록과 구분.
+
 2026-09-21 최신 후속 작업: 사용자가 Vercel에 등록한 NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY를 읽도록 연결. 기존 장소/사진 저장은 Supabase 구현을 재사용하고, 방문 스탬프도 계정별 DB 저장으로 전환했습니다. 기존 브라우저 기록은 자동 귀속하지 않고 명시적인 계정 복사만 허용합니다. 아래 과거 운영 확인 기록과 구분하세요.
 
 ### 최신 Supabase 후속 작업

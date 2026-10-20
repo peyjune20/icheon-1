@@ -1,4 +1,5 @@
-const SAVED_PLACE_IDS_KEY = "icheon-bebe-road:saved-place-ids";
+// Keep the legacy key: these are browser-only guest bookmarks, never account data.
+export const SAVED_PLACE_IDS_KEY = "icheon-bebe-road:saved-place-ids";
 
 export const SAVED_PLACES_CHANGED_EVENT = "icheon-bebe-road:saved-places-changed";
 
@@ -22,33 +23,19 @@ function writeSavedPlaceIds(placeIds: string[]) {
   window.dispatchEvent(new Event(SAVED_PLACES_CHANGED_EVENT));
 }
 
-export function getSavedPlaceIds(): string[] {
+export function getGuestSavedPlaceIds(): string[] {
   return readSavedPlaceIds();
 }
 
-export function isPlaceSaved(placeId: string): boolean {
-  return readSavedPlaceIds().includes(placeId);
-}
-
-export function savePlace(placeId: string): string[] {
+export function saveGuestPlace(placeId: string): string[] {
   const placeIds = readSavedPlaceIds();
   const nextPlaceIds = placeIds.includes(placeId) ? placeIds : [...placeIds, placeId];
   writeSavedPlaceIds(nextPlaceIds);
   return nextPlaceIds;
 }
 
-export function removeSavedPlace(placeId: string): string[] {
+export function removeGuestSavedPlace(placeId: string): string[] {
   const nextPlaceIds = readSavedPlaceIds().filter((id) => id !== placeId);
   writeSavedPlaceIds(nextPlaceIds);
   return nextPlaceIds;
-}
-
-export function toggleSavedPlace(placeId: string): boolean {
-  if (isPlaceSaved(placeId)) {
-    removeSavedPlace(placeId);
-    return false;
-  }
-
-  savePlace(placeId);
-  return true;
 }

@@ -5,7 +5,6 @@ import { ACCOUNT_CHANGED } from "@/lib/supabase";
 import { friendlyError } from "@/lib/client-errors";
 import { deleteCustomPlace } from "./account-repository";
 import { PLACES_CHANGED } from "./use-places";
-import { removeSavedPlace } from "@/features/saved-places/saved-places.storage";
 import { removeTourStamp } from "@/features/tour-stamps/tour-stamps.storage";
 import { readActiveCourse, writeActiveCourse } from "@/features/itinerary/active-course";
 
@@ -25,9 +24,10 @@ export function DeletePlaceButton({ place, onDeleted }: { place: Place; onDelete
     try {
       await deleteCustomPlace(place.id);
       if (current !== generation.current) return;
-      // Local drafts/bookmarks must not keep links to a deleted personal place.
+      // Account bookmarks cascade in the DB. Never mutate the separate guest list here.
+      // Local drafts must not keep links to a deleted personal place.
       try {
-        removeSavedPlace(place.id); removeTourStamp(place.id);
+        removeTourStamp(place.id);
         const plan = readActiveCourse();
         if (plan) {
           const ids = plan.ids.filter(id => id !== place.id);
