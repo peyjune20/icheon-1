@@ -16,6 +16,7 @@ export function useVisitRecords(placeIds: string[]) {
   const [feedbackPlaceId, setFeedbackPlaceId] = useState<string | null>(null);
   const [signInRequired, setSignInRequired] = useState(false);
   const generation = useRef(0), saving = useRef(false);
+  const visibleOwner = useRef<string | null>(null);
   const reloadAfterSave = useRef(false);
 
   const refresh = useCallback(async () => {
@@ -23,19 +24,23 @@ export function useVisitRecords(placeIds: string[]) {
     if (saving.current) { reloadAfterSave.current = true; return; }
     const current = ++generation.current;
     setLoading(true); setError("");
-    const old = getTourStamps(); setLegacy(old);
     try {
-      if (!isSupabaseConfigured()) { setOwner(null); setStamps(old); return; }
+      if (!isSupabaseConfigured()) { visibleOwner.current = null; setOwner(null); setStamps([]); setLegacy([]); return; }
       const { data, error: authError } = await getSupabase().auth.getUser();
       if (current !== generation.current) return;
       if (authError && authError.name !== "AuthSessionMissingError") throw authError;
-      if (!data.user) { setOwner(null); setStamps(old); return; }
-      setOwner(data.user.id);
+      if (!data.user) { visibleOwner.current = null; setOwner(null); setStamps([]); setLegacy([]); return; }
+      // Browser originals are import candidates only, never a guest/account display fallback.
+      if (visibleOwner.current !== data.user.id) { visibleOwner.current = null; setOwner(null); setStamps([]); }
+      setLegacy(getTourStamps());
       const next = await listVisitRecords(data.user.id);
-      if (current === generation.current) setStamps(next);
+      if (current === generation.current) { visibleOwner.current = data.user.id; setOwner(data.user.id); setStamps(next); }
     } catch (e) {
       // A cloud failure must never silently become a successful local save.
-      if (current === generation.current) setError(friendlyError(e, "방문 기록을 불러오지 못했어요. 연결을 확인하고 다시 시도해 주세요."));
+      if (current === generation.current) {
+        visibleOwner.current = null; setOwner(null); setStamps([]); setLegacy([]);
+        setError(friendlyError(e, "방문 기록을 불러오지 못했어요. 연결을 확인하고 다시 시도해 주세요."));
+      }
     } finally { if (current === generation.current) setLoading(false); }
   }, []);
 
@@ -43,20 +48,20 @@ export function useVisitRecords(placeIds: string[]) {
     refresh();
     const accountChanged = () => {
       // Clear private data immediately only when the account really changes.
-      generation.current++; setStamps([]); setOwner(null); setMessage("");
+      generation.current++; visibleOwner.current = null; setStamps([]); setLegacy([]); setOwner(null); setMessage("");
       setFeedbackPlaceId(null); setSignInRequired(false); setLoading(true); refresh();
     };
     const storageChanged = (event: StorageEvent) => {
       if (event.key === TOUR_STAMPS_KEY || event.key === null) refresh();
     };
-    const events = [PLACES_CHANGED, TOUR_STAMPS_CHANGED_EVENT];
+    const events = [PLACES_CHANGED, TOUR_STAMPS_CHANGED_EVENT, "focus"];
     window.addEventListener(ACCOUNT_CHANGED, accountChanged);
     window.addEventListener("storage", storageChanged);
     events.forEach(event => window.addEventListener(event, refresh));
     return () => { generation.current++; window.removeEventListener(ACCOUNT_CHANGED, accountChanged); window.removeEventListener("storage", storageChanged); events.forEach(event => window.removeEventListener(event, refresh)); };
   }, [refresh]);
 
-  const pendingImport = legacyVisitsToImport(legacy, placeIds, stamps);
+  const pendingImport = owner && !error ? legacyVisitsToImport(legacy, placeIds, stamps) : [];
   const mutate = async (placeId: string | null, action: () => Promise<void>, success: string) => {
     if (saving.current) return;
     setFeedbackPlaceId(placeId); setSignInRequired(false);
@@ -66,7 +71,17 @@ export function useVisitRecords(placeIds: string[]) {
     saving.current = true; setBusy(true); setMessage("방문 기록을 저장하고 있어요…");
     const current = generation.current;
     try { await action(); if (current === generation.current) { setError(""); setMessage(success); } }
-    catch (e) { if (current === generation.current) { setSignInRequired(e instanceof UserFacingError && e.code === "AUTH"); setMessage(friendlyError(e, "방문 기록을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.")); } }
+    catch (e) {
+      if (current === generation.current) {
+        const authChanged = e instanceof UserFacingError && (e.code === "AUTH" || e.code === "AUTH_CHANGED");
+        setSignInRequired(authChanged); setMessage(friendlyError(e, "방문 기록을 저장하지 못했어요. 잠시 후 다시 시도해 주세요."));
+        if (authChanged) {
+          generation.current++; visibleOwner.current = null;
+          setOwner(null); setStamps([]); setLegacy([]); setFeedbackPlaceId(null); setLoading(true);
+          reloadAfterSave.current = true;
+        }
+      }
+    }
     finally { saving.current = false; setBusy(false); if (reloadAfterSave.current) { reloadAfterSave.current = false; void refresh(); } }
   };
   const save = (id: string, date: string) => {
