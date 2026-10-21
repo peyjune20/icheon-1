@@ -42,7 +42,7 @@ export default function MyTripPage() {
       {places.filter(place => place.recommendationSource === "USER_ADDED").map(place => <article key={place.id} className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4"><div className="min-w-0 flex-1"><Link href={placeDetailHref(place)} className="font-bold">{place.name} →</Link><p className="mt-1 text-xs text-on-surface-variant">{place.address}</p></div><DeletePlaceButton place={place} onDeleted={() => setDeleteMessage(`${place.name}과 연결된 방문 기록·사진을 삭제했어요.`)} /></article>)}
     </section>
     <details className="mt-4 rounded-3xl border border-outline-variant/40 bg-white p-5 sm:p-6" onToggle={event => setShowPhotos(event.currentTarget.open)}><summary className="cursor-pointer text-lg font-bold">내가 업로드한 사진 관리 <span className="text-xs font-normal text-on-surface-variant">펼치기 / 접기</span></summary>{showPhotos && <VisitorPhotos places={places} />}</details>
-    <VisitRecordsGate owner={visits.owner} loading={visits.loading} error={visits.error} onRetry={visits.refresh}>
+    <VisitRecordsGate owner={visits.owner} loading={visits.loading} error={visits.error} onRetry={visits.refresh} preview={<VillageCollection places={places.filter(p => p.recommendationSource !== "USER_ADDED")} preview />}>
       <VillageCollection places={places.filter(p => p.recommendationSource !== "USER_ADDED")} stamps={stamps} />
       <StampBook key={visits.owner} places={places} stamps={stamps} onCreate={saveStamp} onRemove={removeStamp} disabled={visitsDisabled} feedbackPlaceId={visits.feedbackPlaceId} message={message} signInRequired={visits.signInRequired} loading={visits.loading} error={visits.error} onRetry={visits.refresh} />
     </VisitRecordsGate>

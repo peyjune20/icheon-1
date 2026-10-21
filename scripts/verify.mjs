@@ -1,6 +1,6 @@
 import { build } from "esbuild";
 import { spawnSync } from "node:child_process";
-for (const name of ["verify-itinerary", "verify-integrations", "verify-account-records", "verify-stamp-interactions", "verify-saved-places"]) {
+for (const name of ["verify-itinerary", "verify-integrations", "verify-account-records", "verify-stamp-interactions", "verify-saved-places", "verify-village-preview"]) {
   // Keep React's native Node module loader so async act() uses setImmediate,
   // rather than browser MessageChannels that keep the test process alive.
   await build({ entryPoints: ["scripts/" + name + ".ts"], bundle: true, platform: "node", format: "cjs", jsx: "automatic", external: ["react", "react-test-renderer"], outfile: ".site-deploy/" + name + ".cjs" });
